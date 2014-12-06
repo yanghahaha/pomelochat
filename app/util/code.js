@@ -16,7 +16,11 @@ module.exports = {
         USER_CHANNEL_MEET_MAX           : 1201,
         CHANNEL_USER_MEET_MAX           : 1202,
         CHANNEL_CONNECTION_MEET_MAX     : 1203,
-        CHANNEL_USER_CONNECTION_MEET_MAX: 1204
+        CHANNEL_USER_CONNECTION_MEET_MAX: 1204,
+
+        USER_NOT_IN_SERVER              :
+        USER_NOT_IN_CHANNEL             : 1205,
+        USER_CTX_NOT_FOUND              : 1206
     }
     
 };

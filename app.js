@@ -55,7 +55,7 @@ app.configure('production|development', 'gate', function(){
 });
 
 app.configure('production|development', 'room', function(){
-    var pomeloMessenger = require('./app/modules/pomeloMessenger')
+    var pomeloMessenger = require('./app/messenger/pomeloMessenger')
     pomeloMessenger.init(app)
 });
 

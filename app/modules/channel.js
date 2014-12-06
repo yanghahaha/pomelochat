@@ -1,20 +1,41 @@
 var _ = require('underscore')
+var util = require('util')
 var logger = require('pomelo-logger').getLogger('room', __filename, process.pid)
 var Room = require('./room')
 var Code = require('../util/code')
 var Config = require('../util/config')
 
-var channels = {}
+var channels = {}, exp = module.exports
 
-var exp = module.exports
-
-exp.getChannel = function(id, opts) {
-    var channel = channels[id]
-    if (!channel) {
-        channel = new Channel(id, opts)
-        channels[id] = channel
+exp.createChannel = function(id, opts) {
+    if (!!channels[id]) {
+        return channels[id]
     }
+
+    var channel = new Channel(id, opts)
+    channels[id] = channel
+
+    logger.debug('create channel id=%s', id)
     return channel
+}
+
+exp.destroyChannel = function(id) {
+    var channel = channels[id]
+    if (channel.userCount !== 0 || channel.connectionCount !== 0) {
+        throw new Error(
+            util.format('destroy channel all count should be 0, channel.userCount=%s channel.connectionCount=%s', 
+                channel.userCount, channel.connectionCount))
+    }
+    for (var i in channel) {
+        channel[i] = null
+    }    
+    delete channels[id]
+
+    logger.debug('destroy channel id=%s', id)
+}
+
+exp.getChannel = function(id) {
+    return channels[id]
 }
 
 var firstRoomDispatcher = function(channel) {
@@ -45,23 +66,21 @@ var Channel = function(id, opts) {
     this.channelMaxConnection = opts.channelMaxConnection || Config.ROOM.CHANNEL_MAX_CONNECTION
     this.channelMaxUserConnection = opts.channelMaxUserConnection || Config.ROOM.CHANNEL_MAX_USER_CONNECTION
     this.roomMaxUser = opts.roomMaxUser || Config.ROOM.ROOM_MAX_USER
-    this.userDispatcher = opts.userDispatcher || lastRoomDispatcher
+    this.userDispatcher = opts.userDispatcher || lastRoomDispatcher || firstRoomDispatcher
 }
 
-Channel.prototype.enter = function(user, context, out) {
-    var code, room, newUser = true
+Channel.prototype.enter = function(user, reenter, userInRoomId, context, out) {
+    var code, room
 
     if (this.connectionCount >= this.channelMaxConnection) {
         return Code.ROOM.CHANNEL_CONNECTION_MEET_MAX
     }
 
-    var userChannel = user.getChannel(this.id)
-    if (!!userChannel) {
-        if (userChannel.contexts.length >= this.channelMaxUserConnection) {
+    if (!!userInRoomId) {
+        if (user.getChannelData().getContextsLength() >= this.channelMaxUserConnection) {
             return Code.ROOM.CHANNEL_USER_CONNECTION_MEET_MAX
         }
-        room = this.rooms[userChannel.roomId]
-        newUser = false
+        room = this.rooms[userInRoomId]
     }
     else {
         if (this.userCount >= this.channelMaxUser) {
@@ -70,22 +89,40 @@ Channel.prototype.enter = function(user, context, out) {
         room = this.findRoom()
     }
 
-    code = room.enter(user, context, newUser)
-    if (code != Code.SUCC) {
+    code = room.enter(user, reenter, context)
+    if (code !== Code.SUCC) {
         return code
     }
 
-    if (newUser) {
+    if (!reenter) {
         ++this.userCount
     }
     ++this.connectionCount
 
     out.roomId = room.id
 
-    logger.debug('user=%s newUser=%s entered channel=%s channel.userCount=%s channel.connectionCount=%s room=%s room.userCount=%s room.connectionCount=%s', 
-        user.id, newUser, this.id, this.userCount, this.connectionCount, room.id, room.userCount, room.connectionCount)
+    logger.debug('channel.enter user=%s reenter=%s entered channel=%s channel.userCount=%s channel.connectionCount=%s room=%s room.userCount=%s room.connectionCount=%s', 
+        user.id, reenter, this.id, this.userCount, this.connectionCount, room.id, room.userCount, room.connectionCount)
 
     return Code.SUCC
+}
+
+Channel.prototype.leave = function(user, lastLeave, userInRoomId, context) {
+    var room = this.rooms[userInRoomId]
+    room.leave(user, lastLeave, context)
+
+    if (room.getUserCount() === 0) {
+        Room.destroy(room)
+        delete this.rooms[userInRoomId]
+    }
+
+    if (lastLeave) {
+        --this.userCount
+    }
+    --this.connectionCount
+
+    logger.debug('channel.leave user=%s lastLeave=%s leave channel=%s channel.userCount=%s channel.connectionCount=%s room=%s room.userCount=%s room.connectionCount=%s', 
+        user.id, lastLeave, this.id, this.userCount, this.connectionCount, room.id, room.userCount, room.connectionCount)
 }
 
 Channel.prototype.findRoom = function() {
@@ -103,4 +140,8 @@ Channel.prototype.findRoom = function() {
 
     logger.debug("channel=%s find room index=%s", this.id, room.id)
     return room
+}
+
+Channel.prototype.getUserCount = function() {
+    return this.userCount
 }
