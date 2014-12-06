@@ -1,13 +1,16 @@
 var util = require('util')
 var Code = require('../util/code')
+var logger = require('pomelo-logger').getLogger('room', __filename, process.pid)
 
 var exp = module.exports
 
 exp.create = function(opts) {
-  return new Room(opts)
+    logger.debug('create room id=%s', opts.id)
+    return new Room(opts)
 }
 
 exp.destroy = function(room) {
+    logger.debug('destroy room id=%s', room.id)
     for (var i in room) {
         room[i] = null
     }
@@ -25,11 +28,11 @@ var Room = function(opts) {
 
 Room.prototype.enter = function(user, reenter, context) {
     if (!reenter) {
-        --this.userCount
+        ++this.userCount
         this.users[user.id] = user
         this.messenger.add(this.getIdentifier(), context)        
     }
-    --this.connectionCount
+    ++this.connectionCount
     return Code.SUCC
 }
 

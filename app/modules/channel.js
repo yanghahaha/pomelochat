@@ -47,7 +47,7 @@ var firstRoomDispatcher = function(channel) {
 var lastRoomDispatcher = function(channel) {
     var lastRoom = channel.rooms[channel.lastRoomIndex]
     if (!!lastRoom && lastRoom.getUserCount() < channel.roomMaxUser) {
-        return channel.lastRoomIndex
+        return lastRoom
     }
     else {
         return null
@@ -77,7 +77,7 @@ Channel.prototype.enter = function(user, reenter, userInRoomId, context, out) {
     }
 
     if (!!userInRoomId) {
-        if (user.getChannelData().getContextsLength() >= this.channelMaxUserConnection) {
+        if (user.getChannelData(this.id).getContextCount() >= this.channelMaxUserConnection) {
             return Code.ROOM.CHANNEL_USER_CONNECTION_MEET_MAX
         }
         room = this.rooms[userInRoomId]
@@ -101,7 +101,7 @@ Channel.prototype.enter = function(user, reenter, userInRoomId, context, out) {
 
     out.roomId = room.id
 
-    logger.debug('channel.enter user=%s reenter=%s entered channel=%s channel.userCount=%s channel.connectionCount=%s room=%s room.userCount=%s room.connectionCount=%s', 
+    logger.debug('channel.enter user=%s reenter=%s channel=%s channel.userCount=%s channel.connectionCount=%s room=%s room.userCount=%s room.connectionCount=%s', 
         user.id, reenter, this.id, this.userCount, this.connectionCount, room.id, room.userCount, room.connectionCount)
 
     return Code.SUCC
@@ -111,30 +111,29 @@ Channel.prototype.leave = function(user, lastLeave, userInRoomId, context) {
     var room = this.rooms[userInRoomId]
     room.leave(user, lastLeave, context)
 
-    if (room.getUserCount() === 0) {
-        Room.destroy(room)
-        delete this.rooms[userInRoomId]
-    }
-
     if (lastLeave) {
         --this.userCount
     }
     --this.connectionCount
 
-    logger.debug('channel.leave user=%s lastLeave=%s leave channel=%s channel.userCount=%s channel.connectionCount=%s room=%s room.userCount=%s room.connectionCount=%s', 
+    logger.debug('channel.leave user=%s lastLeave=%s channel=%s channel.userCount=%s channel.connectionCount=%s room=%s room.userCount=%s room.connectionCount=%s', 
         user.id, lastLeave, this.id, this.userCount, this.connectionCount, room.id, room.userCount, room.connectionCount)
+
+    if (room.getUserCount() === 0) {
+        Room.destroy(room)
+        delete this.rooms[userInRoomId]
+    }
 }
 
 Channel.prototype.findRoom = function() {
-    var roomIndex = this.userDispatcher.call(null, this)
-    var room = this.rooms[roomIndex]
+    var room = this.userDispatcher.call(null, this)
     if (!room) {
-        roomIndex = ++this.lastRoomIndex
+        ++this.lastRoomIndex
         room = Room.create({
             channel: this,
-            id: roomIndex
+            id: this.lastRoomIndex
         })
-        this.rooms[roomIndex] = room
+        this.rooms[this.lastRoomIndex] = room
         logger.debug("new room create channelId=%s roomId=%d", this.id, room.id)
     }
 

@@ -70,6 +70,14 @@ handler.login = function(req, session, next) {
                 roomData = data
                 cb(null)
             }
+        },
+        function(cb) {
+            session.set('userId', userId)
+            session.set('channelId', channelId)
+            session.set('roomId', roomData.roomId)
+            session.set('context', context)
+            session.on('closed', onUserLeave.bind(null, self.app))
+            session.pushAll(cb)
         }
     ], function(err) {
         if (!!err) {
@@ -80,12 +88,6 @@ handler.login = function(req, session, next) {
             self.app.sessionService.kickBySessionId(session.id)
         }
         else {
-            session.set('userId', userId)
-            session.set('channelId', channelId)
-            session.set('roomId', roomData.roomId)
-            session.set('context', context)
-            session.on('closed', onUserLeave.bind(null, self.app))
-
             logger.debug('login succ userId=%s channelId=%s', userId, channelId)
             next(null, {
                 code: Code.SUCC,
@@ -98,7 +100,7 @@ handler.login = function(req, session, next) {
 
 var onUserLeave = function(app, session, reason) {
     if (!session || !session.uid) {
-        return;
+        return
     }
 
     var userId = session.get('userId'),

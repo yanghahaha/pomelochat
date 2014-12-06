@@ -98,8 +98,8 @@ User.prototype.leaveChannel = function(channelId, context) {
     }
 
     var index = userChannelData.findContext(context)
-    if (_.isUndefined(index)) {
-        logger.warn('user=%s context.remote=%s not in channel=%s', this.id, context.remote, channelId)
+    if (index === -1) {
+        logger.warn('user=%s context.remote=%j not in channel=%s', this.id, context.remote, channelId)
         return Code.ROOM.USER_CTX_NOT_FOUND
     }
     userChannelData.removeContextByIndex(index)
@@ -115,7 +115,7 @@ var UserChannelData = function(opts) {
     for (var i in opts) {
         this[i] = opts[i]
     }
-    this.conttexs = []
+    this.contexts = []
 }
 
 UserChannelData.prototype.getRole = function() {
@@ -147,11 +147,15 @@ UserChannelData.prototype.addContext = function(ctx) {
 }
 
 UserChannelData.prototype.removeContext = function(ctx) {
-    var index = _.find(this.contexts, function(context) {
-        return ctx.remote.host === context.remote.host && ctx.remote.port === context.remote.port
-    })
-    if (!_.isUndefined(index)) {
-        this.contexts.splice(index, 1)    
+    var found = false
+    for (var i=0; i<this.contexts.length; ++i) {
+        if (this.contexts[i].remote.ip === ctx.remote.ip &&this.contexts[i].remote.port === ctx.remote.port) {
+            found = true
+            break
+        }
+    }
+    if (found) {
+        this.contexts.splice(i, 1)
     }
 }
 
@@ -160,12 +164,15 @@ UserChannelData.prototype.removeContextByIndex = function(index) {
 }
 
 UserChannelData.prototype.existContext = function(ctx) {
-    return !_.isUndefined(this.findContext(ctx))
+    return this.findContext(ctx) !== -1
 }
 
 UserChannelData.prototype.findContext = function(ctx) {
-    return _.find(this.contexts, function(context) {
-        return ctx.remote.host === context.remote.host && ctx.remote.port === context.remote.port
-    })
+    for (var i=0; i<this.contexts.length; ++i) {
+        if (this.contexts[i].remote.ip === ctx.remote.ip &&this.contexts[i].remote.port === ctx.remote.port) {
+            return i
+        }
+    }
+    return -1
 }
 
