@@ -1,0 +1,16 @@
+{
+    "appenders": [
+        {
+            "type": "console"
+        }
+    ],
+
+    "levels": {
+        "[all]": "DEBUG"
+    },
+
+    "replaceConsole": true,
+
+    "lineDebug": false,
+    "reloadSecs": 1
+}

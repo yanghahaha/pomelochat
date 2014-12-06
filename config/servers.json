@@ -1,0 +1,31 @@
+{
+    "development":  {
+        "gate":  [
+            {"id": "gate-server-1", "host": "192.168.186.102", "clientPort": 13011, "frontend": true, "args": "--debug-brk"}
+        ],
+        "connector":  [
+            {"id": "connector-server-1", "host": "192.168.186.102",  "port": 3021, "clientPort": 13021, "frontend": true}
+        ],
+        "auth":  [
+            {"id": "auth-server-1", "host": "192.168.186.102", "port": 3031}
+        ],
+        "room": [
+            {"id": "room-server-1", "host": "192.168.186.102", "port": 3041}
+        ]
+    },
+    "production":  {
+        "connector":  [
+            {"id":  "connector-server-1",  "host":  "192.168.186.102",  "port":  4050,  "clientPort":  3050,  "frontend":  true},
+            {"id":  "connector-server-2",  "host":  "192.168.186.102",  "port":  4051,  "clientPort":  3051,  "frontend":  true},
+            {"id":  "connector-server-3",  "host":  "192.168.186.102",  "port":  4052,  "clientPort":  3052,  "frontend":  true}
+        ],
+        "chat":  [
+            {"id":  "chat-server-1",  "host":  "192.168.186.102",  "port":  6050},
+            {"id":  "chat-server-2",  "host":  "192.168.186.102",  "port":  6051},
+            {"id":  "chat-server-3",  "host":  "192.168.186.102",  "port":  6052}
+        ],
+        "gate":  [
+            {"id":  "gate-server-1",  "host":  "192.168.186.102",  "clientPort":  3014,  "frontend":  true}
+        ]
+    }
+}
