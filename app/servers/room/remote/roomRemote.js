@@ -1,3 +1,4 @@
+var util = require('util')
 var ChannelService = require('../../../modules/channel')
 var UserService = require('../../../modules/user')
 var logger = require('pomelo-logger').getLogger('room', __filename, process.pid)
@@ -29,7 +30,7 @@ remote.enter = function(userId, channelId, userData, context, cb) {
     }
 
     var out = {}
-    var code = user.enterChannel(channelId, userData.channel, context, out)
+    var code = user.enter(channelId, userData.channel, context, out)
     if (code !== Code.SUCC) {
         if (newUser) {
             UserService.destroyUser(userId)
@@ -53,7 +54,7 @@ remote.leave = function(userId, channelId, context, cb) {
         return
     }
 
-    user.leaveChannel(channelId, context)
+    user.leave(channelId, context)
     if (user.getChannelCount() === 0) {
         UserService.destroyUser(userId)
     }
@@ -65,4 +66,25 @@ remote.leave = function(userId, channelId, context, cb) {
 
     logger.debug('leave userId=%s channelId=%s context=%j', userId, channelId, context)
     cb(null, Code.SUCC)
+}
+
+remote.chat = function(userId, channelId, content, cb) {
+    var user = UserService.getUser(userId)
+    if (!user) {
+        cb(new Error(util.format('chat from user not in server userId=%s', userId)))
+        return
+    }
+
+    var toUser = null
+    if (!!toUserId) {
+        toUser = UserService.getUser(toUserId) 
+        if (!toUser) {
+            cb(null, Code.ROOM.TO_USER_NOT_IN_SERVER)
+            return
+        }
+    }
+
+    var code = user.chat(channelId, toUser, content)
+    logger.debug('chat fromId=%s to toId=%s in channelId=%s code=%s', userId, toUserId, channelId, code)
+    cb(null, code)
 }

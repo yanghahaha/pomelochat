@@ -1,8 +1,11 @@
 module.exports = {
 
     SUCC                                : 0,
-    INVALID_PARAMETER                   : 1,
-    INTERNAL_SERVER_ERROR               : 50,
+
+    BAD_REQUEST                         : 400,
+    UNAUTHORIZED                        : 401,
+
+    INTERNAL_SERVER_ERROR               : 500,
 
     AUTH: {
         TOKEN_INVALID                   : 1001
@@ -20,7 +23,10 @@ module.exports = {
 
         USER_NOT_IN_SERVER              : 1205,
         USER_NOT_IN_CHANNEL             : 1206,
-        USER_CTX_NOT_FOUND              : 1207
+        USER_CTX_NOT_FOUND              : 1207,
+
+        TO_USER_NOT_IN_SERVER           : 1208,
+        TO_USER_NOT_IN_ROOM             : 1209
     }
     
 };

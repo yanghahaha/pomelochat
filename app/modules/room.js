@@ -26,6 +26,14 @@ var Room = function(opts) {
     this.messenger = this.messenger || require('../messenger/pomeloMessenger')
 }
 
+Room.prototype.getIdentifier = function() {
+    return this.channel.id + '-' + this.id
+}
+
+Room.prototype.getUserCount = function() {
+    return this.userCount
+}
+
 Room.prototype.enter = function(user, reenter, context) {
     if (!reenter) {
         ++this.userCount
@@ -52,10 +60,18 @@ Room.prototype.leave = function(user, lastLeave, context) {
     }
 }
 
-Room.prototype.getIdentifier = function() {
-    return this.channel.id + '-' + this.id
-}
+Room.prototype.chat = function(fromUser, toUser, content) {
+    var msg = {
+        fromId: fromUser.id,
+        fromName: fromUser.base.name,
+        content: content,
+        time: Date.now() /1000 | 0
+    }
+    if (!!toUser) {
+        msg.toId = toUser.id
+        msg.toName = toUser.base.name
+    }
 
-Room.prototype.getUserCount = function() {
-    return this.userCount
+    this.messenger.pushMessage(this.getIdentifier(), 'chat', msg)
+    return Code.SUCC
 }

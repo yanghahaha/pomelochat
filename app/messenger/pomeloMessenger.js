@@ -27,6 +27,18 @@ exp.destroy = function(identifier) {
     logger.debug('pomelo.channelService(%s) destroy', identifier)
 }
 
+exp.pushMessage = function(identifier, route, msg) {
+    var channel = getChannel(identifier)
+    channel.pushMessage(route, msg, function(err, fails){
+        if (!!err) {
+            logger.error('pomelo.channelService push message error err=%j', err.stack);
+        }
+        if(!!fails && fails.length > 0){
+            logger.error('pomelo.channelService push message error fails.length=%s', fails.length);
+        }
+    })
+}
+
 var getChannel = function(identifier) {
     return app.get('channelService').getChannel(identifier, true)
 }

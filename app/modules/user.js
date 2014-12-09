@@ -39,6 +39,7 @@ exp.getUser = function(id) {
 
 var User = function(id, baseData) {
     this.id = id
+    this.base = {}    
     this.channelDatas = {}
     if (!!baseData) {
         this.updateBase(baseData)
@@ -47,7 +48,7 @@ var User = function(id, baseData) {
 
 User.prototype.updateBase = function(baseData) {
     for (var i in baseData) {
-        this[i] = baseData[i]
+        this.base[i] = baseData[i]
     }
 }
 
@@ -59,7 +60,7 @@ User.prototype.getChannelCount = function() {
     return _.keys(this.channelDatas).length
 }
 
-User.prototype.enterChannel = function(channelId, channelData, context, varOut) {
+User.prototype.enter = function(channelId, channelData, context, varOut) {
     if (this.getChannelCount()>= Config.ROOM.USER_MAX_CHANNEL) {
         return Code.ROOM.USER_CHANNEL_MEET_MAX
     }
@@ -90,10 +91,10 @@ User.prototype.enterChannel = function(channelId, channelData, context, varOut) 
     return Code.SUCC
 }
 
-User.prototype.leaveChannel = function(channelId, context) {
+User.prototype.leave = function(channelId, context) {
     var userChannelData = this.channelDatas[channelId]
     if (!userChannelData) {
-        logger.warn('user=%s not in channel=%s', this.id, context)
+        logger.warn('user=%s not in channel=%s', this.id, channelId)
         return Code.ROOM.USER_NOT_IN_CHANNEL
     }
 
@@ -109,6 +110,27 @@ User.prototype.leaveChannel = function(channelId, context) {
     }
 
     ChannelService.getChannel(channelId).leave(this, lastLeave, userChannelData.getRoomId(), context)
+}
+
+User.prototype.chat = function(channelId, toUser, content) {
+    var userChannelData = this.channelDatas[channelId]
+    if (!userChannelData) {
+        logger.warn('user=%s not in channel=%s', this.id, channelId)
+        return Code.ROOM.USER_NOT_IN_CHANNEL
+    }
+
+    if (!!toUser) {
+        if (!this.isInSameChannelRoom(toUser, channelId)) {
+            return Code.ROOM.TO_USER_NOT_IN_ROOM
+        }
+    }
+
+    return ChannelService.getChannel(channelId).chat(userChannelData.getRoomId(), this, toUser, content)      
+}
+
+User.prototype.isInSameChannelRoom = function(another, channel) {
+    //todo
+    return true
 }
 
 var UserChannelData = function(opts) {

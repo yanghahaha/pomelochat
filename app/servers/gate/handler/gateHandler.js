@@ -29,7 +29,7 @@ handler.lookupConnector = function(req, session, next) {
 
 	if (_.isUndefined(req.userId) || _.isUndefined(req.channelId)) {
 		next(null, {
-			code: Code.INVALID_PARAMETER
+			code: Code.BAD_REQUEST
 		});
         app.sessionService.kickBySessionId(session.id);
 		return;

@@ -24,8 +24,16 @@ res = {
 }
 */
 handler.login = function(req, session, next) {
-    var self = this,
-        userId = req.userId,
+    var self = this
+    if (!req.userId || !req.channelId || !req.token) {
+        next(null, {
+            code: Code.BAD_REQUEST
+        });
+        self.app.sessionService.kickBySessionId(session.id);
+        return;
+    }
+
+    var userId = req.userId,
         channelId = req.channelId,
         userData, roomData,
         code = Code.INTERNAL_SERVER_ERROR
@@ -38,14 +46,6 @@ handler.login = function(req, session, next) {
 
     async.waterfall([
         function(cb) {
-            session.bind(uId, function(err) {
-                if (!!err) {
-                    code = Code.CONNECTOR.BIND_SESSION_ERROR
-                }
-                cb(err)
-            })
-        },
-        function(cb) {
             self.app.rpc.auth.authRemote.verifyToken(session, userId, channelId, req.token, cb)
         },
         function(ret, data, cb) {
@@ -57,6 +57,14 @@ handler.login = function(req, session, next) {
                 userData = data
                 cb(null)
             }
+        },
+        function(cb) {
+            session.bind(uId, function(err) {
+                if (!!err) {
+                    code = Code.CONNECTOR.BIND_SESSION_ERROR
+                }
+                cb(err)
+            })
         },
         function(cb) {
             self.app.rpc.room.roomRemote.enter(session, userId, channelId, userData, context, cb)
@@ -99,7 +107,7 @@ handler.login = function(req, session, next) {
 }
 
 var onUserLeave = function(app, session, reason) {
-    if (!session || !session.uid) {
+    if (!session || !session.get('userId')) {
         return
     }
 
@@ -113,6 +121,51 @@ var onUserLeave = function(app, session, reason) {
         }
         else {
             logger.debug('leave succ userId=%s channelId=%s reason=%s', userId, channelId, reason)
+        }
+    })
+}
+
+/*
+req = {
+    toUserId
+    content
+}
+*/
+handler.chat = function(req, session, next) {
+    var code = Code.SUCC,
+        self = this
+
+    if (!req.content) {
+        code = Code.BAD_REQUEST
+    }
+    if (!session || !session.get('userId')) {
+        code = Code.UNAUTHORIZED
+    }
+
+    if (code !== Code.SUCC) {
+        next(null, {
+            code: code
+        });
+        self.app.sessionService.kickBySessionId(session.id);
+        return;                
+    }
+
+    var userId = session.get('userId'),
+        channelId = session.get('channelId')
+
+    self.app.rpc.room.roomRemote.chat(session, userId, channelId, req.content, function(err, code){
+        if (!!err) {
+            logger.error("chat error userId=%s channelId=%s code=%s err=%j", userId, channelId, code, err)
+            next(null, {
+                code: Code.INTERNAL_SERVER_ERROR
+            })
+            self.app.sessionService.kickBySessionId(session.id);
+        }
+        else {
+            logger.debug('chat succ userId=%s channelId=%s', userId, channelId)
+            next(null, {
+                code: code
+            })
         }
     })
 }

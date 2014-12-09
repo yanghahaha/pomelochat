@@ -49,16 +49,9 @@ function scrollDown(base) {
 };
 
 // add message on board
-function addMessage(from, target, text, time) {
-	var name = (target == '*' ? 'all' : target);
-	if(text === null) return;
-	if(time == null) {
-		// if the time is null or undefined, use the current time.
-		time = new Date();
-	} else if((time instanceof Date) === false) {
-		// if it's a timestamp, interpret it
-		time = new Date(time);
-	}
+function addMessage(from, to, content, time) {
+    to = to || 'all';
+    time = new Date(time);
 	//every message you see is actually a table with 3 cols:
 	//  the time,
 	//  the person who caused the event,
@@ -66,13 +59,26 @@ function addMessage(from, target, text, time) {
 	var messageElement = $(document.createElement("table"));
 	messageElement.addClass("message");
 	// sanitize
-	text = util.toStaticHTML(text);
-	var content = '<tr>' + '  <td class="date">' + util.timeString(time) + '</td>' + '  <td class="nick">' + util.toStaticHTML(from) + ' says to ' + name + ': ' + '</td>' + '  <td class="msg-text">' + text + '</td>' + '</tr>';
-	messageElement.html(content);
+	content = util.toStaticHTML(content);
+	var data = '<tr>' + '  <td class="date">' + util.timeString(time) + '</td>' + '  <td class="nick">' + util.toStaticHTML(from) + ' says to ' + to + ': ' + '</td>' + '  <td class="msg-text">' + content + '</td>' + '</tr>';
+	messageElement.html(data);
 	//the log is the stream that we view
 	$("#chatHistory").append(messageElement);
 	base += increase;
 	scrollDown(base);
+};
+
+function addMessageRaw(msg) {
+    var messageElement = $(document.createElement("table"));
+    messageElement.addClass("message");
+    // sanitize
+    msg = util.toStaticHTML(JSON.stringify(msg));
+    var data = '<tr><td class="msg-text">' + msg + '</td></tr>';
+    messageElement.html(data);
+    //the log is the stream that we view
+    $("#chatHistory").append(messageElement);
+    base += increase;
+    scrollDown(base);
 };
 
 // show tip
@@ -185,22 +191,35 @@ $(document).ready(function() {
 	showLogin();
 
 	//wait message from the server.
-	pomelo.on('onChat', function(data) {
-		addMessage(data.from, data.target, data.msg);
+	pomelo.on('chat', function(msg) {
+		addMessageRaw(msg);
 		$("#chatHistory").show();
 		if(data.from !== userName)
 			tip('message', data.from);
 	});
 
+    pomelo.on('privateChat', function(data) {
+        addMessage(data.from, data.target, data.msg);
+        $("#chatHistory").show();
+        if(data.from !== userName)
+            tip('message', data.from);
+    });    
+
 	//update user list
-	pomelo.on('onAdd', function(data) {
+	pomelo.on('gift', function(data) {
 		var user = data.user;
 		tip('online', user);
 		addUser(user);
 	});
 
+    pomelo.on('ban', function(data) {
+        var user = data.user;
+        tip('offline', user);
+        removeUser(user);
+    });
+
 	//update user list
-	pomelo.on('onLeave', function(data) {
+	pomelo.on('kick', function(data) {
 		var user = data.user;
 		tip('offline', user);
 		removeUser(user);
@@ -247,23 +266,20 @@ $(document).ready(function() {
 
 	//deal with chat mode.
 	$("#entry").keypress(function(e) {
-		var route = "chat.chatHandler.send";
+		var route = "connector.connectorHandler.chat";
 		var target = $("#usersList").val();
 		if(e.keyCode != 13 /* Return */ ) return;
-		var msg = $("#entry").attr("value").replace("\n", "");
-		if(!util.isBlank(msg)) {
+		var content = $("#entry").attr("value");//.replace("\n", "");
+		if(!util.isBlank(content)) {
 			pomelo.request(route, {
-				channelId: channelId,
-				content: msg,
-				from: userName,
-				target: target
+				content: content,
 			}, function(data) {
 				$("#entry").attr("value", ""); // clear the entry field.
-				if(target != '*' && target != userName) {
+/*				if(target != '*' && target != userName) {
 					addMessage(userName, target, msg);
 					$("#chatHistory").show();
 				}
-			});
+*/			});
 		}
 	});
 });

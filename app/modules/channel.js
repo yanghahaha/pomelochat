@@ -69,6 +69,10 @@ var Channel = function(id, opts) {
     this.userDispatcher = opts.userDispatcher || lastRoomDispatcher || firstRoomDispatcher
 }
 
+Channel.prototype.getUserCount = function() {
+    return this.userCount
+}
+
 Channel.prototype.enter = function(user, reenter, userInRoomId, context, out) {
     var code, room
 
@@ -141,6 +145,6 @@ Channel.prototype.findRoom = function() {
     return room
 }
 
-Channel.prototype.getUserCount = function() {
-    return this.userCount
+Channel.prototype.chat = function(roomId, fromUser, toUser, content) {
+    return this.rooms[roomId].chat(fromUser, toUser, content)
 }
