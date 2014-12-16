@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"dependencies": {
-		"pomelo": "git+ssh://git@git.marstv.com:/git/backend/pomelo.git",
+		"pomelo": "git+ssh://git@git.marstv.com/git/backend/pomelo.git",
 		"crc": "0.2.0"
 	}
 }
