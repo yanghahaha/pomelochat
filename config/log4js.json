@@ -10,7 +10,6 @@
     },
 
     "replaceConsole": true,
-
     "lineDebug": false,
     "reloadSecs": 1
 }

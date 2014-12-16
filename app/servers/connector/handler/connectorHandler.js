@@ -40,8 +40,8 @@ handler.login = function(req, session, next) {
         code = Code.INTERNAL_SERVER_ERROR
     var uId = Utils.getSessionUid(userId, channelId)
     var context = {
-            frontServerId: self.app.get('serverId'),
-            channelUid: uId,
+            fsId: self.app.get('serverId'),
+            cUid: uId,
             remote: self.app.sessionService.getClientAddressBySessionId(session.id)
         }
 

@@ -35,6 +35,19 @@ Room.prototype.getUserCount = function() {
     return this.userCount
 }
 
+Room.prototype.getUsers = function(dataKeys) {
+    var users = {}
+    for (var i in this.users) {
+        var data = {}
+        for (var j in dataKeys) {
+            data[j] = this.users[i].data[j]
+        }
+        users[i] = data
+    }
+
+    return users
+}
+
 Room.prototype.enter = function(user, reenter, context) {
     if (!reenter) {
         ++this.userCount

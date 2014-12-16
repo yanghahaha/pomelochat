@@ -5,7 +5,10 @@ var Config = require('../util/config')
 var Code = require('../util/code')
 var ChannelService = require('./channel')
 
-var users = {}, exp = module.exports
+var users = {}
+var count = 0
+
+var exp = module.exports
 
 exp.createUser = function(id) {
     if (!!users[id]) {
@@ -14,6 +17,8 @@ exp.createUser = function(id) {
 
     var user = new User(id)
     users[id] = user
+
+    count++
 
     logger.debug('create user id=%s', id)
     return user
@@ -30,12 +35,27 @@ exp.destroyUser = function(id) {
         user[i] = null
     }        
     delete users[id]
+    count--
+
     logger.debug('destroy user id=%s', id)
 }
 
 exp.getUser = function(id) {
     return users[id]
 }
+
+exp.getCount = function() {
+    return count
+}
+
+exp.dump = function() {
+    var dumps = {}
+    for (var i in users) {
+        dumps[i] = users[i].dump()
+    }
+    return dumps
+}
+
 
 var User = function(id, data) {
     this.id = id
@@ -58,6 +78,10 @@ User.prototype.getChannelData = function(channelId) {
 
 User.prototype.getChannelCount = function() {
     return _.keys(this.channelDatas).length
+}
+
+User.prototype.dump = function() {
+    return this
 }
 
 User.prototype.enter = function(channelId, channelData, context, varOut) {

@@ -5,7 +5,9 @@ var Room = require('./room')
 var Code = require('../util/code')
 var Config = require('../util/config')
 
-var channels = {}, exp = module.exports
+var channels = {}
+
+var exp = module.exports
 
 exp.createChannel = function(id, opts) {
     if (!!channels[id]) {
@@ -37,6 +39,15 @@ exp.destroyChannel = function(id) {
 exp.getChannel = function(id) {
     return channels[id]
 }
+
+exp.dump = function() {
+    var dumps = {}
+    for (var i in channels) {
+        dumps[i] = channels[i].dump()
+    }
+    return dumps
+}
+
 
 var firstRoomDispatcher = function(channel) {
     return _.find(channel.rooms, function(room) {
@@ -71,6 +82,33 @@ var Channel = function(id, opts) {
 
 Channel.prototype.getUserCount = function() {
     return this.userCount
+}
+
+Channel.prototype.getUsers = function(dataKeys) {
+    var users = {}
+    for (var i in this.rooms) {
+        users[i] = this.rooms[i].getUsers(dataKeys)
+    }
+    return users
+}
+
+Channel.prototype.dump = function() {
+    var rooms = {}
+    for (var i in this.rooms) {
+        var room = this.rooms[i]
+        rooms[i] = {
+            id: room.id,
+            userCount: room.userCount,
+            connectionCount: room.connectionCount
+        }
+    }
+
+    return {
+        id: this.id,
+        userCount: this.userCount,
+        connectionCount: this.connectionCount,
+        rooms: rooms
+    }
 }
 
 Channel.prototype.enter = function(user, reenter, userInRoomId, context, out) {

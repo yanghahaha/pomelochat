@@ -8,14 +8,14 @@ exp.init = function(pomeloApp) {
 
 exp.add = function(identifier, context) {
     var channel = getChannel(identifier)
-    channel.add(context.channelUid, context.frontServerId)
-    logger.debug('pomelo.channelService(%s) add(%s, %s) userAmount=%s', identifier, context.channelUid, context.frontServerId, channel.getUserAmount())
+    channel.add(context.cUid, context.fsId)
+    logger.debug('pomelo.channelService(%s) add(%s, %s) userAmount=%s', identifier, context.cUid, context.fsId, channel.getUserAmount())
 }
 
 exp.leave = function(identifier, context) {
     var channel = getChannel(identifier)
-    channel.leave(context.channelUid, context.frontServerId)
-    logger.debug('pomelo.channelService(%s) leave(%s, %s) userAmount=%s', identifier, context.channelUid, context.frontServerId, channel.getUserAmount())
+    channel.leave(context.cUid, context.fsId)
+    logger.debug('pomelo.channelService(%s) leave(%s, %s) userAmount=%s', identifier, context.cUid, context.fsId, channel.getUserAmount())
 }
 
 exp.destroy = function(identifier) {
