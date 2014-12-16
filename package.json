@@ -1,9 +1,9 @@
 {
-	"name": "chatofpomelo",
+	"name": "huomaotv-pomelochat",
 	"version": "0.0.1",
-	"private": false,
+	"private": true,
 	"dependencies": {
-		"pomelo": "0.8.0",
+		"pomelo": "git+ssh://git@git.marstv.com:/git/backend/pomelo.git",
 		"crc": "0.2.0"
 	}
 }

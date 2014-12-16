@@ -1,3 +1,6 @@
+var Code = require('../util/code')
+var Consts = require('../util/consts')
+
 module.exports = function(app) {
     return new Handler(app);
 };
@@ -8,13 +11,86 @@ var Handler = function(app) {
 
 var handler = Handler.prototype;
 
-/*
-msg: {
-    userId,
-    userName,
-}
-*/
-handler.applyToken = function(msg, session, next) {
-    
+handler.applyToken = function(req, session, next) {
+    if (!req.channelId || !req.userId) {
+        next(null, Code.BAD_REQUEST)   
+        return
+    }
 
+    this.app.rpc.auth.authRemote.applyToken(session, req.userId, req.channelId, req.userData,  function(err, code, token){
+        if (!!err) {
+            next(null, {
+                code: Code.INTERNAL_SERVER_ERROR
+            })
+        }
+        else {
+            next(null, {
+                code: code,
+                token: token
+            })
+        }
+    })
 }
+
+handler.sendGlobalMsg = function(msg, next) {
+    this.app.get('channelService').broadcast(Consts.USER_FRONT_SERVER, Consts.SENT_MSG_ROUTE, msg, {
+        binded: true
+    }, function(err){
+        if (!!err) {
+            next(null, Code.INTERNAL_SERVER_ERROR)
+        }
+        else {
+            next(null, Code.SUCC)
+        }
+    })
+}
+
+handler.sendChannelMsg = function(req, session, next) {
+    if (!req.channelId) {
+        next(null, Code.BAD_REQUEST)
+        return
+    }
+
+    this.app.rpc.room.roomRemote.sendChannelMsg(session, req.channelId, req.msg, function(err, code){
+        if (!!err) {
+            next(null, Code.INTERNAL_SERVER_ERROR)
+        }
+        else {
+            next(null, code)
+        }
+    })
+}
+
+handler.sendRoomMsg = function(req, session, next) {
+    if (!req.channelId || !req.roomId) {
+        next(null, Code.BAD_REQUEST)   
+        return
+    }
+
+    this.app.rpc.room.roomRemote.sendRoomMsg(session, req.channelId, req.roomId, req.msg, function(err, code){
+        if (!!err) {
+            next(null, Code.INTERNAL_SERVER_ERROR)
+        }
+        else {
+            next(null, code)
+        }
+    })    
+}
+
+handler.sendRoomMsg = function(req, session, next) {
+    if (!req.channelId || !req.userId) {
+        next(null, Code.BAD_REQUEST)   
+        return
+    }
+
+    this.app.rpc.room.roomRemote.sendRoomMsgByUserId(session, req.channelId, req.userId, req.msg, function(err, code){
+        if (!!err) {
+            next(null, Code.INTERNAL_SERVER_ERROR)
+        }
+        else {
+            next(null, code)
+        }
+    })    
+}
+
+

@@ -90,7 +90,7 @@ Channel.prototype.enter = function(user, reenter, userInRoomId, context, out) {
         if (this.userCount >= this.channelMaxUser) {
             return Code.ROOM.CHANNEL_USER_MEET_MAX
         }
-        room = this.findRoom()
+        room = this.findRoomForNewUser()
     }
 
     code = room.enter(user, reenter, context)
@@ -129,7 +129,7 @@ Channel.prototype.leave = function(user, lastLeave, userInRoomId, context) {
     }
 }
 
-Channel.prototype.findRoom = function() {
+Channel.prototype.findRoomForNewUser = function() {
     var room = this.userDispatcher.call(null, this)
     if (!room) {
         ++this.lastRoomIndex
@@ -145,6 +145,13 @@ Channel.prototype.findRoom = function() {
     return room
 }
 
-Channel.prototype.chat = function(roomId, fromUser, toUser, content) {
-    return this.rooms[roomId].chat(fromUser, toUser, content)
+Channel.prototype.sendMsg = function(msg) {
+    for (var i in this.rooms) {
+        this.rooms[i].sendMsg(msg)
+    }
+    return Code.SUCC
+}
+
+Channel.prototype.getRoom = function(roomId) {
+    return this.rooms[roomId]
 }

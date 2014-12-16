@@ -7,12 +7,9 @@ module.exports = {
 
     INTERNAL_SERVER_ERROR               : 500,
 
-    AUTH: {
-        TOKEN_INVALID                   : 1001
-    },
-
-    CONNECTOR: {
-        BIND_SESSION_ERROR              : 1101
+    LOGIN: {
+        TOKEN_INVALID                   : 1101,
+        BIND_SESSION_ERROR              : 1102
     },
 
     ROOM: {
@@ -21,12 +18,11 @@ module.exports = {
         CHANNEL_CONNECTION_MEET_MAX     : 1203,
         CHANNEL_USER_CONNECTION_MEET_MAX: 1204,
 
-        USER_NOT_IN_SERVER              : 1205,
-        USER_NOT_IN_CHANNEL             : 1206,
-        USER_CTX_NOT_FOUND              : 1207,
-
-        TO_USER_NOT_IN_SERVER           : 1208,
-        TO_USER_NOT_IN_ROOM             : 1209
+        CHANNEL_NOT_EXIST               : 1205,
+        ROOM_NOT_EXIST                  : 1206,
+        USER_NOT_EXIST                  : 1207,
+        USER_NOT_IN_CHANNEL             : 1208,
+        USER_CTX_NOT_FOUND              : 1209
     }
-    
-};
+
+}

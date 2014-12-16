@@ -1,5 +1,6 @@
 var async = require('async')
 var Code = require('../../../util/code')
+var Config = require('../../../util/config')
 var Utils = require('../../../util/utils')
 var logger = require('pomelo-logger').getLogger('connector', __filename, process.pid)
 
@@ -8,7 +9,7 @@ module.exports = function(app) {
 }
 
 var Handler = function(app) {
-		this.app = app
+    this.app = app
 }
 
 var handler = Handler.prototype
@@ -61,7 +62,7 @@ handler.login = function(req, session, next) {
         function(cb) {
             session.bind(uId, function(err) {
                 if (!!err) {
-                    code = Code.CONNECTOR.BIND_SESSION_ERROR
+                    code = Code.LOGIN.BIND_SESSION_ERROR
                 }
                 cb(err)
             })
@@ -82,7 +83,6 @@ handler.login = function(req, session, next) {
         function(cb) {
             session.set('userId', userId)
             session.set('channelId', channelId)
-            session.set('roomId', roomData.roomId)
             session.set('context', context)
             session.on('closed', onUserLeave.bind(null, self.app))
             session.pushAll(cb)
@@ -121,51 +121,6 @@ var onUserLeave = function(app, session, reason) {
         }
         else {
             logger.debug('leave succ userId=%s channelId=%s reason=%s', userId, channelId, reason)
-        }
-    })
-}
-
-/*
-req = {
-    toUserId
-    content
-}
-*/
-handler.chat = function(req, session, next) {
-    var code = Code.SUCC,
-        self = this
-
-    if (!req.content) {
-        code = Code.BAD_REQUEST
-    }
-    if (!session || !session.get('userId')) {
-        code = Code.UNAUTHORIZED
-    }
-
-    if (code !== Code.SUCC) {
-        next(null, {
-            code: code
-        });
-        self.app.sessionService.kickBySessionId(session.id);
-        return;                
-    }
-
-    var userId = session.get('userId'),
-        channelId = session.get('channelId')
-
-    self.app.rpc.room.roomRemote.chat(session, userId, channelId, req.content, function(err, code){
-        if (!!err) {
-            logger.error("chat error userId=%s channelId=%s code=%s err=%j", userId, channelId, code, err)
-            next(null, {
-                code: Code.INTERNAL_SERVER_ERROR
-            })
-            self.app.sessionService.kickBySessionId(session.id);
-        }
-        else {
-            logger.debug('chat succ userId=%s channelId=%s', userId, channelId)
-            next(null, {
-                code: code
-            })
         }
     })
 }

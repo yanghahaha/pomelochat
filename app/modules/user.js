@@ -37,18 +37,18 @@ exp.getUser = function(id) {
     return users[id]
 }
 
-var User = function(id, baseData) {
+var User = function(id, data) {
     this.id = id
-    this.base = {}    
+    this.data = {}    
     this.channelDatas = {}
-    if (!!baseData) {
-        this.updateBase(baseData)
+    if (!!data) {
+        this.updateData(data)
     }
 }
 
-User.prototype.updateBase = function(baseData) {
-    for (var i in baseData) {
-        this.base[i] = baseData[i]
+User.prototype.updateData = function(data) {
+    for (var i in data) {
+        this.data[i] = data[i]
     }
 }
 
@@ -83,8 +83,7 @@ User.prototype.enter = function(channelId, channelData, context, varOut) {
         this.channelDatas[channelId] = userChannelData
     }
 
-    userChannelData.setRole(channelData.role)
-    userChannelData.setRoomId(out.roomId)
+    userChannelData.roomId = out.roomId
     userChannelData.addContext(context)
 
     varOut.roomId = out.roomId
@@ -109,51 +108,12 @@ User.prototype.leave = function(channelId, context) {
         delete this.channelDatas[channelId]
     }
 
-    ChannelService.getChannel(channelId).leave(this, lastLeave, userChannelData.getRoomId(), context)
+    ChannelService.getChannel(channelId).leave(this, lastLeave, userChannelData.roomId, context)
 }
 
-User.prototype.chat = function(channelId, toUser, content) {
-    var userChannelData = this.channelDatas[channelId]
-    if (!userChannelData) {
-        logger.warn('user=%s not in channel=%s', this.id, channelId)
-        return Code.ROOM.USER_NOT_IN_CHANNEL
-    }
-
-    if (!!toUser) {
-        if (!this.isInSameChannelRoom(toUser, channelId)) {
-            return Code.ROOM.TO_USER_NOT_IN_ROOM
-        }
-    }
-
-    return ChannelService.getChannel(channelId).chat(userChannelData.getRoomId(), this, toUser, content)      
-}
-
-User.prototype.isInSameChannelRoom = function(another, channel) {
-    //todo
-    return true
-}
-
-var UserChannelData = function(opts) {
-    for (var i in opts) {
-        this[i] = opts[i]
-    }
+var UserChannelData = function() {
+    this.roomId = null
     this.contexts = []
-}
-
-UserChannelData.prototype.getRole = function() {
-    return this.role
-}
-
-UserChannelData.prototype.setRole = function(role) {
-    this.role = role
-}
-
-UserChannelData.prototype.getRoomId = function() {
-    return this.roomId
-}
-
-UserChannelData.prototype.setRoomId = function(roomId) {
-    this.roomId = roomId
 }
 
 UserChannelData.prototype.getContexts = function() {
@@ -197,4 +157,3 @@ UserChannelData.prototype.findContext = function(ctx) {
     }
     return -1
 }
-

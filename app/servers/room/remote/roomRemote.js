@@ -1,4 +1,3 @@
-var util = require('util')
 var ChannelService = require('../../../modules/channel')
 var UserService = require('../../../modules/user')
 var logger = require('pomelo-logger').getLogger('room', __filename, process.pid)
@@ -21,7 +20,7 @@ remote.enter = function(userId, channelId, userData, context, cb) {
         user = UserService.createUser(userId)
         newUser = true
     }
-    user.updateBase(userData.base)
+    user.updateData(userData)
 
     var newChannel = false
     if (!ChannelService.getChannel(channelId)) {
@@ -30,7 +29,7 @@ remote.enter = function(userId, channelId, userData, context, cb) {
     }
 
     var out = {}
-    var code = user.enter(channelId, userData.channel, context, out)
+    var code = user.enter(channelId, context, out)
     if (code !== Code.SUCC) {
         if (newUser) {
             UserService.destroyUser(userId)
@@ -50,7 +49,7 @@ remote.leave = function(userId, channelId, context, cb) {
     var user = UserService.getUser(userId)
     if (!user) {
         logger.warn('leave userId=%s not found', userId)        
-        cb(null, Code.ROOM.USER_NOT_IN_SERVER)
+        cb(null, Code.ROOM.USER_NOT_EXIST)
         return
     }
 
@@ -68,23 +67,46 @@ remote.leave = function(userId, channelId, context, cb) {
     cb(null, Code.SUCC)
 }
 
-remote.chat = function(userId, channelId, content, cb) {
-    var user = UserService.getUser(userId)
-    if (!user) {
-        cb(new Error(util.format('chat from user not in server userId=%s', userId)))
+remote.sendChannelMsg = function(channelId, msg, cb) {
+    var channel = ChannelService.getChannel(channelId)
+    if (!channel) {
+        cb(null, Code.ROOM.CHANNEL_NOT_EXIST)
         return
     }
 
-    var toUser = null
-    if (!!toUserId) {
-        toUser = UserService.getUser(toUserId) 
-        if (!toUser) {
-            cb(null, Code.ROOM.TO_USER_NOT_IN_SERVER)
-            return
-        }
+    var code = channel.sendMsg(msg)
+    cb(null, code)
+}
+
+remote.sendRoomMsg = function(channelId, roomId, msg, cb) {
+    var channel = ChannelService.getChannel(channelId)
+    if (!channel) {
+        cb(null, Code.ROOM.CHANNEL_NOT_EXIST)
+        return
     }
 
-    var code = user.chat(channelId, toUser, content)
-    logger.debug('chat fromId=%s to toId=%s in channelId=%s code=%s', userId, toUserId, channelId, code)
+    var room = channel.getRoom(roomId)
+    if (!room) {
+        cb(null, Code.ROOM.ROOM_NOT_EXIST)
+        return        
+    }
+
+    var code = room.sendMsg(msg)
     cb(null, code)
+}
+
+remote.sendRoomMsgByUserId = function(channelId, userId, msg, cb) {
+    var user = UserService.getUser(userId)
+    if (!user) {
+        cb(null, Code.ROOM.USER_NOT_EXIST)
+        return
+    }
+
+    var userChannel = user.getChannelData(channelId)
+    if (!userChannel) {
+        cb(null, Code.ROOM.USER_NOT_IN_CHANNEL)
+        return        
+    }
+
+    this.sendRoomMsg(channelId, userChannel.roomId, msg, cb)
 }

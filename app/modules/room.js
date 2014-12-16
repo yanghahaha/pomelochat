@@ -1,6 +1,7 @@
 var util = require('util')
-var Code = require('../util/code')
 var logger = require('pomelo-logger').getLogger('room', __filename, process.pid)
+var Code = require('../util/code')
+var Consts = require('../util/consts')
 
 var exp = module.exports
 
@@ -60,18 +61,7 @@ Room.prototype.leave = function(user, lastLeave, context) {
     }
 }
 
-Room.prototype.chat = function(fromUser, toUser, content) {
-    var msg = {
-        fromId: fromUser.id,
-        fromName: fromUser.base.name,
-        content: content,
-        time: Date.now() /1000 | 0
-    }
-    if (!!toUser) {
-        msg.toId = toUser.id
-        msg.toName = toUser.base.name
-    }
-
-    this.messenger.pushMessage(this.getIdentifier(), 'chat', msg)
+Room.prototype.sendMsg = function(msg) {
+    this.messenger.pushMessage(this.getIdentifier(), Consts.SENT_MSG_ROUTE, msg)
     return Code.SUCC
 }
