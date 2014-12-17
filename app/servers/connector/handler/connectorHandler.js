@@ -1,8 +1,8 @@
+var logger = require('pomelo-logger').getLogger('connector', __filename, process.pid)
 var async = require('async')
 var Code = require('../../../util/code')
-var Config = require('../../../util/config')
 var Utils = require('../../../util/utils')
-var logger = require('pomelo-logger').getLogger('connector', __filename, process.pid)
+var FrontChannelService = require('../../modules/frontChannel')
 
 module.exports = function(app) {
 	return new Handler(app)
@@ -14,16 +14,6 @@ var Handler = function(app) {
 
 var handler = Handler.prototype
 
-/*
-req = {
-    userId:
-    channelId:
-    token:
-}
-res = {
-    code:
-}
-*/
 handler.login = function(req, session, next) {
     var self = this
     if (!req.userId || !req.channelId || !req.token) {
@@ -36,39 +26,26 @@ handler.login = function(req, session, next) {
 
     var userId = req.userId,
         channelId = req.channelId,
-        userData, roomData,
-        code = Code.INTERNAL_SERVER_ERROR
+        code = Code.INTERNAL_SERVER_ERROR,
+        retData
     var uId = Utils.getSessionUid(userId, channelId)
     var context = {
             fsId: self.app.get('serverId'),
-            cUid: uId,
+            sId: session.id,
             remote: self.app.sessionService.getClientAddressBySessionId(session.id)
         }
 
     async.waterfall([
         function(cb) {
-            self.app.rpc.auth.authRemote.verifyToken(session, userId, channelId, req.token, cb)
-        },
-        function(ret, data, cb) {
-            code = ret
-            if (code !== Code.SUCC) {
-                cb(new Error('authRemote.verifyToken fail'))
-            }
-            else {
-                userData = data
-                cb(null)
-            }
-        },
-        function(cb) {
             session.bind(uId, function(err) {
                 if (!!err) {
-                    code = Code.LOGIN.BIND_SESSION_ERROR
+                    code = Code.LOGIN_ERROR
                 }
                 cb(err)
             })
         },
         function(cb) {
-            self.app.rpc.channel.channelRemote.enter(session, userId, channelId, userData, context, cb)
+            self.app.rpc.api.channelRemote.enter(session, req.token, userId, channelId, context, cb)
         },
         function(ret, data, cb) {
             code = ret
@@ -76,31 +53,29 @@ handler.login = function(req, session, next) {
                 cb(new Error('channelRemote.enter fail'))
             }
             else {
-                roomData = data
-                cb(null)
+                retData = data
+                session.on('closed', onUserLeave.bind(null, self.app))
+                session.set('userId', userId)
+                session.set('channelId', channelId)
+                session.set('context', context)
+                session.set('roomId', retData.roomId)
+                session.pushAll(cb)
             }
-        },
-        function(cb) {
-            session.set('userId', userId)
-            session.set('channelId', channelId)
-            session.set('context', context)
-            session.on('closed', onUserLeave.bind(null, self.app))
-            session.pushAll(cb)
         }
     ], function(err) {
         if (!!err) {
-            logger.error("login error userId=%s channelId=%s code=%s err=%j", userId, channelId, code, err)
+            logger.error("login error userId=%s channelId=%s token=%s code=%s err=%j", userId, channelId, req.token, code, err)
             next(null, {
                 code: code
             })
             self.app.sessionService.kickBySessionId(session.id)
         }
         else {
-            logger.debug('login succ userId=%s channelId=%s', userId, channelId)
+            FrontChannelService.add(channelId, retData.roomId, session.id)
+            logger.debug('login succ userId=%s channelId=%s token=%s', userId, channelId, req.token)
             next(null, {
                 code: Code.SUCC,
-                user: userData,
-                room: roomData
+                data: retData
             })
         }
     })
@@ -113,9 +88,11 @@ var onUserLeave = function(app, session, reason) {
 
     var userId = session.get('userId'),
         channelId = session.get('channelId'),
+        roomId = session.get('roomId'),
         context = session.get('context')
 
-    app.rpc.channel.channelRemote.leave(session, userId, channelId, context, function(err, code){
+    FrontChannelService.remove(channelId, roomId, session.id)
+    app.rpc.api.channelRemote.leave(session, userId, channelId, context, function(err, code){
         if (!!err || code !== Code.SUCC) {
             logger.error('leave error userId=%s channelId=%s reason=%s code=%s error=%j', userId, channelId, reason, code, err)
         }

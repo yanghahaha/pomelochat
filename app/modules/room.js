@@ -1,7 +1,6 @@
 var util = require('util')
-var logger = require('pomelo-logger').getLogger('room', __filename, process.pid)
+var logger = require('pomelo-logger').getLogger('channel', __filename, process.pid)
 var Code = require('../util/code')
-var Consts = require('../util/consts')
 
 var exp = module.exports
 
@@ -24,11 +23,6 @@ var Room = function(opts) {
     this.users = {}
     this.userCount = 0
     this.connectionCount = 0
-    this.messenger = this.messenger || require('../messenger/pomeloMessenger')
-}
-
-Room.prototype.getIdentifier = function() {
-    return this.channel.id + '-' + this.id
 }
 
 Room.prototype.getUserCount = function() {
@@ -36,6 +30,7 @@ Room.prototype.getUserCount = function() {
 }
 
 Room.prototype.getUsers = function(dataKeys) {
+    dataKeys = dataKeys || {}
     var users = {}
     for (var i in this.users) {
         var data = {}
@@ -48,21 +43,19 @@ Room.prototype.getUsers = function(dataKeys) {
     return users
 }
 
-Room.prototype.enter = function(user, reenter, context) {
+Room.prototype.enter = function(user, reenter) {
     if (!reenter) {
         ++this.userCount
         this.users[user.id] = user
-        this.messenger.add(this.getIdentifier(), context)        
     }
     ++this.connectionCount
     return Code.SUCC
 }
 
-Room.prototype.leave = function(user, lastLeave, context) {
+Room.prototype.leave = function(user, lastLeave) {
     if (lastLeave) {
         --this.userCount
         delete this.users[user.id]
-        this.messenger.leave(this.getIdentifier(), context)
     }
     --this.connectionCount
 
@@ -70,11 +63,5 @@ Room.prototype.leave = function(user, lastLeave, context) {
         if (this.connectionCount !== this.connectionCount) {
             throw new Error(util.format('destroy room all count should be 0, this.userCount=%s this.connectionCount=%s', this.userCount, this.connectionCount))
         }
-        this.messenger.destroy(this.getIdentifier())
     }
-}
-
-Room.prototype.sendMsg = function(msg) {
-    this.messenger.pushMessage(this.getIdentifier(), Consts.SENT_MSG_ROUTE, msg)
-    return Code.SUCC
 }

@@ -1,6 +1,6 @@
 var _ = require('underscore')
 var util = require('util')
-var logger = require('pomelo-logger').getLogger('room', __filename, process.pid)
+var logger = require('pomelo-logger').getLogger('channel', __filename, process.pid)
 var Room = require('./room')
 var Code = require('../util/code')
 var Config = require('../util/config')
@@ -73,10 +73,10 @@ var Channel = function(id, opts) {
     this.connectionCount = 0
     this.rooms = {}
 
-    this.channelMaxUser = opts.channelMaxUser || Config.CHANNEL.CHANNEL_MAX_USER
-    this.channelMaxConnection = opts.channelMaxConnection || Config.CHANNEL.CHANNEL_MAX_CONNECTION
-    this.channelMaxUserConnection = opts.channelMaxUserConnection || Config.CHANNEL.CHANNEL_MAX_USER_CONNECTION
-    this.roomMaxUser = opts.roomMaxUser || Config.CHANNEL.ROOM_MAX_USER
+    this.channelMaxUser = opts.channelMaxUser || Config.CHANNEL_MAX_USER
+    this.channelMaxConnection = opts.channelMaxConnection || Config.CHANNEL_MAX_CONNECTION
+    this.channelMaxUserConnection = opts.channelMaxUserConnection || Config.CHANNEL_MAX_USER_CONNECTION
+    this.roomMaxUser = opts.roomMaxUser || Config.ROOM_MAX_USER
     this.userDispatcher = opts.userDispatcher || lastRoomDispatcher || firstRoomDispatcher
 }
 
@@ -115,18 +115,18 @@ Channel.prototype.enter = function(user, reenter, userInRoomId, context, out) {
     var code, room
 
     if (this.connectionCount >= this.channelMaxConnection) {
-        return Code.CHANNEL.CHANNEL_CONNECTION_MEET_MAX
+        return Code.CHANNEL_CONNECTION_MEET_MAX
     }
 
     if (!!userInRoomId) {
         if (user.getChannelData(this.id).getContextCount() >= this.channelMaxUserConnection) {
-            return Code.CHANNEL.CHANNEL_USER_CONNECTION_MEET_MAX
+            return Code.CHANNEL_USER_CONNECTION_MEET_MAX
         }
         room = this.rooms[userInRoomId]
     }
     else {
         if (this.userCount >= this.channelMaxUser) {
-            return Code.CHANNEL.CHANNEL_USER_MEET_MAX
+            return Code.CHANNEL_USER_MEET_MAX
         }
         room = this.findRoomForNewUser()
     }
@@ -181,13 +181,6 @@ Channel.prototype.findRoomForNewUser = function() {
 
     logger.debug("channel=%s find room index=%s", this.id, room.id)
     return room
-}
-
-Channel.prototype.sendMsg = function(msg) {
-    for (var i in this.rooms) {
-        this.rooms[i].sendMsg(msg)
-    }
-    return Code.SUCC
 }
 
 Channel.prototype.getRoom = function(roomId) {

@@ -32,15 +32,6 @@ app.configure('production|development', function(){
     app.set('ssh_config_params', ['-P 1127'])
 })
 
-app.configure('production|development', 'channel', function(){
-    var pomeloMessenger = require('./app/messenger/pomeloMessenger')
-    pomeloMessenger.init(app)
-})
-
-app.configure('production|development', 'auth', function(){
-    tokenService.init()
-})
-
 app.configure('production|development', 'connector', function(){
     app.set('connectorConfig', {
         connector : pomelo.connectors.hybridconnector,
@@ -70,6 +61,7 @@ app.configure('production|development', 'api', function(){
         distinctHost: true
     })
     app.filter(handlerLogFilter(app, 'api'))
+    tokenService.init()
 })
 
 app.start()

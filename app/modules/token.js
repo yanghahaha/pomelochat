@@ -1,6 +1,6 @@
 var _ = require('underscore')
 var randomString = require('random-string')
-var logger = require('pomelo-logger').getLogger('auth', __filename, process.pid)
+var logger = require('pomelo-logger').getLogger('channel', __filename, process.pid)
 var Code = require('../util/code')
 var Config = require('../util/config')
 
@@ -35,7 +35,7 @@ var exp = module.exports
 
 exp.init = function(opts) {
     opts = opts || {}
-    expireSecond = opts.tokenTimeout || Config.LOGIN.TOKEN_TIMEOUT || 10
+    expireSecond = opts.tokenTimeout || Config.TOKEN_TIMEOUT || 10
     setInterval(clearExpiredToken, 1000)
 }
 
@@ -58,15 +58,15 @@ exp.verify = function(userId, channelId, token, out) {
     var tokenData = tokens[token]
     if (!tokenData) {
         logger.debug("token not found, token=%s", token)
-        return Code.LOGIN.TOKEN_INVALID
+        return Code.TOKEN_INVALID
     }
     if (tokenData.userId != userId) {
         logger.debug("token.userId not match, token.userId=%s userId=%s", tokenData.userId, userId)
-        return Code.LOGIN.TOKEN_INVALID
+        return Code.TOKEN_INVALID
     }
     if (tokenData.channelId != channelId) {
         logger.debug("token.channel not match, token.channelId=%s uchannelId=%s", tokenData.channelId, channelId)
-        return Code.LOGIN.TOKEN_INVALID
+        return Code.TOKEN_INVALID
     }
 
     removeToken(token)

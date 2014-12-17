@@ -30,22 +30,7 @@
                 "clientPort": 13021, 
                 "frontend": true
             }
-        ],
-        "auth":  [
-            {
-                "id": "auth-server-1", 
-                "host": "127.0.0.1", 
-                "port": 3031
-            }
-        ],
-        "channel": [
-            {
-                "id": "channel-server-1", 
-                "host": "127.0.0.1", 
-                "port": 3041
-            }
         ]
-
     },
     "production":  {
     }
