@@ -10,7 +10,7 @@ module.exports = {
         BIND_SESSION_ERROR              : 1102
     },
 
-    ROOM: {
+    CHANNEL: {
         USER_CHANNEL_MEET_MAX           : 1201,
         CHANNEL_USER_MEET_MAX           : 1202,
         CHANNEL_CONNECTION_MEET_MAX     : 1203,

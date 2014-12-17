@@ -38,9 +38,9 @@
                 "port": 3031
             }
         ],
-        "room": [
+        "channel": [
             {
-                "id": "room-server-1", 
+                "id": "channel-server-1", 
                 "host": "127.0.0.1", 
                 "port": 3041
             }

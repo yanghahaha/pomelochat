@@ -85,8 +85,8 @@ User.prototype.dump = function() {
 }
 
 User.prototype.enter = function(channelId, channelData, context, varOut) {
-    if (this.getChannelCount()>= Config.ROOM.USER_MAX_CHANNEL) {
-        return Code.ROOM.USER_CHANNEL_MEET_MAX
+    if (this.getChannelCount()>= Config.CHANNEL.USER_MAX_CHANNEL) {
+        return Code.CHANNEL.USER_CHANNEL_MEET_MAX
     }
 
     var userChannelData = this.channelDatas[channelId]
@@ -118,13 +118,13 @@ User.prototype.leave = function(channelId, context) {
     var userChannelData = this.channelDatas[channelId]
     if (!userChannelData) {
         logger.warn('user=%s not in channel=%s', this.id, channelId)
-        return Code.ROOM.USER_NOT_IN_CHANNEL
+        return Code.CHANNEL.USER_NOT_IN_CHANNEL
     }
 
     var index = userChannelData.findContext(context)
     if (index === -1) {
         logger.warn('user=%s context.remote=%j not in channel=%s', this.id, context.remote, channelId)
-        return Code.ROOM.USER_CTX_NOT_FOUND
+        return Code.CHANNEL.USER_CTX_NOT_FOUND
     }
     userChannelData.removeContextByIndex(index)
     var lastLeave = (userChannelData.getContextCount() === 0)

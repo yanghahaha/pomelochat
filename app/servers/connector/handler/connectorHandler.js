@@ -68,12 +68,12 @@ handler.login = function(req, session, next) {
             })
         },
         function(cb) {
-            self.app.rpc.room.roomRemote.enter(session, userId, channelId, userData, context, cb)
+            self.app.rpc.channel.channelRemote.enter(session, userId, channelId, userData, context, cb)
         },
         function(ret, data, cb) {
             code = ret
             if (code !== Code.SUCC) {
-                cb(new Error('roomRemote.enter fail'))
+                cb(new Error('channelRemote.enter fail'))
             }
             else {
                 roomData = data
@@ -115,7 +115,7 @@ var onUserLeave = function(app, session, reason) {
         channelId = session.get('channelId'),
         context = session.get('context')
 
-    app.rpc.room.roomRemote.leave(session, userId, channelId, context, function(err, code){
+    app.rpc.channel.channelRemote.leave(session, userId, channelId, context, function(err, code){
         if (!!err || code !== Code.SUCC) {
             logger.error('leave error userId=%s channelId=%s reason=%s code=%s error=%j', userId, channelId, reason, code, err)
         }

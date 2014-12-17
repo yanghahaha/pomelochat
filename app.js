@@ -3,8 +3,9 @@ var pomelo = require('pomelo')
 var app = pomelo.createApp()
 app.set('name', 'huomaotv-pomelochat')
 
-var tokenService = require('./app/modules/token')
 var handlerLogFilter = require('./app/filters/handlerLogFilter')
+var tokenService = require('./app/modules/token')
+
 var TcpMailBox = require('pomelo-rpc').client.TcpMailbox
 var TcpAcceptor = require('pomelo-rpc').server.TcpAcceptor
 
@@ -31,7 +32,7 @@ app.configure('production|development', function(){
     app.set('ssh_config_params', ['-P 1127'])
 })
 
-app.configure('production|development', 'room', function(){
+app.configure('production|development', 'channel', function(){
     var pomeloMessenger = require('./app/messenger/pomeloMessenger')
     pomeloMessenger.init(app)
 })

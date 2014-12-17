@@ -57,7 +57,7 @@ handler.sendChannelMsg = function(req, session, next) {
         return
     }
 
-    this.app.rpc.room.roomRemote.sendChannelMsg(session, req.channelId, req.msg, function(err, code){
+    this.app.rpc.channel.channelRemote.sendChannelMsg(session, req.channelId, req.msg, function(err, code){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -77,7 +77,7 @@ handler.sendRoomMsg = function(req, session, next) {
         return
     }
 
-    this.app.rpc.room.roomRemote.sendRoomMsg(session, req.channelId, req.roomId, req.msg, function(err, code){
+    this.app.rpc.channel.channelRemote.sendRoomMsg(session, req.channelId, req.roomId, req.msg, function(err, code){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -97,7 +97,7 @@ handler.sendRoomMsgByUserId = function(req, session, next) {
         return
     }
 
-    this.app.rpc.room.roomRemote.sendRoomMsgByUserId(session, req.channelId, req.userId, req.msg, function(err, code){
+    this.app.rpc.channel.channelRemote.sendRoomMsgByUserId(session, req.channelId, req.userId, req.msg, function(err, code){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR

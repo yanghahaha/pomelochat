@@ -73,10 +73,10 @@ var Channel = function(id, opts) {
     this.connectionCount = 0
     this.rooms = {}
 
-    this.channelMaxUser = opts.channelMaxUser || Config.ROOM.CHANNEL_MAX_USER
-    this.channelMaxConnection = opts.channelMaxConnection || Config.ROOM.CHANNEL_MAX_CONNECTION
-    this.channelMaxUserConnection = opts.channelMaxUserConnection || Config.ROOM.CHANNEL_MAX_USER_CONNECTION
-    this.roomMaxUser = opts.roomMaxUser || Config.ROOM.ROOM_MAX_USER
+    this.channelMaxUser = opts.channelMaxUser || Config.CHANNEL.CHANNEL_MAX_USER
+    this.channelMaxConnection = opts.channelMaxConnection || Config.CHANNEL.CHANNEL_MAX_CONNECTION
+    this.channelMaxUserConnection = opts.channelMaxUserConnection || Config.CHANNEL.CHANNEL_MAX_USER_CONNECTION
+    this.roomMaxUser = opts.roomMaxUser || Config.CHANNEL.ROOM_MAX_USER
     this.userDispatcher = opts.userDispatcher || lastRoomDispatcher || firstRoomDispatcher
 }
 
@@ -115,18 +115,18 @@ Channel.prototype.enter = function(user, reenter, userInRoomId, context, out) {
     var code, room
 
     if (this.connectionCount >= this.channelMaxConnection) {
-        return Code.ROOM.CHANNEL_CONNECTION_MEET_MAX
+        return Code.CHANNEL.CHANNEL_CONNECTION_MEET_MAX
     }
 
     if (!!userInRoomId) {
         if (user.getChannelData(this.id).getContextCount() >= this.channelMaxUserConnection) {
-            return Code.ROOM.CHANNEL_USER_CONNECTION_MEET_MAX
+            return Code.CHANNEL.CHANNEL_USER_CONNECTION_MEET_MAX
         }
         room = this.rooms[userInRoomId]
     }
     else {
         if (this.userCount >= this.channelMaxUser) {
-            return Code.ROOM.CHANNEL_USER_MEET_MAX
+            return Code.CHANNEL.CHANNEL_USER_MEET_MAX
         }
         room = this.findRoomForNewUser()
     }
