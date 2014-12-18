@@ -2,7 +2,7 @@ var logger = require('pomelo-logger').getLogger('connector', __filename, process
 var async = require('async')
 var Code = require('../../../util/code')
 var Utils = require('../../../util/utils')
-var frontchannelService = require('../../modules/frontChannel')
+var frontchannelService = require('../../../modules/frontChannel')
 
 module.exports = function(app) {
 	return new Handler(app)
@@ -48,6 +48,7 @@ handler.login = function(req, session, next) {
             self.app.rpc.api.channelRemote.enter(session, req.token, userId, channelId, context, cb)
         },
         function(ret, data, cb) {
+            cb = arguments[arguments.length-1]
             code = ret
             if (code !== Code.SUCC) {
                 cb(new Error('channelRemote.enter fail'))

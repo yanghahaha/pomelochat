@@ -41,7 +41,7 @@ exp.remove = function(channelId, roomId, sessionId) {
     channelSessionCount[channelId][roomId] --
 
     if (channelSessionCount[channelId][roomId] <= 0) {
-        var length = _.keys.channels[channelId][roomId].length
+        var length = _.keys(channels[channelId][roomId]).length
         if (length !== 0) {
             logger.warn('channelSessionCount[channelId][roomId] !== length, length=%s supposed te be 0', length)
             channelSessionCount[channelId][roomId] = length
@@ -49,6 +49,11 @@ exp.remove = function(channelId, roomId, sessionId) {
         else {
             delete channels[channelId][roomId]
             delete channelSessionCount[channelId][roomId]
+
+            if (_.keys(channels[channelId]).length === 0) {
+                delete channels[channelId]
+                delete channelSessionCount[channelId]
+            }
         }
     }
 }

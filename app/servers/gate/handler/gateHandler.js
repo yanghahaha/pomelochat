@@ -59,19 +59,10 @@ handler.lookupConnector = function(req, session, next) {
         }
         //app.sessionService.kickBySessionId(session.id)
     })
+}
 
-/*	var res = dispatch(Utils.getSessionUid(req.userId, req.channelId), connectors)
-	next(null, {
-		code: Code.SUCC,
-		host: res.clientHostReal,
-		port: res.clientPort
-	})
-    app.sessionService.kickBySessionId(session.id)
-*/}
-
-var crc = require('crc')
 var dispatch = function(key, list) {
-	var index = Math.abs(crc.crc32(key)) % list.length
+	var index = (Math.random() * 10000 | 0)% list.length
 	return list[index]
 }
 

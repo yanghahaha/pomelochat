@@ -81,7 +81,7 @@ User.prototype.dump = function() {
     return this
 }
 
-User.prototype.enter = function(channelId, channelData, context, varOut) {
+User.prototype.enter = function(channelId, context, varOut) {
     if (this.getChannelCount()>= Config.USER_MAX_CHANNEL) {
         return Code.CHANNEL.USER_CHANNEL_MEET_MAX
     }
@@ -143,7 +143,7 @@ User.prototype.leave = function(channelId, context) {
     }
 
     ChannelService.getChannel(channelId).leave(this, lastLeave, leaveConnection, userChannelData.roomId, context)
-    return contexts
+    return ret
 }
 
 

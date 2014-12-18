@@ -1,5 +1,5 @@
 var Code = require('../../../util/code')
-var channelRemote = require('../remote/channelRemote')
+var channelRemote
 
 module.exports = function(app) {
     return new Handler(app);
@@ -7,6 +7,7 @@ module.exports = function(app) {
 
 var Handler = function(app) {
     this.app = app;
+    channelRemote = require('../remote/channelRemote')(app)
 };
 
 var handler = Handler.prototype;
@@ -33,7 +34,12 @@ handler.applyToken = function(req, session, next) {
 }
 
 var routeConnectors = function(app) {
-    return app.getServersByType('connector')
+    var connectors = app.getServersByType('connector')
+    var ids = []
+    for (var i=0; i<connectors.length; ++i) {
+        ids.push(connectors[i].id)
+    }
+    return ids
 }
 
 /**************************************************
@@ -86,7 +92,7 @@ handler.sendRoomMsgByUserId = function(req, session, next) {
         next(null, Code.BAD_REQUEST)   
         return
     }
-
+    var self = this
     channelRemote.getRoomIdByUserId(req.channelId, req.userId, function(err, code, roomId){
         if (!!err) {
             next(null, {
@@ -100,7 +106,7 @@ handler.sendRoomMsgByUserId = function(req, session, next) {
         }
         else {
             req.roomId = roomId
-            this.sendRoomMsg(req, session, next)
+            self.sendRoomMsg(req, session, next)
         }
     })
 }
@@ -110,13 +116,16 @@ handler.kickUser = function(req, session, next) {
         next(null, Code.BAD_REQUEST)   
         return
     }
-    channelRemote.kick(req.uesrId, req.channelId, function(err, code, channelToContexts){
+
+    var channelToContexts
+    channelRemote.kick(req.uesrId, req.channelId, function(err, code, contexts){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
             })            
         }
         else {
+            channelToContexts = contexts
             next(null, {
                 code: code
             })
@@ -147,31 +156,33 @@ sIdToKickData = {
     fId2: {...}
 }
 */
-    var sIdToKickData = {}
-    for (var channelId in channelToContexts) {
-        var info = channelToContexts[channelId]
-        var roomId = info.roomId
-        var contexts = info.contexts
-        for (var i=0; i<contexts.length; ++i) {
+    if (!!channelToContexts) {
+        var sIdToKickData = {}
+        for (var channelId in channelToContexts) {
+            var info = channelToContexts[channelId]
+            var roomId = info.roomId
+            var contexts = info.contexts
+            for (var i=0; i<contexts.length; ++i) {
 
-            var fId = contexts[i].fId
-                sId = contexts[i].sId
+                var fId = contexts[i].fId,
+                    sId = contexts[i].sId
 
-            if (!sIdToKickData[fId]) {
-                sIdToKickData[fId] = {}
-            }
-            if (!sIdToKickData[fId][channelId]) {
-                sIdToKickData[fId][channelId] = {
-                    roomId: roomId
-                    sIds: []
+                if (!sIdToKickData[fId]) {
+                    sIdToKickData[fId] = {}
                 }
+                if (!sIdToKickData[fId][channelId]) {
+                    sIdToKickData[fId][channelId] = {
+                        roomId: roomId,
+                        sIds: []
+                    }
+                }
+                sIdToKickData[fId][channelId].sIds.push(sId)
             }
-            sIdToKickData[fId][channelId]['sIds'].push(sId)
         }
-    }
 
-    for (var fsId in sIdToKickData) {
-        this.app.rpc.connector.connectorRemote.kick.toServer(fsId, sIdToKickData[fsId], null)
+        for (var fsId in sIdToKickData) {
+            this.app.rpc.connector.connectorRemote.kick.toServer(fsId, sIdToKickData[fsId], null)
+        }
     }
 }
 

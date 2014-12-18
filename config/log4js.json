@@ -8,6 +8,9 @@
                 "type": "basic"
             }, 
             "backups": 5
+        },
+        {
+            "type": "console"
         }
     ],
 
