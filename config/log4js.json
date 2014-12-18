@@ -1,7 +1,13 @@
 {
     "appenders": [
         {
-            "type": "console"
+            "type": "file",
+            "filename": "./logs/${opts:serverId}.log",
+            "fileSize": 1048576,
+            "layout": {
+                "type": "basic"
+            }, 
+            "backups": 5
         }
     ],
 

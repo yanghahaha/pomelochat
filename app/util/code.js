@@ -6,7 +6,7 @@ module.exports = {
     INTERNAL_SERVER_ERROR               : 500,
 
     TOKEN_INVALID                       : 1001,
-    LOGIN_ERROR                         : 1002
+    LOGIN_ERROR                         : 1002,
 
     USER_CHANNEL_MEET_MAX               : 1003,
     CHANNEL_USER_MEET_MAX               : 1004,

@@ -1,6 +1,6 @@
 module.exports = {
 
-    TOKEN_TIMEOUT               : 30
+    TOKEN_TIMEOUT               : 30,
 
     USER_MAX_CHANNEL            : 10,
     CHANNEL_MAX_USER            : 1 << 30,  // 单个频道总用户数限制

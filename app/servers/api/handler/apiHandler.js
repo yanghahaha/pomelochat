@@ -13,7 +13,7 @@ var handler = Handler.prototype;
 
 handler.applyToken = function(req, session, next) {
     if (!req.channelId || !req.userId) {
-        next(null, Code.BAD_REQUEST)   
+        next(null, Code.BAD_REQUEST)
         return
     }
 
@@ -106,7 +106,73 @@ handler.sendRoomMsgByUserId = function(req, session, next) {
 }
 
 handler.kickUser = function(req, session, next) {
-    //todo
+    if (!req.userId) {
+        next(null, Code.BAD_REQUEST)   
+        return
+    }
+    channelRemote.kick(req.uesrId, req.channelId, function(err, code, channelToContexts){
+        if (!!err) {
+            next(null, {
+                code: Code.INTERNAL_SERVER_ERROR
+            })            
+        }
+        else {
+            next(null, {
+                code: code
+            })
+        }
+    })
+
+/*
+ret = {
+    channelId1: {
+        roomId: roomId
+        contexts: [{
+            fId:
+            sId:
+            context:
+        }]
+    },
+    channelId2: {...}
+}
+To
+sIdToKickData = {
+    fId1: {
+        channelId1: {
+            roomId: roomId
+            sIds: [sId1, sId2, ...]
+        }
+        channelId2: {...}
+    }
+    fId2: {...}
+}
+*/
+    var sIdToKickData = {}
+    for (var channelId in channelToContexts) {
+        var info = channelToContexts[channelId]
+        var roomId = info.roomId
+        var contexts = info.contexts
+        for (var i=0; i<contexts.length; ++i) {
+
+            var fId = contexts[i].fId
+                sId = contexts[i].sId
+
+            if (!sIdToKickData[fId]) {
+                sIdToKickData[fId] = {}
+            }
+            if (!sIdToKickData[fId][channelId]) {
+                sIdToKickData[fId][channelId] = {
+                    roomId: roomId
+                    sIds: []
+                }
+            }
+            sIdToKickData[fId][channelId]['sIds'].push(sId)
+        }
+    }
+
+    for (var fsId in sIdToKickData) {
+        this.app.rpc.connector.connectorRemote.kick.toServer(fsId, sIdToKickData[fsId], null)
+    }
 }
 
 /**************************************************

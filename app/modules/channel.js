@@ -24,9 +24,8 @@ exp.createChannel = function(id, opts) {
 exp.destroyChannel = function(id) {
     var channel = channels[id]
     if (channel.userCount !== 0 || channel.connectionCount !== 0) {
-        throw new Error(
-            util.format('destroy channel all count should be 0, channel.userCount=%s channel.connectionCount=%s', 
-                channel.userCount, channel.connectionCount))
+        logger.fatal('destroy channel all count should be 0, channel.userCount=%s channel.connectionCount=%s', 
+                channel.userCount, channel.connectionCount)
     }
     for (var i in channel) {
         channel[i] = null
@@ -149,17 +148,17 @@ Channel.prototype.enter = function(user, reenter, userInRoomId, context, out) {
     return Code.SUCC
 }
 
-Channel.prototype.leave = function(user, lastLeave, userInRoomId, context) {
+Channel.prototype.leave = function(user, lastLeave, leaveConnection, userInRoomId, context) {
     var room = this.rooms[userInRoomId]
-    room.leave(user, lastLeave, context)
+    room.leave(user, lastLeave, leaveConnection, context)
 
     if (lastLeave) {
         --this.userCount
     }
-    --this.connectionCount
+    this.connectionCount -= leaveConnection
 
-    logger.debug('channel.leave user=%s lastLeave=%s channel=%s channel.userCount=%s channel.connectionCount=%s room=%s room.userCount=%s room.connectionCount=%s', 
-        user.id, lastLeave, this.id, this.userCount, this.connectionCount, room.id, room.userCount, room.connectionCount)
+    logger.debug('channel.leave user=%s lastLeave=%s leaveConnection=%s channel=%s channel.userCount=%s channel.connectionCount=%s room=%s room.userCount=%s room.connectionCount=%s', 
+        user.id, lastLeave, leaveConnection, this.id, this.userCount, this.connectionCount, room.id, room.userCount, room.connectionCount)
 
     if (room.getUserCount() === 0) {
         Room.destroy(room)

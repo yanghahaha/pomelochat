@@ -1,7 +1,5 @@
 var _ = require('underscore')
-var logger = require('pomelo-logger').getLogger('gate', __filename, process.pid)
 var Code = require('../../../util/code')
-var Utils = require('../../../util/utils.js')
 
 module.exports = function(app) {
 	return new Handler(app)
@@ -44,7 +42,7 @@ handler.lookupConnector = function(req, session, next) {
 		return
 	}
 
-    var res = dispatch(Utils.getSessionUid(req.userId, req.channelId), connectors)
+    var res = dispatch(req.userId, connectors)
     applyToken(app, session, req.userId, req.channelId, function(err, code, token){
         if (code !== Code.SUCC) {
             next(null, {
@@ -65,7 +63,7 @@ handler.lookupConnector = function(req, session, next) {
 /*	var res = dispatch(Utils.getSessionUid(req.userId, req.channelId), connectors)
 	next(null, {
 		code: Code.SUCC,
-		host: res.host,
+		host: res.clientHostReal,
 		port: res.clientPort
 	})
     app.sessionService.kickBySessionId(session.id)
@@ -78,7 +76,7 @@ var dispatch = function(key, list) {
 }
 
 var applyToken = function(app, session, userId, channelId, cb) {
-    app.rpc.auth.authRemote.applyToken(session, userId, channelId, {
+    app.rpc.api.channelRemote.applyToken(session, userId, channelId, {
         name: 'bob'
     }, cb)
 }

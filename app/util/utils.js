@@ -7,5 +7,5 @@ utils.invokeCallback = function(cb) {
 }
 
 utils.getSessionUid = function(userId, channelId) {
-    return userId + '-' + channelId;
+    return [userId, channelId].join('-')
 }

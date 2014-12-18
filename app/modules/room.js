@@ -52,16 +52,16 @@ Room.prototype.enter = function(user, reenter) {
     return Code.SUCC
 }
 
-Room.prototype.leave = function(user, lastLeave) {
+Room.prototype.leave = function(user, lastLeave, leaveConnection) {
     if (lastLeave) {
         --this.userCount
         delete this.users[user.id]
     }
-    --this.connectionCount
+    this.connectionCount -= leaveConnection
 
     if (this.userCount === 0 || this.connectionCount === 0) {
         if (this.connectionCount !== this.connectionCount) {
-            throw new Error(util.format('destroy room all count should be 0, this.userCount=%s this.connectionCount=%s', this.userCount, this.connectionCount))
+            logger.fatal('destroy room all count should be 0, this.userCount=%s this.connectionCount=%s', this.userCount, this.connectionCount)
         }
     }
 }

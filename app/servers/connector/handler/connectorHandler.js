@@ -2,7 +2,7 @@ var logger = require('pomelo-logger').getLogger('connector', __filename, process
 var async = require('async')
 var Code = require('../../../util/code')
 var Utils = require('../../../util/utils')
-var FrontChannelService = require('../../modules/frontChannel')
+var frontchannelService = require('../../modules/frontChannel')
 
 module.exports = function(app) {
 	return new Handler(app)
@@ -30,7 +30,7 @@ handler.login = function(req, session, next) {
         retData
     var uId = Utils.getSessionUid(userId, channelId)
     var context = {
-            fsId: self.app.get('serverId'),
+            fId: self.app.get('serverId'),
             sId: session.id,
             remote: self.app.sessionService.getClientAddressBySessionId(session.id)
         }
@@ -71,7 +71,7 @@ handler.login = function(req, session, next) {
             self.app.sessionService.kickBySessionId(session.id)
         }
         else {
-            FrontChannelService.add(channelId, retData.roomId, session.id)
+            frontchannelService.add(channelId, retData.roomId, session.id)
             logger.debug('login succ userId=%s channelId=%s token=%s', userId, channelId, req.token)
             next(null, {
                 code: Code.SUCC,
@@ -82,7 +82,7 @@ handler.login = function(req, session, next) {
 }
 
 var onUserLeave = function(app, session, reason) {
-    if (!session || !session.get('userId')) {
+    if (!session || !session.get('userId') || reason === 'kick') {
         return
     }
 
@@ -91,7 +91,7 @@ var onUserLeave = function(app, session, reason) {
         roomId = session.get('roomId'),
         context = session.get('context')
 
-    FrontChannelService.remove(channelId, roomId, session.id)
+    frontchannelService.remove(channelId, roomId, session.id)
     app.rpc.api.channelRemote.leave(session, userId, channelId, context, function(err, code){
         if (!!err || code !== Code.SUCC) {
             logger.error('leave error userId=%s channelId=%s reason=%s code=%s error=%j', userId, channelId, reason, code, err)

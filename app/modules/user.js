@@ -1,5 +1,4 @@
 var _ = require('underscore')
-var util = require('util')
 var logger = require('pomelo-logger').getLogger('channel', __filename, process.pid)
 var Config = require('../util/config')
 var Code = require('../util/code')
@@ -28,8 +27,7 @@ exp.createUser = function(id) {
 exp.destroyUser = function(id) {
     var user = users[id]
     if (user.getChannelCount() !== 0) {
-        throw new Error(
-            util.format('destroy user channel count should be 0, user.getChannelCount()=%s', user.getChannelCount()))
+        logger.fatal('destroy user channel count should be 0, user.getChannelCount()=%s', user.getChannelCount())
     }
     for (var i in user) {
         user[i] = null
@@ -55,7 +53,6 @@ exp.dump = function() {
     }
     return dumps
 }
-
 
 var User = function(id, data) {
     this.id = id
@@ -121,18 +118,50 @@ User.prototype.leave = function(channelId, context) {
         return Code.CHANNEL.USER_NOT_IN_CHANNEL
     }
 
-    var index = userChannelData.findContext(context)
-    if (index === -1) {
-        logger.warn('user=%s context.remote=%j not in channel=%s', this.id, context.remote, channelId)
-        return Code.CHANNEL.USER_CTX_NOT_FOUND
+    var leaveConnection, lastLeave, 
+        ret = {roomId: userChannelData.roomId}
+
+    if (!!context) {
+        var index = userChannelData.findContext(context)
+        if (index === -1) {
+            logger.warn('user=%s context.remote=%j not in channel=%s', this.id, context.remote, channelId)
+            return Code.CHANNEL.USER_CTX_NOT_FOUND
+        }
+        userChannelData.removeContextByIndex(index)
+        leaveConnection = 1
+        lastLeave = (userChannelData.getContextCount() === 0)
+        ret.contexts = [context]
     }
-    userChannelData.removeContextByIndex(index)
-    var lastLeave = (userChannelData.getContextCount() === 0)
+    else {
+        leaveConnection = userChannelData.getContextCount()
+        lastLeave = true
+        ret.contexts = userChannelData.getContexts()
+    }
+
     if (lastLeave) {
         delete this.channelDatas[channelId]
     }
 
-    ChannelService.getChannel(channelId).leave(this, lastLeave, userChannelData.roomId, context)
+    ChannelService.getChannel(channelId).leave(this, lastLeave, leaveConnection, userChannelData.roomId, context)
+    return contexts
+}
+
+
+/*
+ret = {
+    channelId1: {
+        roomId: roomId
+        contexts: []
+    },
+    channelId2: {...}
+}
+*/
+User.prototype.leaveAll = function() {
+    var contexts = {}
+    for (var i in this.channelDatas) {
+        contexts[i] = this.leave(i)
+    }
+    return contexts
 }
 
 var UserChannelData = function() {

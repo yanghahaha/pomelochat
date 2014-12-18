@@ -21,7 +21,7 @@ exp.leave = function(identifier, context) {
 exp.destroy = function(identifier) {
     var channel = getChannel(identifier)
     if (channel.getUserAmount() !== 0) {
-        throw new Error(util.format('pomelo.channelService userAmount should be 0, userAmount=%s', channel.getUserAmount()))
+        logger.fatal('pomelo.channelService userAmount should be 0, userAmount=%s', channel.getUserAmount())
     }
     channel.destroy()
     logger.debug('pomelo.channelService(%s) destroy', identifier)
