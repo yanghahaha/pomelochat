@@ -223,7 +223,7 @@ remote.getRoomUsersByUserId = function(channelId, userId, dataKeys, cb) {
         return        
     }
 
-    this.getRoomUsers(channelId, userChannel.roomId, cb)
+    this.getRoomUsers(channelId, userChannel.roomId, dataKeys, cb)
 }
 
 /**************************************************

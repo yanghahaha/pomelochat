@@ -34,12 +34,13 @@ Room.prototype.getConnectionCount = function() {
 }
 
 Room.prototype.getUsers = function(dataKeys) {
-    dataKeys = dataKeys || {}
+    dataKeys = dataKeys || []
     var users = {}
     for (var i in this.users) {
         var data = {}
-        for (var j in dataKeys) {
-            data[j] = this.users[i].data[j]
+        for (var j=0; j<dataKeys.length; ++j) {
+            var key = dataKeys[j]
+            data[key] = this.users[i].data[key]
         }
         users[i] = data
     }

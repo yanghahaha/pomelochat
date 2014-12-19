@@ -264,7 +264,7 @@ handler.getRoomUserCountByUserId = function(req, session, next) {
         return
     }   
 
-    channelRemote.getRoomUserCountByUserId(req.channelId, req.userId, function(err, userCount, connectionCount){
+    channelRemote.getRoomUserCountByUserId(req.channelId, req.userId, function(err, code, userCount, connectionCount){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -272,7 +272,7 @@ handler.getRoomUserCountByUserId = function(req, session, next) {
         }
         else {
             next(null, {
-                code: Code.SUCC,
+                code: code,
                 userCount: userCount,
                 connectionCount: connectionCount
             })              
@@ -299,7 +299,7 @@ handler.getChannelUsers = function(req, session, next) {
         }
         else {
             next(null, {
-                code: Code.SUCC,
+                code: code,
                 users: users
             })              
         }        
@@ -322,7 +322,7 @@ handler.getRoomUsers = function(req, session, next) {
         }
         else {
             next(null, {
-                code: Code.SUCC,
+                code: code,
                 users: users
             })              
         }
@@ -345,7 +345,7 @@ handler.getRoomUsersByUserId = function(req, session, next) {
         }
         else {
             next(null, {
-                code: Code.SUCC,
+                code: code,
                 users: users
             })              
         }
@@ -356,7 +356,7 @@ handler.getRoomUsersByUserId = function(req, session, next) {
     dump
 ***************************************************/
 handler.dumpUser = function(req, session, next) {
-    if (!!req.userId) {
+    if (!req.userId) {
         next(null, {
             code: Code.BAD_REQUEST
         })
@@ -371,7 +371,7 @@ handler.dumpUser = function(req, session, next) {
         }
         else {
             next(null, {
-                code: Code.SUCC,
+                code: code,
                 user: user
             })              
         }
@@ -387,7 +387,7 @@ handler.dumpUsers = function(req, session, next) {
         }
         else {
             next(null, {
-                code: Code.SUCC,
+                code: code,
                 users: users
             })              
         }
@@ -395,7 +395,7 @@ handler.dumpUsers = function(req, session, next) {
 }
 
 handler.dumpChannel = function(req, session, next) {
-    if (!!req.channelId) {
+    if (!req.channelId) {
         next(null, {
             code: Code.BAD_REQUEST
         })
@@ -410,7 +410,7 @@ handler.dumpChannel = function(req, session, next) {
         }
         else {
             next(null, {
-                code: Code.SUCC,
+                code: code,
                 channel: channel
             })              
         }
@@ -426,7 +426,7 @@ handler.dumpChannels = function(req, session, next) {
         }
         else {
             next(null, {
-                code: Code.SUCC,
+                code: code,
                 channels: channels
             })              
         }
