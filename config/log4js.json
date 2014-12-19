@@ -15,7 +15,9 @@
     ],
 
     "levels": {
-        "[all]": "DEBUG"
+        "[all]": "DEBUG",
+        "rpc-log": "ERROR",
+        "forward-log": "ERROR"
     },
 
     "replaceConsole": true,

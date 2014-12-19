@@ -4,6 +4,9 @@ var argv = require('optimist').argv
 var host = argv.h || argv.host || '127.0.0.1'
 var port = argv.p || argv.port || 13011
 var channel = argv.c || argv.channel || 'yang-hannah'
+var keys = argv.k || argv.key || '["name"]'
+
+keys = JSON.parse(keys)
 
 var req = http.request({
     hostname: host,
@@ -24,7 +27,7 @@ var reqBody = JSON.stringify({
     route: 'api.apiHandler.getChannelUsers',
     body: {
         channelId: channel,
-        dataKeys: ['name']
+        dataKeys: keys
     }
 })
 
