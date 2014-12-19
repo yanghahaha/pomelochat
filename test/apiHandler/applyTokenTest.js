@@ -10,7 +10,7 @@ var req = http.request({
     method: 'POST'
 }, function(res){
     res.on('data', function(body) {
-        console.log('req: ' + body);
+        console.log('res: ' + body);
     })
 })
 
@@ -27,7 +27,8 @@ var reqBody = JSON.stringify({
         userData: {'name': 'bob'}
     }
 })
+
+console.log('req: ' + reqBody)
 req.write(reqBody)
 
-console.log('res: ' + reqBody)
 req.end()

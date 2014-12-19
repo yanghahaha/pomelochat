@@ -29,6 +29,10 @@ Room.prototype.getUserCount = function() {
     return this.userCount
 }
 
+Room.prototype.getConnectionCount = function() {
+    return this.connectionCount
+}
+
 Room.prototype.getUsers = function(dataKeys) {
     dataKeys = dataKeys || {}
     var users = {}

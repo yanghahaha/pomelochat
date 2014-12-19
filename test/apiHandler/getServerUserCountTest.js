@@ -20,15 +20,8 @@ req.on('error', function(e) {
 
 var reqBody = JSON.stringify({
     id: 1,
-    route: 'api.apiHandler.broadcastMsg',
-    body: {
-        route: 'msg',
-        msg: {
-            id: 111,
-            name: 'bob',
-            conetent: 'hello world'
-        },
-    }
+    route: 'api.apiHandler.getServerUserCount',
+    body: {}
 })
 
 console.log('req: ' + reqBody)

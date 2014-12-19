@@ -1,11 +1,11 @@
 var _ = require('underscore')
-var util = require('util')
 var logger = require('pomelo-logger').getLogger('channel', __filename, process.pid)
 var Room = require('./room')
 var Code = require('../util/code')
 var Config = require('../util/config')
 
 var channels = {}
+var connectionCount = 0
 
 var exp = module.exports
 
@@ -47,6 +47,10 @@ exp.dump = function() {
     return dumps
 }
 
+exp.getConnectionCount = function() {
+    return connectionCount
+}
+
 
 var firstRoomDispatcher = function(channel) {
     return _.find(channel.rooms, function(room) {
@@ -81,6 +85,10 @@ var Channel = function(id, opts) {
 
 Channel.prototype.getUserCount = function() {
     return this.userCount
+}
+
+Channel.prototype.getConnectionCount = function() {
+    return this.connectionCount
 }
 
 Channel.prototype.getUsers = function(dataKeys) {
@@ -136,9 +144,10 @@ Channel.prototype.enter = function(user, reenter, userInRoomId, context, out) {
     }
 
     if (!reenter) {
-        ++this.userCount
+        this.userCount++
     }
-    ++this.connectionCount
+    this.connectionCount++
+    connectionCount++
 
     out.roomId = room.id
 
@@ -156,6 +165,7 @@ Channel.prototype.leave = function(user, lastLeave, leaveConnection, userInRoomI
         --this.userCount
     }
     this.connectionCount -= leaveConnection
+    connectionCount -= leaveConnection
 
     logger.debug('channel.leave user=%s lastLeave=%s leaveConnection=%s channel=%s channel.userCount=%s channel.connectionCount=%s room=%s room.userCount=%s room.connectionCount=%s', 
         user.id, lastLeave, leaveConnection, this.id, this.userCount, this.connectionCount, room.id, room.userCount, room.connectionCount)

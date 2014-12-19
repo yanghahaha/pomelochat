@@ -42,7 +42,7 @@ exp.getUser = function(id) {
     return users[id]
 }
 
-exp.getCount = function() {
+exp.getUserCount = function() {
     return count
 }
 
@@ -83,13 +83,15 @@ User.prototype.dump = function() {
 
 User.prototype.enter = function(channelId, context, varOut) {
     if (this.getChannelCount()>= Config.USER_MAX_CHANNEL) {
-        return Code.CHANNEL.USER_CHANNEL_MEET_MAX
+        return Code.USER_CHANNEL_MEET_MAX
     }
 
     var userChannelData = this.channelDatas[channelId]
-    var reenter = false, userChannelRoomId
+    var reenter = false, 
+        userChannelRoomId
+
     if (userChannelData) {
-        userChannelRoomId = userChannelData.getRoomId()
+        userChannelRoomId = userChannelData.roomId
         reenter = true
     }
 
@@ -111,31 +113,31 @@ User.prototype.enter = function(channelId, context, varOut) {
     return Code.SUCC
 }
 
-User.prototype.leave = function(channelId, context) {
+User.prototype.leave = function(channelId, context, out) {
     var userChannelData = this.channelDatas[channelId]
     if (!userChannelData) {
         logger.warn('user=%s not in channel=%s', this.id, channelId)
-        return Code.CHANNEL.USER_NOT_IN_CHANNEL
+        return Code.USER_NOT_IN_CHANNEL
     }
 
-    var leaveConnection, lastLeave, 
-        ret = {roomId: userChannelData.roomId}
+    var leaveConnection, lastLeave
+    out.roomId = userChannelData.roomId
 
     if (!!context) {
         var index = userChannelData.findContext(context)
         if (index === -1) {
             logger.warn('user=%s context.remote=%j not in channel=%s', this.id, context.remote, channelId)
-            return Code.CHANNEL.USER_CTX_NOT_FOUND
+            return Code.USER_CTX_NOT_FOUND
         }
         userChannelData.removeContextByIndex(index)
         leaveConnection = 1
         lastLeave = (userChannelData.getContextCount() === 0)
-        ret.contexts = [context]
+        out.contexts = [context]
     }
     else {
         leaveConnection = userChannelData.getContextCount()
         lastLeave = true
-        ret.contexts = userChannelData.getContexts()
+        out.contexts = userChannelData.getContexts()
     }
 
     if (lastLeave) {
@@ -143,9 +145,8 @@ User.prototype.leave = function(channelId, context) {
     }
 
     ChannelService.getChannel(channelId).leave(this, lastLeave, leaveConnection, userChannelData.roomId, context)
-    return ret
+    return Code.SUCC
 }
-
 
 /*
 ret = {
@@ -156,12 +157,13 @@ ret = {
     channelId2: {...}
 }
 */
-User.prototype.leaveAll = function() {
-    var contexts = {}
+User.prototype.leaveAll = function(out) {
     for (var i in this.channelDatas) {
-        contexts[i] = this.leave(i)
+        var ctx = {}
+        if (this.leave(i, null, ctx) === Code.SUCC) {
+            out[i] = ctx
+        }
     }
-    return contexts
 }
 
 var UserChannelData = function() {

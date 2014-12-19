@@ -34,7 +34,7 @@ var reqBody = JSON.stringify({
         },
     }
 })
-console.log('res: ' + reqBody)
+console.log('req: ' + reqBody)
 req.write(reqBody)
 
 req.end()

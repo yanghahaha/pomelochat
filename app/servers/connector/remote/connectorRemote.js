@@ -56,11 +56,19 @@ channelToSids = {
     channelId2: {...}
 }
 */
-remote.kick = function(channelToSids, cb) {
+remote.kick = function(channelToSids, route, msg, cb) {
+    var opts = {}
     var sessionService = this.app.get('sessionService')
+    var connector = this.app.components.__connector__    
+
     for (var channelId in channelToSids) {
         var roomId = channelToSids[channelId].roomId,
             sIds = channelToSids[channelId].sIds
+
+        if (!!route) {
+            connector.send(null, route, msg, sIds, opts, null)   
+        }
+
         for (var i=0; i<sIds.length; ++i) {
             var sId = sIds[i]
             frontchannelService.remove(channelId, roomId, sId)

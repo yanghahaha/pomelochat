@@ -1,3 +1,4 @@
+var _ = require('underscore')
 var Code = require('../../../util/code')
 var channelRemote
 
@@ -118,7 +119,7 @@ handler.kickUser = function(req, session, next) {
     }
 
     var channelToContexts
-    channelRemote.kick(req.uesrId, req.channelId, function(err, code, contexts){
+    channelRemote.kick(req.userId, req.channelId, function(err, code, contexts){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -156,7 +157,8 @@ sIdToKickData = {
     fId2: {...}
 }
 */
-    if (!!channelToContexts) {
+    console.log(channelToContexts)
+    if (!_.isEmpty(channelToContexts)) {
         var sIdToKickData = {}
         for (var channelId in channelToContexts) {
             var info = channelToContexts[channelId]
@@ -181,7 +183,7 @@ sIdToKickData = {
         }
 
         for (var fsId in sIdToKickData) {
-            this.app.rpc.connector.connectorRemote.kick.toServer(fsId, sIdToKickData[fsId], null)
+            this.app.rpc.connector.connectorRemote.kick.toServer(fsId, sIdToKickData[fsId], req.route, req.msg, null)
         }
     }
 }
@@ -190,7 +192,7 @@ sIdToKickData = {
     get user count
 ***************************************************/
 handler.getServerUserCount = function(req, session, next) {
-    channelRemote.getServerUserCount(function(err, count){
+    channelRemote.getServerCount(function(err, code, userCount, connectionCount){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -198,8 +200,9 @@ handler.getServerUserCount = function(req, session, next) {
         }
         else {
             next(null, {
-                code: Code.SUCC,
-                count: count
+                code: code,
+                userCount: userCount,
+                connectionCount: connectionCount
             })              
         }
     })
@@ -213,7 +216,7 @@ handler.getChannelUserCount = function(req, session, next) {
         return
     }   
 
-    channelRemote.getChannelUserCount(req.channelId, function(err, count){
+    channelRemote.getChannelUserCount(req.channelId, function(err, code, userCount, connectionCount){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -221,8 +224,9 @@ handler.getChannelUserCount = function(req, session, next) {
         }
         else {
             next(null, {
-                code: Code.SUCC,
-                count: count
+                code: code,
+                userCount: userCount,
+                connectionCount: connectionCount
             })              
         }
     })
@@ -236,7 +240,7 @@ handler.getRoomUserCount = function(req, session, next) {
         return
     }   
 
-    channelRemote.getRoomUserCount(req.channelId, req.roomId, function(err, count){
+    channelRemote.getRoomUserCount(req.channelId, req.roomId, function(err, code, userCount, connectionCount){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -244,8 +248,9 @@ handler.getRoomUserCount = function(req, session, next) {
         }
         else {
             next(null, {
-                code: Code.SUCC,
-                count: count
+                code: code,
+                userCount: userCount,
+                connectionCount: connectionCount
             })              
         }
     })
@@ -259,7 +264,7 @@ handler.getRoomUserCountByUserId = function(req, session, next) {
         return
     }   
 
-    channelRemote.getRoomUserCountByUserId(req.channelId, req.userId, function(err, count){
+    channelRemote.getRoomUserCountByUserId(req.channelId, req.userId, function(err, userCount, connectionCount){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -268,7 +273,8 @@ handler.getRoomUserCountByUserId = function(req, session, next) {
         else {
             next(null, {
                 code: Code.SUCC,
-                count: count
+                userCount: userCount,
+                connectionCount: connectionCount
             })              
         }
     })

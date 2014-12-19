@@ -55,7 +55,7 @@ remote.enter = function(token, userId, channelId, context, cb) {
         }
     }
 
-    logger.debug('enter userId=%s channelId=%s userData=%j context=%j code=%s', userId, channelId, userData, context, code)
+    logger.info('enter userId=%s channelId=%s roomId=%s context=%j code=%s', userId, channelId, out.roomId,context, code)
     cb(null, code, {
         roomId: out.roomId
     })
@@ -69,7 +69,8 @@ remote.leave = function(userId, channelId, context, cb) {
         return
     }
 
-    user.leave(channelId, context)
+    var out = {}
+    user.leave(channelId, context, out)
     if (user.getChannelCount() === 0) {
         userService.destroyUser(userId)
     }
@@ -79,32 +80,38 @@ remote.leave = function(userId, channelId, context, cb) {
         channelService.destroyChannel(channelId)
     }
 
-    logger.debug('leave userId=%s channelId=%s context=%j', userId, channelId, context)
+    logger.info('leave userId=%s channelId=%s roomId=%s context=%j', userId, channelId, out.roomId, context)
     cb(null, Code.SUCC)
 }
 
 remote.kick = function(userId, channelId, cb) {
     var user = userService.getUser(userId)
     if (!user) {
-        logger.warn('leave userId=%s not found', userId)        
+        logger.warn('kick userId=%s not found', userId)
         cb(null, Code.USER_NOT_EXIST)
         return
     }
 
-    var contexts = {}
+    var out = {}
     if (!!channelId) {
-        contexts[channelId] = user.leave(channelId)
+        var ctx = {}
+        var code = user.leave(channelId, null, ctx)
+        out.channelId = ctx
+        if (code !== Code.SUCC) {
+            cb(null, code)
+            return            
+        }
     }
     else {
-        contexts = user.leaveAll()
+        user.leaveAll(out)
     }
 
     if (user.getChannelCount() === 0) {
         userService.destroyUser(userId)
     }
 
-    logger.debug('kick userId=%s channelId=%s ', userId, channelId)
-    cb(null, Code.SUCC, contexts)
+    logger.info('kick userId=%s channelId=%s ', userId, channelId)
+    cb(null, Code.SUCC, out)
 }
 
 remote.getRoomIdByUserId = function(channelId, userId, cb) {
@@ -128,7 +135,7 @@ remote.getRoomIdByUserId = function(channelId, userId, cb) {
     get user count
 ***************************************************/
 remote.getServerUserCount = function(cb) {
-    cb(null, userService.getCount())
+    cb(null, Code.SUCC, userService.getUserCount(), channelService.getConnectionCount())
 }
 
 remote.getChannelUserCount = function(channelId, cb) {
@@ -137,7 +144,7 @@ remote.getChannelUserCount = function(channelId, cb) {
         cb(null, Code.CHANNEL_NOT_EXIST)
     }
     else {
-        cb(null, Code.SUCC, channel.getUserCount())
+        cb(null, Code.SUCC, channel.getUserCount(), channel.getConnectionCount())
     }
 }
 
@@ -154,7 +161,7 @@ remote.getRoomUserCount = function(channelId, roomId, cb) {
         return
     }
 
-    cb(null, Code.SUCC, room.getUserCount())
+    cb(null, Code.SUCC, room.getUserCount(), room.getConnectionCount())
 }
 
 remote.getRoomUserCountByUserId = function(channelId, userId, cb) {
