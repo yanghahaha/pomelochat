@@ -34,19 +34,21 @@ handler.applyToken = function(req, session, next) {
     })
 }
 
-var routeConnectors = function(app) {
-    var connectors = app.getServersByType('connector')
-    var ids = []
-    for (var i=0; i<connectors.length; ++i) {
-        ids.push(connectors[i].id)
+var routeConnectors = function(app, params) {
+    if (!routeConnectors.allConnectors) {
+        routeConnectors.allConnectors = []
+        _.each(app.getServersByType('connector'), function(connector){
+            routeConnectors.allConnectors.push(connector.id)
+        })
     }
-    return ids
+    console.log(params)
+    return routeConnectors.allConnectors
 }
 
 /**************************************************
     send msg
 ***************************************************/
-handler.broadcastMsg = function(req, session, next) {
+handler.sendServerMsg = function(req, session, next) {
     if (!req.route) {
         next(null, {
             code: Code.BAD_REQUEST
@@ -55,7 +57,7 @@ handler.broadcastMsg = function(req, session, next) {
     }
     next(null, {code: Code.SUCC})
 
-    this.app.rpc.connector.connectorRemote.broadcastMsg.toServer('*', req.route, req.msg, null)
+    this.app.rpc.connector.connectorRemote.sendServerMsg.toServer('*', req.route, req.msg, null)
 }
 
 handler.sendChannelMsg = function(req, session, next) {
@@ -67,9 +69,19 @@ handler.sendChannelMsg = function(req, session, next) {
     }
     next(null, {code: Code.SUCC})
 
-    var connectors = routeConnectors(this.app, {channelId: req.channelId})
+    var channelIds
+    if (_.isArray(req.channelId)) {
+        channelIds = req.channelId
+    }
+    else {
+        channelIds = [req.channelId]
+    }
+
+    var connectors = routeConnectors(this.app, {
+        channelIds: channelIds
+    })
     for (var i=0; i<connectors.length; ++i) {
-        this.app.rpc.connector.connectorRemote.sendChannelMsg.toServer(connectors[i], req.channelId, req.route, req.msg, null)
+        this.app.rpc.connector.connectorRemote.sendChannelMsg.toServer(connectors[i], channelIds, req.route, req.msg, null)
     }
 }
 
@@ -82,9 +94,23 @@ handler.sendRoomMsg = function(req, session, next) {
     }
     next(null, {code: Code.SUCC})
 
-    var connectors = routeConnectors(this.app, {channelId: req.channelId})
+    var roomIds
+    if (_.isArray(req.roomId)) {
+        roomIds = req.roomId
+    }
+    else {
+        roomIds = [req.roomId]
+    }
+
+    var routeParams = {
+        channelIds: [req.channelId],
+        roomIds: {}
+    }
+    routeParams.roomIds[req.channelId] = roomIds
+
+    var connectors = routeConnectors(this.app, routeParams)
     for (var i=0; i<connectors.length; ++i) {
-        this.app.rpc.connector.connectorRemote.sendRoomMsg.toServer(connectors[i], req.channelId, req.roomId, req.route, req.msg, null)
+        this.app.rpc.connector.connectorRemote.sendRoomMsg.toServer(connectors[i], req.channelId, roomIds, req.route, req.msg, null)
     }
 }
 
@@ -157,30 +183,60 @@ sIdToKickData = {
     fId2: {...}
 }
 */
-    console.log(channelToContexts)
+    console.log('%j', channelToContexts)
     if (!_.isEmpty(channelToContexts)) {
         var sIdToKickData = {}
-        for (var channelId in channelToContexts) {
-            var info = channelToContexts[channelId]
-            var roomId = info.roomId
-            var contexts = info.contexts
-            for (var i=0; i<contexts.length; ++i) {
 
-                var fId = contexts[i].fId,
-                    sId = contexts[i].sId
+        _.each(channelToContexts, function(info, channelId){
+            if (!!info) {
+                var roomId = info.roomId
+                var contexts = info.contexts                
 
-                if (!sIdToKickData[fId]) {
-                    sIdToKickData[fId] = {}
-                }
-                if (!sIdToKickData[fId][channelId]) {
-                    sIdToKickData[fId][channelId] = {
-                        roomId: roomId,
-                        sIds: []
+                _.each(contexts, function(context){
+                    var fId = context.fId,
+                        sId = context.sId
+
+                    if (!sIdToKickData[fId]) {
+                        sIdToKickData[fId] = {}
                     }
-                }
-                sIdToKickData[fId][channelId].sIds.push(sId)
+                    if (!sIdToKickData[fId][channelId]) {
+                        sIdToKickData[fId][channelId] = {
+                            roomId: roomId,
+                            sIds: []
+                        }
+                    }
+                    sIdToKickData[fId][channelId].sIds.push(sId)
+                })
             }
-        }
+        }) 
+
+        // for (var channelId in channelToContexts) {
+        //     if (!channelToContexts[channelId]) {
+        //         continue
+        //     }
+
+        //     var info = channelToContexts[channelId]
+        //     var roomId = info.roomId
+        //     var contexts = info.contexts
+
+
+        //     for (var i=0; i<contexts.length; ++i) {
+
+        //         var fId = contexts[i].fId,
+        //             sId = contexts[i].sId
+
+        //         if (!sIdToKickData[fId]) {
+        //             sIdToKickData[fId] = {}
+        //         }
+        //         if (!sIdToKickData[fId][channelId]) {
+        //             sIdToKickData[fId][channelId] = {
+        //                 roomId: roomId,
+        //                 sIds: []
+        //             }
+        //         }
+        //         sIdToKickData[fId][channelId].sIds.push(sId)
+        //     }
+        // }
 
         for (var fsId in sIdToKickData) {
             this.app.rpc.connector.connectorRemote.kick.toServer(fsId, sIdToKickData[fsId], req.route, req.msg, null)
@@ -192,7 +248,7 @@ sIdToKickData = {
     get user count
 ***************************************************/
 handler.getServerUserCount = function(req, session, next) {
-    channelRemote.getServerCount(function(err, code, userCount, connectionCount){
+    channelRemote.getServerUserCount(function(err, code, userCount, connectionCount){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -216,17 +272,16 @@ handler.getChannelUserCount = function(req, session, next) {
         return
     }   
 
-    channelRemote.getChannelUserCount(req.channelId, function(err, code, userCount, connectionCount){
+    channelRemote.getChannelUserCount(req.channelId, function(err, code, counts){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
-            })            
+            })
         }
         else {
             next(null, {
                 code: code,
-                userCount: userCount,
-                connectionCount: connectionCount
+                channels: counts
             })              
         }
     })
@@ -240,7 +295,7 @@ handler.getRoomUserCount = function(req, session, next) {
         return
     }   
 
-    channelRemote.getRoomUserCount(req.channelId, req.roomId, function(err, code, userCount, connectionCount){
+    channelRemote.getRoomUserCount(req.channelId, req.roomId, function(err, code, counts){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -249,9 +304,8 @@ handler.getRoomUserCount = function(req, session, next) {
         else {
             next(null, {
                 code: code,
-                userCount: userCount,
-                connectionCount: connectionCount
-            })              
+                rooms: counts
+            })
         }
     })
 }
@@ -363,7 +417,7 @@ handler.dumpUser = function(req, session, next) {
         return
     }
 
-    channelRemote.dumpUser(req.userId, function(err, code, user){
+    channelRemote.dumpUser(req.userId, function(err, code, users){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -372,14 +426,14 @@ handler.dumpUser = function(req, session, next) {
         else {
             next(null, {
                 code: code,
-                user: user
+                users: users
             })              
         }
     })
 }
 
-handler.dumpUsers = function(req, session, next) {
-    channelRemote.dumpUsers(function(err, code, users){
+handler.dumpAllUser = function(req, session, next) {
+    channelRemote.dumpAllUser(function(err, code, users){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -402,7 +456,7 @@ handler.dumpChannel = function(req, session, next) {
         return
     }
 
-    channelRemote.dumpChannel(req.channelId, function(err, code, channel){
+    channelRemote.dumpChannel(req.channelId, function(err, code, channels){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -411,14 +465,14 @@ handler.dumpChannel = function(req, session, next) {
         else {
             next(null, {
                 code: code,
-                channel: channel
+                channels: channels
             })              
         }
     })
 }
 
-handler.dumpChannels = function(req, session, next) {
-    channelRemote.dumpChannels(function(err, code, channels){
+handler.dumpAllChannel = function(req, session, next) {
+    channelRemote.dumpAllChannel(function(err, code, channels){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR

@@ -20,9 +20,7 @@ req.on('error', function(e) {
 
 var reqBody = JSON.stringify({
     id: 1,
-    route: 'api.apiHandler.dumpChannels',
-    body: {
-    }
+    route: 'api.apiHandler.dumpAllChannel'
 })
 
 console.log('req: ' + reqBody)

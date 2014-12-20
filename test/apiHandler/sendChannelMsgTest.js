@@ -3,7 +3,9 @@ var argv = require('optimist').argv
 
 var host = argv.h || argv.host || '127.0.0.1'
 var port = argv.p || argv.port || 13011
-var channel = argv.c || argv.channel || 'yang-hannah'
+var channel = argv.c || argv.channel || '"yang-hannah"'
+
+channel = JSON.parse(channel)
 
 var req = http.request({
     hostname: host,

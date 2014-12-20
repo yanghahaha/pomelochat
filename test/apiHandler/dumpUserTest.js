@@ -3,7 +3,9 @@ var argv = require('optimist').argv
 
 var host = argv.h || argv.host || '127.0.0.1'
 var port = argv.p || argv.port || 13011
-var user = argv.u || argv.user || 1
+var user = argv.u || argv.user || '123'
+
+user = JSON.parse(user)
 
 var req = http.request({
     hostname: host,

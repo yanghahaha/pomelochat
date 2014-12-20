@@ -21,6 +21,7 @@ Filter.prototype.after = function(err, msg, session, resp, next) {
         timeUsed = Date.now() - start;
     }
 
+    var code = (resp === undefined) ? undefined : resp.code
     var log = {
       route: msg.__route__,
       req: msg,
@@ -28,11 +29,11 @@ Filter.prototype.after = function(err, msg, session, resp, next) {
       remote: this.app.sessionService.getClientAddressBySessionId(session.id),
       timeUsed: timeUsed,
       err: err,
-      code: resp.code
+      code: code
     };
 
-    if (!!err || resp.code != Code.SUCC) {
-        this.logger.warn(JSON.stringify(log));
+    if (!!err || resp.code !== Code.SUCC) {
+        this.logger.error(JSON.stringify(log));
     }
     else {
         this.logger.debug(JSON.stringify(log));

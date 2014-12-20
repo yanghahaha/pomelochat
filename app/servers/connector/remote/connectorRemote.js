@@ -1,3 +1,4 @@
+var _ = require('underscore')
 var frontchannelService = require('../../../modules/frontChannel')
 var utils = require('../../../util/utils')
 
@@ -11,7 +12,7 @@ var Remote = function(app) {
 
 var remote = Remote.prototype
 
-remote.broadcastMsg = function(route, msg, cb) {
+remote.sendServerMsg = function(route, msg, cb) {
     var opts = {
         type: 'broadcast',
         userOptions: {
@@ -21,30 +22,34 @@ remote.broadcastMsg = function(route, msg, cb) {
     this.app.components.__connector__.send(null, route, msg, null, opts, cb)
 }
 
-remote.sendChannelMsg = function(channelId, route, msg, cb) {
+remote.sendChannelMsg = function(channelIds, route, msg, cb) {
     var opts = {}
     var connector = this.app.components.__connector__
-    var rooms = frontchannelService.getChannel(channelId)
-    if (!!rooms) {
-        for (var i in rooms) {
-            connector.send(null, route, msg, rooms[i], opts, cb)
+
+    _.each(channelIds, function(channelId) {
+        var rooms = frontchannelService.getChannel(channelId)
+        if (!!rooms) {
+            _.each(rooms, function(room){
+                connector.send(null, route, msg, room, opts, null)
+            })
         }
-    }
-    else {
-        utils.invokeCallback(cb)
-    }
+    })
+
+    utils.invokeCallback(cb)
 }
 
-remote.sendRoomMsg = function(channelId, roomId, route, msg, cb) {
+remote.sendRoomMsg = function(channelId, roomIds, route, msg, cb) {
     var opts = {}
     var connector = this.app.components.__connector__
-    var room = frontchannelService.getRoom(channelId, roomId)
-    if (!!room) {
-        connector.send(null, route, msg, room, opts, cb)
-    }
-    else {
-        utils.invokeCallback(cb)
-    }
+
+    _.each(roomIds, function(roomId){
+        var room = frontchannelService.getRoom(channelId, roomId)
+        if (!!room) {
+            connector.send(null, route, msg, room, opts, null)
+        }
+    })
+
+    utils.invokeCallback(cb)
 }
 
 /*
@@ -61,22 +66,22 @@ remote.kick = function(channelToSids, route, msg, cb) {
     var sessionService = this.app.get('sessionService')
     var connector = this.app.components.__connector__    
 
-    for (var channelId in channelToSids) {
-        var roomId = channelToSids[channelId].roomId,
-            sIds = channelToSids[channelId].sIds
+    _.each(channelToSids, function(channel, channelId){
+        var roomId = channel.roomId,
+            sIds = channel.sIds
 
         if (!!route) {
             connector.send(null, route, msg, sIds, opts, null)   
         }
 
-        for (var i=0; i<sIds.length; ++i) {
-            var sId = sIds[i]
+        _.each(sIds, function(sId){            
             frontchannelService.remove(channelId, roomId, sId)
             var session = sessionService.get(sId)
             if (!!session) {
                 session.closed('kick')
             }
-        }
-    }
+        })
+    })
+    
     utils.invokeCallback(cb)
 }
