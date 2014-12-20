@@ -2,7 +2,7 @@ module.exports = {
 
     TOKEN_TIMEOUT               : 30,
 
-    USER_MAX_CHANNEL            : 10,
+    USER_MAX_CHANNEL            : 1 << 30,  // 单个用户同时登录最大频道数
     CHANNEL_MAX_USER            : 1 << 30,  // 单个频道总用户数限制
     CHANNEL_MAX_CONNECTION      : 1 << 30,  // 单个频道总连接数限制
     CHANNEL_MAX_USER_CONNECTION : 5,        // 单个频道单个用户最多连接数, 考虑到同时多个设备
