@@ -2,6 +2,10 @@
 	"name": "huomaotv-pomelochat",
 	"version": "0.0.1",
 	"private": true,
+    "repository": {
+        "type": "git",
+        "url": "git+ssh://git@git.marstv.com/git/backend/pomelochat.git"
+    },    
 	"dependencies": {
 		"pomelo": "git+ssh://git@git.marstv.com/git/backend/pomelo.git",
         "pomelo-logger": "0.1.6",
