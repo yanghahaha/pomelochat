@@ -12,6 +12,7 @@
         "pomelo-rpc": "git+ssh://git@git.marstv.com/git/backend/pomelo-rpc.git",
 		"crc": "0.2.0",
         "underscore": "",
-        "random-string": ""
+        "random-string": "",
+        "async": ""
 	}
 }

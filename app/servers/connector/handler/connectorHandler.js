@@ -39,7 +39,7 @@ handler.login = function(req, session, next) {
         function(cb) {
             session.bind(uId, function(err) {
                 if (!!err) {
-                    code = Code.LOGIN_ERROR
+                    code = Code.DUPLICATED_LOGIN
                 }
                 cb(err)
             })
