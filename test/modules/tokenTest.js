@@ -1,4 +1,4 @@
-var logger = require('pomelo-logger');
+var logger = require('pomelo-logger')
 logger.configure({
     "appenders": [
         {
@@ -9,17 +9,16 @@ logger.configure({
         "[all]": "DEBUG"
     },
     "replaceConsole": true
-});
+})
 
-var tokenService = require('../app/modules/token');
-var Code = require('../app/modules/code');
+var tokenService = require('../../app/modules/token')
 
-var userId = 1;
-var channelId = 111;
-var data = {role:'admin'};
-var token, code, out = {};
+var userId = 1
+var channelId = 111
+var data = {role:'admin'}
+var token, code, out = {}
 
-code = tokenService.apply(userId, channelId, data, out);
-console.log(out.token);
-code = tokenService.apply(userId, channelId, data, out);
-console.log(out.token);
+code = tokenService.apply(userId, channelId, data, out)
+console.log(out.token)
+code = tokenService.apply(userId, channelId, data, out)
+console.log(out.token)

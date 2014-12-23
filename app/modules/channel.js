@@ -2,7 +2,7 @@ var _ = require('underscore')
 var logger = require('pomelo-logger').getLogger('channel', __filename, process.pid)
 var Room = require('./room')
 var Code = require('../util/code')
-var Config = require('../util/config')
+var config = require('../util/config')
 
 var channels = {}
 var connectionCount = 0
@@ -52,15 +52,15 @@ exp.getConnectionCount = function() {
 }
 
 
-var firstRoomDispatcher = function(channel) {
-    return _.find(channel.rooms, function(room) {
-        return room.getUserCount() < channel.roomMaxUser
+var firstRoomDispatcher = function(rooms, roomMaxUser) {
+    return _.find(rooms, function(room) {
+        return room.getUserCount() < roomMaxUser
     })
 }
 
-var lastRoomDispatcher = function(channel) {
-    var lastRoom = channel.rooms[channel.lastRoomIndex]
-    if (!!lastRoom && lastRoom.getUserCount() < channel.roomMaxUser) {
+var lastRoomDispatcher = function(rooms, roomMaxUser, lastRoomIndex) {
+    var lastRoom = rooms[lastRoomIndex]
+    if (!!lastRoom && lastRoom.getUserCount() < roomMaxUser) {
         return lastRoom
     }
     else {
@@ -75,11 +75,6 @@ var Channel = function(id, opts) {
     this.userCount = 0
     this.connectionCount = 0
     this.rooms = {}
-
-    this.channelMaxUser = opts.channelMaxUser || Config.CHANNEL_MAX_USER
-    this.channelMaxConnection = opts.channelMaxConnection || Config.CHANNEL_MAX_CONNECTION
-    this.channelMaxUserConnection = opts.channelMaxUserConnection || Config.CHANNEL_MAX_USER_CONNECTION
-    this.roomMaxUser = opts.roomMaxUser || Config.ROOM_MAX_USER
     this.userDispatcher = opts.userDispatcher || lastRoomDispatcher || firstRoomDispatcher
 }
 
@@ -121,18 +116,18 @@ Channel.prototype.dump = function() {
 Channel.prototype.enter = function(user, reenter, userInRoomId, context, out) {
     var code, room
 
-    if (this.connectionCount >= this.channelMaxConnection) {
+    if (this.connectionCount >= config.get('channel.maxConnectionCount')) {
         return Code.CHANNEL_CONNECTION_MEET_MAX
     }
 
     if (!!userInRoomId) {
-        if (user.getChannelData(this.id).getContextCount() >= this.channelMaxUserConnection) {
+        if (user.getChannelData(this.id).getContextCount() >= config.get('channel.maxUserConnectionCount')) {
             return Code.CHANNEL_USER_CONNECTION_MEET_MAX
         }
         room = this.rooms[userInRoomId]
     }
     else {
-        if (this.userCount >= this.channelMaxUser) {
+        if (this.userCount >= config.get('channel.maxUserCount')) {
             return Code.CHANNEL_USER_MEET_MAX
         }
         room = this.findRoomForNewUser()
@@ -177,7 +172,7 @@ Channel.prototype.leave = function(user, lastLeave, leaveConnection, userInRoomI
 }
 
 Channel.prototype.findRoomForNewUser = function() {
-    var room = this.userDispatcher.call(null, this)
+    var room = this.userDispatcher.call(null, this.rooms, config.get('room.maxUserCount'), this.lastRoomIndex)
     if (!room) {
         ++this.lastRoomIndex
         room = Room.create({

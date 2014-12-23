@@ -1,6 +1,6 @@
 var _ = require('underscore')
 var logger = require('pomelo-logger').getLogger('channel', __filename, process.pid)
-var Config = require('../util/config')
+var config = require('../util/config')
 var Code = require('../util/code')
 var ChannelService = require('./channel')
 
@@ -82,7 +82,7 @@ User.prototype.dump = function() {
 }
 
 User.prototype.enter = function(channelId, context, varOut) {
-    if (this.getChannelCount()>= Config.USER_MAX_CHANNEL) {
+    if (this.getChannelCount()>= config.get('user.maxChannelCount')) {
         return Code.USER_CHANNEL_MEET_MAX
     }
 

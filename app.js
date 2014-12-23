@@ -1,4 +1,5 @@
 var pomelo = require('pomelo')
+var config = require('./app/util/config')
 
 var app = pomelo.createApp()
 app.set('name', 'huomaotv-pomelochat')
@@ -20,6 +21,8 @@ var acceptorFactory = {
         return TcpAcceptor.create(opts, cb)
     }
 }
+
+config.init({path: './config/config.json'})
 
 app.configure('production|development', function(){
     app.rpcFilter(pomelo.rpcFilters.rpcLog())

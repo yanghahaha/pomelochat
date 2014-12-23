@@ -1,11 +1,55 @@
-module.exports = {
+var fs = require('fs')
+var exp = module.exports
 
-    TOKEN_TIMEOUT               : 30,
+var CONFIG_PATH = '../../config/config.json'
+var CHECK_SEC = 1
 
-    USER_MAX_CHANNEL            : 1 << 30,  // 单个用户同时登录最大频道数
-    CHANNEL_MAX_USER            : 1 << 30,  // 单个频道总用户数限制
-    CHANNEL_MAX_CONNECTION      : 1 << 30,  // 单个频道总连接数限制
-    CHANNEL_MAX_USER_CONNECTION : 5,        // 单个频道单个用户最多连接数, 考虑到同时多个设备
-    ROOM_MAX_USER               : 5000,     // 单个房间最大人数，注意是人数，同个用户的多个设备进入的会是一个房间，保证看的内容一致
+var config,
+    path,
+    mtime
 
+exp.init = function(opts) {
+    opts = opts || {}
+    path = opts.path || CONFIG_PATH
+    var checkSec = opts.checkSec || CHECK_SEC
+
+    config = JSON.parse(fs.readFileSync(path))
+    mtime = fs.statSync(path).mtime.getTime()
+
+    console.log('load config file %s mtime=%s', path, mtime)
+    console.log(config)
+
+    setInterval(check, checkSec*1000)
+}
+
+exp.get = function(property) {
+    return config[property]
+}
+
+var check = function() {
+    fs.stat(path, function(err, stats){
+        if (!!err) {
+            console.error('stat config file %s fail err=%j', path, err)
+        }
+        else {
+            var nowMTime = stats.mtime.getTime()
+            if (nowMTime !== mtime) {
+                mtime = nowMTime
+                reload()
+            }
+        }
+    })
+}
+
+var reload = function() {
+    fs.readFile(path, function(err, data) {
+        if (!!err) {
+            console.error('read config file %s fail err=%j', path, err)
+        }
+        else {
+            config = JSON.parse(data)
+            console.log('reload config file %s mtime=%s', path, mtime)
+            console.log(config)
+        }
+    })
 }

@@ -2,7 +2,7 @@ var _ = require('underscore')
 var randomString = require('random-string')
 var logger = require('pomelo-logger').getLogger('channel', __filename, process.pid)
 var Code = require('../util/code')
-var Config = require('../util/config')
+var config = require('../util/config')
 
 /*
 tokens = {
@@ -29,13 +29,10 @@ userToTokens = {
 }
 */
 var userToTokens = {}
-var expireSecond
 
 var exp = module.exports
 
-exp.init = function(opts) {
-    opts = opts || {}
-    expireSecond = opts.tokenTimeout || Config.TOKEN_TIMEOUT || 10
+exp.init = function() {
     setInterval(clearExpiredToken, 1000)
 }
 
@@ -90,7 +87,7 @@ var addToken = function(token, userId, channelId, data) {
     }
     userToTokens[userId][channelId] = token
 
-    var expireTime = process.uptime() + expireSecond
+    var expireTime = process.uptime() + config.get('token.timeout')
     if (!timeToTokens[expireTime]) {
         timeToTokens[expireTime] = []
     }

@@ -1,0 +1,12 @@
+{
+    "token.timeout"                   : 30,
+
+    "user.maxChannelCount"            : 1073741824,
+
+    "channel.maxUserCount"            : 1073741824,
+    "channel.maxConnectionCount"      : 1073741824,
+    "channel.maxUserConnectionCount"  : 5,         
+
+    "room.maxUserCount"               : 5000
+
+}
