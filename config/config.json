@@ -5,7 +5,8 @@
 
     "channel.maxUserCount"            : 1073741824,
     "channel.maxConnectionCount"      : 1073741824,
-    "channel.maxUserConnectionCount"  : 5,         
+    "channel.maxUserConnectionCount"  : 5,
+    "channel.userDispatcher"          : "lastRoomDispatcher",
 
     "room.maxUserCount"               : 5000
 

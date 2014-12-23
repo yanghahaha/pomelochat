@@ -68,14 +68,17 @@ var lastRoomDispatcher = function(rooms, roomMaxUser, lastRoomIndex) {
     }
 }
 
-var Channel = function(id, opts) {
-    opts = opts || {}
+var dispatchers = {
+    'firstRoomDispatcher': firstRoomDispatcher,
+    'lastRoomDispatcher': lastRoomDispatcher
+}
+
+var Channel = function(id) {
     this.id = id
     this.lastRoomIndex = 0
     this.userCount = 0
     this.connectionCount = 0
     this.rooms = {}
-    this.userDispatcher = opts.userDispatcher || lastRoomDispatcher || firstRoomDispatcher
 }
 
 Channel.prototype.getUserCount = function() {
@@ -172,7 +175,12 @@ Channel.prototype.leave = function(user, lastLeave, leaveConnection, userInRoomI
 }
 
 Channel.prototype.findRoomForNewUser = function() {
-    var room = this.userDispatcher.call(null, this.rooms, config.get('room.maxUserCount'), this.lastRoomIndex)
+    var dispatcher = dispatchers[config.get('channel.userDispatcher')]
+    if (!dispatcher) {
+        dispatcher = lastRoomDispatcher
+    }
+
+    var room = dispatcher.call(null, this.rooms, config.get('room.maxUserCount'), this.lastRoomIndex)
     if (!room) {
         ++this.lastRoomIndex
         room = Room.create({
