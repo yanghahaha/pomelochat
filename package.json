@@ -8,7 +8,7 @@
     },
 	"dependencies": {
 		"pomelo": "git+ssh://git@git.marstv.com/git/backend/pomelo.git",
-        "pomelo-logger": "0.1.6",
+        "pomelo-logger": "git+ssh://git@git.marstv.com/git/backend/pomelo-logger.git",
         "pomelo-rpc": "git+ssh://git@git.marstv.com/git/backend/pomelo-rpc.git",
 		"crc": "0.2.0",
         "underscore": "",

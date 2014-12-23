@@ -60,17 +60,29 @@
             "category":"crash-log"
         },
         {
+            "type": "file",
+            "filename": "./logs/console.log",
+            "fileSize": 10485760,
+            "layout": {
+                "type": "basic"
+            },
+            "backups": 5,
+            "category":"console"
+        },        
+        {
             "type": "console"
         }
     ],
 
     "levels": {
-        "[all]": "DEBUG",
+        "[all]": "ALL",
         "rpc-log": "ERROR",
         "forward-log": "ERROR"
     },
 
     "replaceConsole": true,
+
     "lineDebug": false,
-    "reloadSecs": 1
+    "reloadSecs": 1,
+    "reloadSync": false
 }
