@@ -8,6 +8,6 @@
     "channel.maxUserConnectionCount"  : 5,
     "channel.userDispatcher"          : "lastRoomDispatcher",
 
-    "room.maxUserCount"               : 5000
+    "room.maxUserCount"               : 10000
 
 }

@@ -52,20 +52,17 @@ exp.getConnectionCount = function() {
 }
 
 
-var firstRoomDispatcher = function(rooms, roomMaxUser) {
-    return _.find(rooms, function(room) {
-        return room.getUserCount() < roomMaxUser
+var firstRoomDispatcher = function(params) {
+    return _.find(params.rooms, function(room) {
+        return room.getUserCount() < params.maxUserCount
     })
 }
 
-var lastRoomDispatcher = function(rooms, roomMaxUser, lastRoomIndex) {
-    var lastRoom = rooms[lastRoomIndex]
-    if (!!lastRoom && lastRoom.getUserCount() < roomMaxUser) {
-        return lastRoom
+var lastRoomDispatcher = function(params) {
+    if (!!params.lastRoom && params.lastRoom.getUserCount() < params.maxUserCount) {
+        return params.lastRoom
     }
-    else {
-        return null
-    }
+    return null
 }
 
 var dispatchers = {
@@ -75,7 +72,8 @@ var dispatchers = {
 
 var Channel = function(id) {
     this.id = id
-    this.lastRoomIndex = 0
+    this.lastRoom = null
+    this.maxRoomIndex = 0
     this.userCount = 0
     this.connectionCount = 0
     this.rooms = {}
@@ -169,29 +167,57 @@ Channel.prototype.leave = function(user, lastLeave, leaveConnection, userInRoomI
         user.id, lastLeave, leaveConnection, this.id, this.userCount, this.connectionCount, room.id, room.userCount, room.connectionCount)
 
     if (room.getUserCount() === 0) {
+        if (room === this.lastRoom) {
+            this.lastRoom = null
+        }
         Room.destroy(room)
         delete this.rooms[userInRoomId]
     }
 }
 
 Channel.prototype.findRoomForNewUser = function() {
-    var dispatcher = dispatchers[config.get('channel.userDispatcher')]
+    var dispatcherName = config.get('channel.userDispatcher')
+    var dispatcher = dispatchers[dispatcherName]
     if (!dispatcher) {
         dispatcher = lastRoomDispatcher
+        dispatcherName = 'lastRoomDispatcher'
     }
 
-    var room = dispatcher.call(null, this.rooms, config.get('room.maxUserCount'), this.lastRoomIndex)
+    var room = dispatcher.call(null, {
+        rooms: this.rooms,
+        lastRoom: this.lastRoom,
+        maxUserCount: config.get('room.maxUserCount')
+    })
+
     if (!room) {
-        ++this.lastRoomIndex
-        room = Room.create({
-            channel: this,
-            id: this.lastRoomIndex
-        })
-        this.rooms[this.lastRoomIndex] = room
-        logger.debug("new room create channelId=%s roomId=%d", this.id, room.id)
+        room = this.createNewRoom()
+    }
+    this.lastRoom = room
+
+    logger.debug("channel=%s find room index=%s count=%s dispatcher=%s", this.id, room.id, room.getUserCount(), dispatcherName)
+    return room
+}
+
+Channel.prototype.createNewRoom = function() {
+    var index
+    for (var i=1; i<=this.maxRoomIndex; ++i) {
+        if (!this.rooms[i]) {
+            index = i
+            break
+        }
+    }
+    if (!index) {
+        index = ++this.maxRoomIndex
     }
 
-    logger.debug("channel=%s find room index=%s", this.id, room.id)
+    var room = Room.create({
+        channel: this,
+        id: index
+    })
+
+    this.rooms[index] = room
+    logger.debug("new room create channelId=%s roomId=%d", this.id, room.id)
+
     return room
 }
 

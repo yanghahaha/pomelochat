@@ -33,6 +33,7 @@ app.configure('production|development', function(){
         acceptorFactory: acceptorFactory
     })
     app.set('ssh_config_params', ['-P 1127'])
+    app.enable('systemMonitor')
 })
 
 app.configure('production|development', 'connector', function(){
