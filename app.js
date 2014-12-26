@@ -25,7 +25,7 @@ var acceptorFactory = {
 config.init(app.get('env'), {path: './config/config.json'})
 blacklist.init(app.get('env'), app.getServerType(), {path: './config/blacklist.json'})
 
-app.configure('production|development', function(){
+app.configure(function(){
     app.rpcFilter(pomelo.rpcFilters.rpcLog())
     app.set('proxyConfig', {
         mailboxFactory: mailboxFactory
@@ -37,7 +37,7 @@ app.configure('production|development', function(){
     app.enable('systemMonitor')
 })
 
-app.configure('production|development', 'connector', function(){
+app.configure('all', 'connector', function(){
     app.set('connectorConfig', {
         connector : pomelo.connectors.hybridconnector,
         heartbeat : 30,
@@ -50,7 +50,7 @@ app.configure('production|development', 'connector', function(){
     app.filter(handlerLogFilter(app, 'connector'))
 })
 
-app.configure('production|development', 'gate', function(){
+app.configure('all', 'gate', function(){
 	app.set('connectorConfig', {
 		connector : pomelo.connectors.hybridconnector,
         distinctHost: true,
@@ -62,7 +62,7 @@ app.configure('production|development', 'gate', function(){
     app.filter(handlerLogFilter(app, 'gate'))
 })
 
-app.configure('production|development', 'api', function(){
+app.configure('all', 'api', function(){
     app.set('connectorConfig', {
         connector : pomelo.connectors.httpconnector,
         distinctHost: true,
