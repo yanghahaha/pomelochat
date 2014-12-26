@@ -1,0 +1,12 @@
+{
+    "development":  {
+        "connector": [
+            "192.168."
+        ],
+        "gate": [
+            "192.168."
+        ]
+    },
+    "production":  {
+    }    
+}

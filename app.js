@@ -1,11 +1,11 @@
 var pomelo = require('pomelo')
 var config = require('./app/util/config')
+var blacklist = require('./app/util/blacklist')
+var handlerLogFilter = require('./app/filters/handlerLogFilter')
+var tokenService = require('./app/modules/token')
 
 var app = pomelo.createApp()
 app.set('name', 'huomaotv-pomelochat')
-
-var handlerLogFilter = require('./app/filters/handlerLogFilter')
-var tokenService = require('./app/modules/token')
 
 var TcpMailBox = require('pomelo-rpc').client.TcpMailbox
 var TcpAcceptor = require('pomelo-rpc').server.TcpAcceptor
@@ -23,6 +23,7 @@ var acceptorFactory = {
 }
 
 config.init({path: './config/config.json'})
+blacklist.init(app, {path: './config/blacklist.json'})
 
 app.configure('production|development', function(){
     app.rpcFilter(pomelo.rpcFilters.rpcLog())
@@ -42,7 +43,8 @@ app.configure('production|development', 'connector', function(){
         heartbeat : 30,
         distinctHost: true,
         firstTimeout: 3,
-        disconnectOnTimeout: true
+        disconnectOnTimeout: true,
+        blacklistFun: blacklist.get
     })
 
     app.filter(handlerLogFilter(app, 'connector'))
@@ -53,7 +55,8 @@ app.configure('production|development', 'gate', function(){
 		connector : pomelo.connectors.hybridconnector,
         distinctHost: true,
         firstTimeout: 3,
-        disconnectOnTimeout: true
+        disconnectOnTimeout: true,
+        blacklistFun: blacklist.get
 	})
 
     app.filter(handlerLogFilter(app, 'gate'))
@@ -62,7 +65,8 @@ app.configure('production|development', 'gate', function(){
 app.configure('production|development', 'api', function(){
     app.set('connectorConfig', {
         connector : pomelo.connectors.httpconnector,
-        distinctHost: true
+        distinctHost: true,
+        blacklistFun: blacklist.get        
     })
     app.filter(handlerLogFilter(app, 'api'))
     tokenService.init()
