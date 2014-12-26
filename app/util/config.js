@@ -55,7 +55,10 @@ var reload = function() {
         else {
             try {
                 config = JSON.parse(data)
-
+                config = config[env]
+                if (!config) {
+                    throw new Error('reload config is null')
+                }
                 console.log('reload config file %s mtime=%s env=%s', path, mtime, env)
                 console.log(config)
             }
