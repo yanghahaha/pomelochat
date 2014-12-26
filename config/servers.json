@@ -5,6 +5,39 @@
                 "id": "api-server-1", 
                 "host": "127.0.0.1",
                 "port": 3011,
+                "clientHost": "0.0.0.0",
+                "clientPort": 13011, 
+                "frontend": true
+            }
+        ],
+        "gate":  [
+            {
+                "id": "gate-server-1", 
+                "host": "127.0.0.1", 
+                "port": 3021,
+                "clientHost": "192.168.186.102",
+                "clientPort": 13021, 
+                "frontend": true
+            }
+        ],
+        "connector":  [
+            {
+                "id": "connector-server-1", 
+                "host": "127.0.0.1",  
+                "port": 3031, 
+                "clientHost": "192.168.186.102",
+                "clientHostReal": "192.168.186.102",
+                "clientPort": 13031, 
+                "frontend": true
+            }
+        ]
+    },    
+    "test":  {
+        "api": [
+            {
+                "id": "api-server-1", 
+                "host": "127.0.0.1",
+                "port": 3011,
                 "clientHost": "0.0.0.0",                
                 "clientPort": 13011, 
                 "frontend": true

@@ -5,6 +5,12 @@
         "gate": [
         ]
     },
+    "test":  {
+        "connector": [
+        ],
+        "gate": [
+        ]
+    },    
     "production":  {
     }    
 }

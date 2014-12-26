@@ -7,11 +7,13 @@ var CHECK_SEC = 1
 var config,
     path,
     mtime,
-    app
+    env,
+    serverType
 
-exp.init = function(application, opts) {
+exp.init = function(environment, serverTypeParam, opts) {
+    env = environment
+    serverType = serverTypeParam
     opts = opts || {}
-    app = application
     path = opts.path || CONFIG_PATH
     var checkSec = opts.checkSec || CHECK_SEC
 
@@ -19,7 +21,7 @@ exp.init = function(application, opts) {
     config = JSON.parse(fs.readFileSync(path))
     config = parse(config)
 
-    console.log('load blacklist file %s mtime=%s for %s %s', path, mtime, app.getServerType(), app.get('env'))
+    console.log('load blacklist file %s mtime=%s env=%s serverType=%s', path, mtime, env, serverType)
     console.log(config)
 
     setInterval(check, checkSec*1000)
@@ -47,13 +49,13 @@ var check = function() {
 var reload = function() {
     fs.readFile(path, function(err, data) {
         if (!!err) {
-            console.error('read blacklist file %s fail err=%j', path, err)
+            console.error('read blacklist file %s fail err=%s', path, err.stack)
         }
         else {
             try {
                 config = JSON.parse(data)
                 config = parse(config)
-                console.log('reload blacklist file %s mtime=%s for %s %s', path, mtime, app.getServerType(), app.get('env'))
+                console.log('reload blacklist file %s mtime=%s env=%s serverType=%s', path, mtime, env, serverType)
                 console.log(config)
             }
             catch (e) {
@@ -64,12 +66,12 @@ var reload = function() {
 }
 
 var parse = function(config) {
-    config = config[app.get('env')]
+    config = config[env]
     if (!config) {
         return []
     }
 
-    config = config[app.getServerType()]
+    config = config[serverType]
     if (!config) {
         return []
     }

@@ -22,8 +22,8 @@ var acceptorFactory = {
     }
 }
 
-config.init({path: './config/config.json'})
-blacklist.init(app, {path: './config/blacklist.json'})
+config.init(app.get('env'), {path: './config/config.json'})
+blacklist.init(app.get('env'), app.getServerType(), {path: './config/blacklist.json'})
 
 app.configure('production|development', function(){
     app.rpcFilter(pomelo.rpcFilters.rpcLog())

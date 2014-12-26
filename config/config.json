@@ -1,13 +1,29 @@
 {
-    "token.timeout"                   : 30,
-
-    "user.maxChannelCount"            : 1073741824,
-
-    "channel.maxUserCount"            : 1073741824,
-    "channel.maxConnectionCount"      : 1073741824,
-    "channel.maxUserConnectionCount"  : 5,
-    "channel.userDispatcher"          : "lastRoomDispatcher",
-
-    "room.maxUserCount"               : 10000
-
+    "development":  {
+        "token.timeout"                   : 30,
+        "user.maxChannelCount"            : 1073741824,
+        "channel.maxUserCount"            : 1073741824,
+        "channel.maxConnectionCount"      : 1073741824,
+        "channel.maxUserConnectionCount"  : 5,
+        "channel.userDispatcher"          : "lastRoomDispatcher",
+        "room.maxUserCount"               : 10000
+    },
+    "test":  {
+        "token.timeout"                   : 30,
+        "user.maxChannelCount"            : 1073741824,
+        "channel.maxUserCount"            : 1073741824,
+        "channel.maxConnectionCount"      : 1073741824,
+        "channel.maxUserConnectionCount"  : 5,
+        "channel.userDispatcher"          : "lastRoomDispatcher",
+        "room.maxUserCount"               : 10000
+    },
+    "production":  {
+        "token.timeout"                   : 30,
+        "user.maxChannelCount"            : 1073741824,
+        "channel.maxUserCount"            : 1073741824,
+        "channel.maxConnectionCount"      : 1073741824,
+        "channel.maxUserConnectionCount"  : 5,
+        "channel.userDispatcher"          : "lastRoomDispatcher",
+        "room.maxUserCount"               : 10000
+    }        
 }
