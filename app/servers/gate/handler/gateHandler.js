@@ -1,5 +1,13 @@
 var _ = require('underscore')
 var Code = require('../../../util/code')
+var config = require('../../../util/config')
+var logger = require('pomelo-logger').getLogger('gate', __filename)
+
+var dispatchers = {
+    'leastConnDispatcher': require('../../../dispatchers/leastConnDispatcher'),
+    'randomDispatcher': require('../../../dispatchers/randomDispatcher'),
+    'roundRobinDispatcher': require('../../../dispatchers/roundRobinDispatcher')
+}
 
 module.exports = function(app) {
 	return new Handler(app)
@@ -23,13 +31,11 @@ res = {
 }
 */
 handler.lookupConnector = function(req, session, next) {
-    var app = this.app
-
 	if (_.isUndefined(req.userId) || _.isUndefined(req.channelId)) {
 		next(null, {
 			code: Code.BAD_REQUEST
 		})
-        app.sessionService.kickBySessionId(session.id)
+        this.app.sessionService.kickBySessionId(session.id)
 		return
 	}
 
@@ -38,20 +44,22 @@ handler.lookupConnector = function(req, session, next) {
 		next(null, {
 			code: Code.INTERNAL_SERVER_ERROR
 		})
-        app.sessionService.kickBySessionId(session.id)
+        this.app.sessionService.kickBySessionId(session.id)
 		return
 	}
 
-    var res = dispatch(req.userId, connectors)
+    var dispatcherName = config.get('gate.dispatcher')
+    if (!dispatcherName || !dispatchers[dispatcherName]) {
+        dispatcherName = 'leastConnDispatcher'
+    }
+
+    var connector = dispatchers[dispatcherName].dispatch(connectors)
     next(null, {
         code: Code.SUCC,
-        host: res.clientHostReal,
-        port: res.clientPort
+        host: connector.clientHostReal,
+        port: connector.clientPort
     })             
-    app.sessionService.kickBySessionId(session.id)
-}
+    this.app.sessionService.kickBySessionId(session.id)
 
-var dispatch = function(key, list) {
-	var index = (Math.random() * 10000 | 0)% list.length
-	return list[index]
+    logger.debug('gate dispatch userId=%s channelId=%s to %s %s:%s', req.userId, req.channelId, connector.id, connector.clientHostReal, connector.clientPort)
 }

@@ -4,7 +4,7 @@ var exp = module.exports
 var CONFIG_PATH = '../../config/config.json'
 var CHECK_SEC = 1
 
-var config,
+var config = {},
     path,
     mtime,
     env

@@ -30,6 +30,20 @@ userToTokens = {
 */
 var userToTokens = {}
 
+/*
+{
+    applyCount
+    verifyCount
+    verifyFailCount
+    verifySuccCount
+    timeoutCount
+*/
+var stats = {
+    applyCount: 0,
+    verifyFailCount: 0,
+    verifySuccCount: 0
+}
+
 var exp = module.exports
 
 exp.init = function() {
@@ -48,6 +62,7 @@ exp.apply = function(userId, channelId, data, out) {
 
     addToken(token, userId, channelId, data)
     out.token = token
+    stats.applyCount++
     return Code.SUCC
 }
 
@@ -55,20 +70,28 @@ exp.verify = function(userId, channelId, token, out) {
     var tokenData = tokens[token]
     if (!tokenData) {
         logger.debug("token not found, token=%s", token)
+        stats.verifyFailCount++
         return Code.TOKEN_INVALID
     }
     if (tokenData.userId != userId) {
         logger.debug("token.userId not match, token.userId=%s userId=%s", tokenData.userId, userId)
+        stats.verifyFailCount++
         return Code.TOKEN_INVALID
     }
     if (tokenData.channelId != channelId) {
         logger.debug("token.channel not match, token.channelId=%s uchannelId=%s", tokenData.channelId, channelId)
+        stats.verifyFailCount++
         return Code.TOKEN_INVALID
     }
 
     removeToken(token)
     out.data = tokenData.data
+    stats.verifySuccCount++
     return Code.SUCC
+}
+
+exp.getStats = function() {
+    return stats
 }
 
 var genToken = function() {

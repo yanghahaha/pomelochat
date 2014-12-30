@@ -3,9 +3,9 @@ var config = require('./app/util/config')
 var blacklist = require('./app/util/blacklist')
 var handlerLogFilter = require('./app/filters/handlerLogFilter')
 var tokenService = require('./app/modules/token')
-
-var app = pomelo.createApp()
-app.set('name', 'huomaotv-pomelochat')
+var channelService = require('./app/modules/channel')
+var userService = require('./app/modules/user')
+var leastConnDispatcher = require('./app/dispatchers/leastConnDispatcher')
 
 var TcpMailBox = require('pomelo-rpc').client.TcpMailbox
 var TcpAcceptor = require('pomelo-rpc').server.TcpAcceptor
@@ -21,6 +21,10 @@ var acceptorFactory = {
         return TcpAcceptor.create(opts, cb)
     }
 }
+
+
+var app = pomelo.createApp()
+app.set('name', 'huomaotv-pomelochat')
 
 config.init(app.get('env'), {path: './config/config.json'})
 blacklist.init(app.get('env'), app.getServerType(), {path: './config/blacklist.json'})
@@ -60,6 +64,7 @@ app.configure('all', 'gate', function(){
 	})
 
     app.filter(handlerLogFilter(app, 'gate'))
+    leastConnDispatcher.init(app)
 })
 
 app.configure('all', 'api', function(){
@@ -68,8 +73,12 @@ app.configure('all', 'api', function(){
         distinctHost: true,
         blacklistFun: blacklist.get        
     })
+    app.set('token', tokenService)
+    app.set('user', userService)
+    app.set('channel', channelService)
     app.filter(handlerLogFilter(app, 'api'))
     tokenService.init()
+    channelService.init()
 })
 
 app.start()

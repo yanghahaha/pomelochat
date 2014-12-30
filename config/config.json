@@ -2,28 +2,43 @@
     "development":  {
         "token.timeout"                   : 30,
         "user.maxChannelCount"            : 1073741824,
+        "user.maxIpCount"                 : 5,
         "channel.maxUserCount"            : 1073741824,
         "channel.maxConnectionCount"      : 1073741824,
         "channel.maxUserConnectionCount"  : 5,
         "channel.userDispatcher"          : "lastRoomDispatcher",
-        "room.maxUserCount"               : 10000
+        "channel.statMsgCountMinute"      : [1, 5, 15],
+        "channel.statMsgCountMinuteDebug" : true,
+        "room.maxUserCount"               : 10,
+        "gate.dispatcher"                 : "leastConnDispatcher",
+        "gate.lastConnDispatcherReloadSec": 10
     },
     "test":  {
         "token.timeout"                   : 30,
         "user.maxChannelCount"            : 1073741824,
+        "user.maxIpCount"                 : 10,
         "channel.maxUserCount"            : 1073741824,
         "channel.maxConnectionCount"      : 1073741824,
         "channel.maxUserConnectionCount"  : 5,
         "channel.userDispatcher"          : "lastRoomDispatcher",
-        "room.maxUserCount"               : 10000
+        "channel.statMsgCountMinute"      : [1, 5, 15],
+        "channel.statMsgCountMinuteDebug" : true,
+        "room.maxUserCount"               : 10,
+        "gate.dispatcher"                 : "leastConnDispatcher",
+        "gate.lastConnDispatcherReloadSec": 10
     },
     "production":  {
         "token.timeout"                   : 30,
         "user.maxChannelCount"            : 1073741824,
+        "user.maxIpCount"                 : 100,
         "channel.maxUserCount"            : 1073741824,
         "channel.maxConnectionCount"      : 1073741824,
         "channel.maxUserConnectionCount"  : 5,
         "channel.userDispatcher"          : "lastRoomDispatcher",
-        "room.maxUserCount"               : 10000
-    }        
+        "channel.statMsgCountMinute"      : [1, 5, 15],
+        "channel.statMsgCountMinuteDebug" : false,
+        "room.maxUserCount"               : 10000,
+        "gate.dispatcher"                 : "leastConnDispatcher",
+        "gate.lastConnDispatcherReloadSec": 60
+    }
 }

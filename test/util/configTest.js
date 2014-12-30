@@ -1,4 +1,4 @@
-var config = require('../../app/util/config');
+var config = require('../../app/util/config')
 
 console.log(config)
 config.init()

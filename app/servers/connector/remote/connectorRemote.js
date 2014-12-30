@@ -85,3 +85,7 @@ remote.kick = function(channelToSids, route, msg, cb) {
     
     utils.invokeCallback(cb)
 }
+
+remote.getConnetionStat = function(cb) {
+    cb(null, this.app.components.__connection__.getStatisticsCount())
+}

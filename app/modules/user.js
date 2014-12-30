@@ -7,6 +7,8 @@ var ChannelService = require('./channel')
 var users = {}
 var count = 0
 
+var ips = {}
+
 var exp = module.exports
 
 exp.createUser = function(id) {
@@ -54,6 +56,26 @@ exp.dump = function() {
     return dumps
 }
 
+exp.sortIps = function(minCount) {
+    var filteredIps
+    if (!minCount) {
+        filteredIps = ips
+    }
+    else {
+        filteredIps = _.filter(ips, function(ip){
+            return ip.count >= minCount
+        })
+    }
+
+    return _.sortBy(filteredIps, function(ip){
+        return ip.count
+    })
+}
+
+exp.getIps = function() {
+    return ips
+}
+
 var User = function(id, data) {
     this.id = id
     this.data = {}    
@@ -85,6 +107,9 @@ User.prototype.enter = function(channelId, context, varOut) {
     if (this.getChannelCount()>= config.get('user.maxChannelCount')) {
         return Code.USER_CHANNEL_MEET_MAX
     }
+    if (!!ips[context.remote.ip] && ips[context.remote.ip].count >= config.get('user.maxIpCount')) {
+        return Code.USER_IP_MEET_MAX
+    }
 
     var userChannelData = this.channelDatas[channelId]
     var reenter = false, 
@@ -105,9 +130,10 @@ User.prototype.enter = function(channelId, context, varOut) {
         userChannelData = new UserChannelData()
         this.channelDatas[channelId] = userChannelData
     }
-
     userChannelData.roomId = out.roomId
     userChannelData.addContext(context)
+
+    addIp(context.remote.ip, this.id)
 
     varOut.roomId = out.roomId
     return Code.SUCC
@@ -145,6 +171,12 @@ User.prototype.leave = function(channelId, context, out) {
     }
 
     ChannelService.getChannel(channelId).leave(this, lastLeave, leaveConnection, userChannelData.roomId, context)
+
+    var userId = this.id
+    _.each(out.contexts, function(context){
+        removeIp(context.remote.ip, userId)
+    })
+
     return Code.SUCC
 }
 
@@ -211,4 +243,37 @@ UserChannelData.prototype.findContext = function(ctx) {
         }
     }
     return -1
+}
+
+var addIp = function(ip, userId) {
+    if (!ips[ip]) {
+        ips[ip] = {
+            count: 0,
+            users: {},
+            ip: ip
+        }
+    }
+    if (!ips[ip].users[userId]) {
+        ips[ip].users[userId] = 0
+    }
+
+    ips[ip].count++
+    ips[ip].users[userId]++
+}
+
+var removeIp = function(ip, userId) {
+    if (!ips[ip] || !ips[ip].users[userId]) {
+        logger.error('remove ip not found. ip=%s userId=%s', ip, userId)
+        return
+    }
+
+    ips[ip].users[userId]--
+    if (ips[ip].users[userId] === 0) {
+        delete ips[ip].users[userId]
+    }
+
+    ips[ip].count--
+    if (ips[ip].count === 0) {
+        delete ips[ip]
+    }
 }

@@ -4,6 +4,7 @@ var channelService = require('../../../modules/channel')
 var userService = require('../../../modules/user')
 var tokenService = require('../../../modules/token');
 var Code = require('../../../util/code')
+var utils = require('../../../util/utils')
 
 module.exports = function(app) {
 	return new Remote(app)
@@ -143,6 +144,30 @@ remote.getRoomIdByUserId = function(channelId, userId, cb) {
     }
 
     cb(null, Code.SUCC, userChannel.roomId)
+}
+
+/**************************************************
+    log msg count
+***************************************************/
+remote.logMsgCount = function(channelId, roomIds, timestamp, msgCount, cb) {
+    var channel = channelService.getChannel(channelId)
+    if (!channel) {
+        logger.error('statRoomMsg channel not found channel=%s', channelId)
+    }
+    else {
+        var min = timestamp / 60 | 0
+        _.each(roomIds, function(roomId){
+            var room = channel.getRoom(roomId)
+            if (!room) {
+                logger.error('statRoomMsg room not found channel=%s room=%s', channelId, roomId)
+            }
+            else {
+                room.logMsgCount(min, msgCount)
+            }
+        })
+    }
+
+    utils.invokeCallback(cb)
 }
 
 

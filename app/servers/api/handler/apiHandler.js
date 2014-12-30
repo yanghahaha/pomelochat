@@ -41,7 +41,6 @@ var routeConnectors = function(app, params) {
             routeConnectors.allConnectors.push(connector.id)
         })
     }
-    console.log(params)
     return routeConnectors.allConnectors
 }
 
@@ -83,6 +82,8 @@ handler.sendChannelMsg = function(req, session, next) {
     for (var i=0; i<connectors.length; ++i) {
         this.app.rpc.connector.connectorRemote.sendChannelMsg.toServer(connectors[i], channelIds, req.route, req.msg, null)
     }
+
+    var time = new Date().getTime() / 1000 | 0
 }
 
 handler.sendRoomMsg = function(req, session, next) {
@@ -112,6 +113,9 @@ handler.sendRoomMsg = function(req, session, next) {
     for (var i=0; i<connectors.length; ++i) {
         this.app.rpc.connector.connectorRemote.sendRoomMsg.toServer(connectors[i], req.channelId, roomIds, req.route, req.msg, null)
     }
+
+    var time = new Date().getTime() / 1000 | 0
+    channelRemote.logMsgCount(req.channelId, roomIds, time, 1, null)
 }
 
 handler.sendRoomMsgByUserId = function(req, session, next) {
@@ -183,7 +187,6 @@ sIdToKickData = {
     fId2: {...}
 }
 */
-    console.log('%j', channelToContexts)
     if (!_.isEmpty(channelToContexts)) {
         var sIdToKickData = {}
 

@@ -1,6 +1,7 @@
 var util = require('util')
 var logger = require('pomelo-logger').getLogger('channel', __filename, process.pid)
 var Code = require('../util/code')
+var MinuteStat = require('../util/minuteStat')
 
 var exp = module.exports
 
@@ -23,6 +24,9 @@ var Room = function(opts) {
     this.users = {}
     this.userCount = 0
     this.connectionCount = 0
+
+    this.minuteStat = new MinuteStat()
+    this.stats = {}
 }
 
 Room.prototype.getUserCount = function() {
@@ -69,4 +73,13 @@ Room.prototype.leave = function(user, lastLeave, leaveConnection) {
             logger.fatal('destroy room all count should be 0, this.userCount=%s this.connectionCount=%s', this.userCount, this.connectionCount)
         }
     }
+}
+
+Room.prototype.logMsgCount = function(min, msgCount) {
+    this.minuteStat.log(min, msgCount)
+}
+
+ Room.prototype.statMsgCount = function(currTimeMin, minutesToStat) {
+    this.stats = this.minuteStat.stat(currTimeMin, minutesToStat)
+    return this.stats
 }

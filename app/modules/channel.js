@@ -9,6 +9,29 @@ var connectionCount = 0
 
 var exp = module.exports
 
+exp.init = function() {
+    var lastMin = 0
+    setInterval(function(){
+        var currMin = new Date() / 60000 | 0
+        if (currMin > lastMin) {
+            var debug = config.get('channel.statMsgCountMinuteDebug')
+            if (!!debug) {
+                console.time('channel.statMsgCountMinute')
+            }
+            lastMin = currMin
+            var statMsgCountMinute = config.get('channel.statMsgCountMinute')
+            if (_.isArray(statMsgCountMinute)) {
+                _.each(channels, function(channel){
+                    channel.statMsgCount(currMin, statMsgCountMinute)
+                })
+            }
+            if (!!debug) {
+                console.timeEnd('channel.statMsgCountMinute')
+            }
+        }
+    }, 1000)
+}
+
 exp.createChannel = function(id, opts) {
     if (!!channels[id]) {
         return channels[id]
@@ -27,9 +50,10 @@ exp.destroyChannel = function(id) {
         logger.fatal('destroy channel all count should be 0, channel.userCount=%s channel.connectionCount=%s', 
                 channel.userCount, channel.connectionCount)
     }
+
     for (var i in channel) {
         channel[i] = null
-    }    
+    }
     delete channels[id]
 
     logger.debug('destroy channel id=%s', id)
@@ -77,6 +101,9 @@ var Channel = function(id) {
     this.userCount = 0
     this.connectionCount = 0
     this.rooms = {}
+    this.minToMsgCount = []
+
+    this.stats = {}
 }
 
 Channel.prototype.getUserCount = function() {
@@ -102,7 +129,8 @@ Channel.prototype.dump = function() {
         rooms[i] = {
             id: room.id,
             userCount: room.userCount,
-            connectionCount: room.connectionCount
+            connectionCount: room.connectionCount,
+            stats: room.stats
         }
     }
 
@@ -110,6 +138,7 @@ Channel.prototype.dump = function() {
         id: this.id,
         userCount: this.userCount,
         connectionCount: this.connectionCount,
+        stats: this.stats,
         rooms: rooms
     }
 }
@@ -223,4 +252,19 @@ Channel.prototype.createNewRoom = function() {
 
 Channel.prototype.getRoom = function(roomId) {
     return this.rooms[roomId]
+}
+
+Channel.prototype.statMsgCount = function(currMin, statMsgCountMinute) {
+    var stats = {}
+    _.each(statMsgCountMinute, function(min){
+        stats[min] = 0
+    })
+    _.each(this.rooms, function(room){
+        var roomStats = room.statMsgCount(currMin, statMsgCountMinute)
+        for (var min in stats) {
+            stats[min] += roomStats[min]
+        }
+    })
+
+    this.stats = stats
 }
