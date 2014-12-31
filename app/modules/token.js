@@ -22,9 +22,10 @@ var timeQueue = []
 /*
 userToTokens = {
     userId1: {
-        channelId1: token1,
-        channelId2: token2
-    } userId2: ...
+        channelId1: [token1],
+        channelId2: [token2]
+    } 
+    userId2: ...
 }
 */
 var userToTokens = {}
@@ -51,7 +52,11 @@ exp.init = function() {
 
 exp.apply = function(userId, channelId, data, out) {
     if (!!userToTokens[userId] && !!userToTokens[userId][channelId]) {
-        removeToken(userToTokens[userId][channelId])
+        var maxUserConnectionCount = config.get('channel.maxUserConnectionCount') || 5
+        var userChannelTokens = userToTokens[userId][channelId]
+        while (userChannelTokens.length >= maxUserConnectionCount) {
+            removeToken(userChannelTokens.shift())
+        }
     }
 
     var token
@@ -107,7 +112,10 @@ var addToken = function(token, userId, channelId, data) {
     if (!userToTokens[userId]) {
         userToTokens[userId] = {}
     }
-    userToTokens[userId][channelId] = token
+    if (!userToTokens[userId][channelId]) {
+        userToTokens[userId][channelId] = []
+    }
+    userToTokens[userId][channelId].push(token)
 
     var now = process.uptime()
     var timeToTokens = timeQueue[timeQueue.length-1]
@@ -131,16 +139,33 @@ var removeToken = function(token) {
         return
     }
 
+    delete tokens[token]
+    logger.debug("delete token token=%s userId=%s channelId=%s", token, tokenData.userId, tokenData.channelId)
+
     if (!!userToTokens[tokenData.userId] && !!userToTokens[tokenData.userId][tokenData.channelId]) {
-        delete userToTokens[tokenData.userId][tokenData.channelId]
-        if (_.isEmpty(userToTokens[tokenData.userId])) {
-            delete userToTokens[tokenData.userId]
-            logger.debug("remove userToTokens[%s] ", tokenData.userId)
+        var userChannelTokens = userToTokens[tokenData.userId][tokenData.channelId]
+        var i = 0
+        for (; i<userChannelTokens.length; ++i) {
+            if (userChannelTokens[i] === token) {
+                break
+            }
+        }
+        if (i < userChannelTokens.length) {
+            userChannelTokens.splice(i,1)
+            logger.debug("delete userToTokens[%s][%s][%s] after userChannelTokens=%j", tokenData.userId, tokenData.channelId, i, userChannelTokens)
+            if (userChannelTokens.length === 0) {
+                delete userToTokens[tokenData.userId][tokenData.channelId]
+                logger.debug("delete userToTokens[%s][%s]", tokenData.userId, tokenData.channelId)
+                if (_.isEmpty(userToTokens[tokenData.userId])) {
+                    delete userToTokens[tokenData.userId]
+                    logger.debug("delete userToTokens[%s]", tokenData.userId)
+                }
+            }
+        }
+        else {
+            logger.debug("not found token %s in userChannelTokens", token)
         }
     }
-
-    delete tokens[token]
-    logger.debug("remove token, token=%s userId=%s channelId=%s", token, tokenData.userId, tokenData.channelId)
 }
 
 var clearExpiredToken = function() {
