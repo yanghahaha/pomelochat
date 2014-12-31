@@ -75,7 +75,7 @@
     ],
 
     "levels": {
-        "[all]": "ALL",
+        "[all]": "INFO",
         "rpc-log": "ERROR",
         "forward-log": "ERROR"
     },
