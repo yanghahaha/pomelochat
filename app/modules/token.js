@@ -13,12 +13,11 @@ tokens = {
 var tokens = {}
 
 /*
-timeToTokens = {
-    time1: [token1, token2, ...]
-    time2: [token1, token2, ...]
-}
+timeToTokens = [
+    {time1:, tokens:[token1, token2, ...]}
+]
 */
-var timeToTokens = {}
+var timeQueue = []
 
 /*
 userToTokens = {
@@ -110,11 +109,18 @@ var addToken = function(token, userId, channelId, data) {
     }
     userToTokens[userId][channelId] = token
 
-    var expireTime = process.uptime() + config.get('token.timeout')
-    if (!timeToTokens[expireTime]) {
-        timeToTokens[expireTime] = []
+    var now = process.uptime()
+    var timeToTokens = timeQueue[timeQueue.length-1]
+    if (!timeToTokens || timeToTokens.time !== now) {
+        timeToTokens = {
+          time: now,
+          tokens: [token]
+        }
+        timeQueue.push(timeToTokens)
     }
-    timeToTokens[expireTime].push(token)
+    else {
+        timeToTokens.tokens.push(token)
+    }
 
     logger.debug("add token, token=%s userId=%s channelId=%s", token, userId, channelId)
 }
@@ -138,11 +144,11 @@ var removeToken = function(token) {
 }
 
 var clearExpiredToken = function() {
-    var now = process.uptime()
-    for (var time in timeToTokens) {
-        if (time <= now) {
-            _.each(timeToTokens[time], removeToken)
-            delete timeToTokens[time]
-        }
+    var timeout = config.get('token.timeout') || 30
+    var timeoutTime = process.uptime() - timeout
+
+    while(!!timeQueue[0] && timeQueue[0].time <= timeoutTime) {
+        var timeToTokens = timeQueue.shift()
+        _.each(timeToTokens.tokens, removeToken)
     }
 }

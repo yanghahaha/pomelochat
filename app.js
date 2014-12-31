@@ -22,7 +22,6 @@ var acceptorFactory = {
     }
 }
 
-
 var app = pomelo.createApp()
 app.set('name', 'huomaotv-pomelochat')
 
