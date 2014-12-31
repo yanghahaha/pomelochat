@@ -36,7 +36,7 @@ app.configure(function(){
     app.set('remoteConfig', {
         acceptorFactory: acceptorFactory
     })
-    app.set('ssh_config_params', ['-P 1127'])
+    app.set('ssh_config_params', ['-p 1127'])
     app.enable('systemMonitor')
 })
 
