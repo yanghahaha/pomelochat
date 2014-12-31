@@ -23,9 +23,9 @@
         "channel.userDispatcher"          : "lastRoomDispatcher",
         "channel.statMsgCountMinute"      : [1, 5, 15],
         "channel.statMsgCountMinuteDebug" : true,
-        "room.maxUserCount"               : 10,
+        "room.maxUserCount"               : 10000,
         "gate.dispatcher"                 : "leastConnDispatcher",
-        "gate.lastConnDispatcherReloadSec": 10
+        "gate.lastConnDispatcherReloadSec": 60
     },
     "production":  {
         "token.timeout"                   : 30,

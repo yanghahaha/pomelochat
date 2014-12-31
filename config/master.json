@@ -10,5 +10,8 @@
         "port":3001
     },    
     "production":{
+        "id":"master-server-1",
+        "host":"10.10.6.28",
+        "port":3001        
     }
 }

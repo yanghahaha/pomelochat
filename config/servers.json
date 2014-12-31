@@ -15,7 +15,7 @@
                 "id": "gate-server-1", 
                 "host": "127.0.0.1", 
                 "port": 3021,
-                "clientHost": "192.168.186.102",
+                "clientHost": "0.0.0.0",
                 "clientPort": 13021, 
                 "frontend": true
             }
@@ -25,7 +25,7 @@
                 "id": "connector-server-1", 
                 "host": "127.0.0.1",  
                 "port": 3031, 
-                "clientHost": "192.168.186.102",
+                "clientHost": "0.0.0.0",
                 "clientHostReal": "192.168.186.102",
                 "clientPort": 13031, 
                 "frontend": true
@@ -48,7 +48,7 @@
                 "id": "gate-server-1", 
                 "host": "127.0.0.1", 
                 "port": 3021,
-                "clientHost": "192.168.14.11",
+                "clientHost": "0.0.0.0",
                 "clientPort": 13021, 
                 "frontend": true
             }
@@ -58,7 +58,7 @@
                 "id": "connector-server-1", 
                 "host": "127.0.0.1",  
                 "port": 3031, 
-                "clientHost": "192.168.14.11",
+                "clientHost": "0.0.0.0",
                 "clientHostReal": "192.168.14.11",
                 "clientPort": 13031, 
                 "frontend": true
@@ -66,5 +66,53 @@
         ]
     },
     "production":  {
+        "api": [
+            {
+                "id": "api-server-1", 
+                "host": "10.10.6.28",
+                "port": 3011,
+                "clientHost": "0.0.0.0",
+                "clientPort": 13011, 
+                "frontend": true
+            }
+        ],
+        "gate":  [
+            {
+                "id": "gate-server-1", 
+                "host": "10.10.61.52", 
+                "port": 3021,
+                "clientHost": "0.0.0.0",
+                "clientPort": 13021, 
+                "frontend": true
+            },
+            {
+                "id": "gate-server-2", 
+                "host": "10.10.19.195", 
+                "port": 3021,
+                "clientHost": "0.0.0.0",
+                "clientPort": 13021, 
+                "frontend": true
+            }            
+        ],
+        "connector":  [
+            {
+                "id": "connector-server-1", 
+                "host": "10.10.61.52",  
+                "port": 3031, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "180.150.186.66",
+                "clientPort": 13031, 
+                "frontend": true
+            },
+            {
+                "id": "connector-server-2", 
+                "host": "10.10.19.195",  
+                "port": 3031, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "180.150.186.65",
+                "clientPort": 13031, 
+                "frontend": true
+            }            
+        ]
     }
 }
