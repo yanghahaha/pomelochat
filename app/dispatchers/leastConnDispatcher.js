@@ -50,7 +50,7 @@ var reloadStats = function() {
         app.rpc.connector.connectorRemote.getConnetionStat.toServer(connector.id, function(err, stat){
             if (!err) {
                 stats[connector.id] = stat.totalConnCount
-                logger.debug('reload connection count %s=%s', connector.id, stat.totalConnCount)
+                logger.debug('reload connection count sever=%s connCount=%s loginCount=%s', connector.id, stat.totalConnCount, stat.loginedCount)
             }
         })
     })

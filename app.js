@@ -50,6 +50,9 @@ app.configure('all', 'connector', function(){
         disconnectOnTimeout: true,
         blacklistFun: blacklist.get
     })
+    app.set('sessionConfig', {
+        bindTimeout: 5
+    })
 
     app.filter(handlerLogFilter(app, 'connector'))
 })
@@ -62,7 +65,6 @@ app.configure('all', 'gate', function(){
         disconnectOnTimeout: true,
         blacklistFun: blacklist.get
 	})
-
     app.filter(handlerLogFilter(app, 'gate'))
     leastConnDispatcher.init(app)
 })
