@@ -72,6 +72,16 @@ exp.sortIps = function(minCount) {
     })
 }
 
+exp.topIps = function(topNum) {
+    var sortedIps = _.sortBy(ips, function(ip){
+        return ip.count
+    })
+    if (!!topNum) {
+        sortedIps.splice(topNum)
+    }
+    return sortedIps
+}
+
 exp.getIps = function() {
     return ips
 }

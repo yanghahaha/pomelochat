@@ -1,4 +1,5 @@
 var Code = require('../util/code')
+var config = require('../util/config')
 
 module.exports = function(app, serverType) {
     return new Filter(app, serverType)
@@ -36,6 +37,9 @@ Filter.prototype.after = function(err, msg, session, resp, next) {
     }
     else if(resp.code !== Code.SUCC) {
         this.logger.error(JSON.stringify(log))
+    }
+    else if (timeUsed > config.get('handler.timeUseWarn')) {
+        this.logger.warn(JSON.stringify(log))
     }
     else {
         this.logger.debug(JSON.stringify(log))

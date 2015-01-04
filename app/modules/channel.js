@@ -71,6 +71,16 @@ exp.dump = function() {
     return dumps
 }
 
+exp.topChannels = function(topNum) {
+    var sortedChannels = _.sortBy(channels, function(channel){
+        return channel.userCount
+    })
+    if (!!topNum) {
+        sortedChannels.splice(topNum)
+    }
+    return sortedChannels
+}
+
 exp.getConnectionCount = function() {
     return connectionCount
 }

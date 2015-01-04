@@ -1,5 +1,6 @@
 {
     "development":  {
+        "handler.timeUseWarn"             : 300,
         "token.timeout"                   : 30,
         "user.maxChannelCount"            : 1073741824,
         "user.maxIpCount"                 : 5,
@@ -14,6 +15,7 @@
         "gate.lastConnDispatcherReloadSec": 10
     },
     "test":  {
+        "handler.timeUseWarn"             : 300,        
         "token.timeout"                   : 30,
         "user.maxChannelCount"            : 1073741824,
         "user.maxIpCount"                 : 10,
@@ -28,6 +30,7 @@
         "gate.lastConnDispatcherReloadSec": 60
     },
     "production":  {
+        "handler.timeUseWarn"             : 300,
         "token.timeout"                   : 30,
         "user.maxChannelCount"            : 1073741824,
         "user.maxIpCount"                 : 100,
