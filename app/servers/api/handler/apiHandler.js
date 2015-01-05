@@ -15,7 +15,9 @@ var handler = Handler.prototype;
 
 handler.applyToken = function(req, session, next) {
     if (!req.channelId || !req.userId) {
-        next(null, Code.BAD_REQUEST)
+        next(null, {
+            code: Code.BAD_REQUEST
+        })
         return
     }
 
@@ -120,7 +122,9 @@ handler.sendRoomMsg = function(req, session, next) {
 
 handler.sendRoomMsgByUserId = function(req, session, next) {
     if (!req.route || !req.channelId || !req.userId) {
-        next(null, Code.BAD_REQUEST)   
+        next(null, {
+            code: Code.BAD_REQUEST
+        })   
         return
     }
     var self = this
@@ -144,7 +148,9 @@ handler.sendRoomMsgByUserId = function(req, session, next) {
 
 handler.kickUser = function(req, session, next) {
     if (!req.userId) {
-        next(null, Code.BAD_REQUEST)   
+        next(null, {
+            code: Code.BAD_REQUEST
+        })   
         return
     }
 
