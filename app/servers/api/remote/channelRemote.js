@@ -151,10 +151,7 @@ remote.getRoomIdByUserId = function(channelId, userId, cb) {
 ***************************************************/
 remote.logMsgCount = function(channelId, roomIds, timestamp, msgCount, cb) {
     var channel = channelService.getChannel(channelId)
-    if (!channel) {
-        logger.error('statRoomMsg channel not found channel=%s', channelId)
-    }
-    else {
+    if (!!channel) {
         var min = timestamp / 60 | 0
         _.each(roomIds, function(roomId){
             var room = channel.getRoom(roomId)
