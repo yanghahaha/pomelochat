@@ -1,0 +1,9 @@
+{
+    "dependencies": {
+        "pomelo-protocol": "",
+        "pomelo-protobuf": "",
+        "ws": "",
+        "random-string": "",
+        "optimist": ""
+    }
+}
