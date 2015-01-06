@@ -59,7 +59,7 @@
                 "host": "127.0.0.1",  
                 "port": 3031, 
                 "clientHost": "0.0.0.0",
-                "clientHostReal": "192.168.14.11",
+                "clientHostReal": "192.168.14.13",
                 "clientPort": 13031, 
                 "frontend": true
             }
