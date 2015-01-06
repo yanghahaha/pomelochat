@@ -155,7 +155,7 @@ Client.prototype.sendMessage = function(reqId, route, msg) {
 }
 
 Client.prototype.send = function(packet){
-    this.socket.send(packet.buffer)
+    this.socket.send(packet)
 }
 
 

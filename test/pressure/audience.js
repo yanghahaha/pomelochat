@@ -6,25 +6,37 @@ var Pomelo = require('./pomelo-client')
 var api = argv.a || argv.api || '127.0.0.1:13011'
 var gate = argv.g || argv.gate || '127.0.0.1:13021'
 var channel = argv.c || argv.channel || 'yang-hannah'
-var num = argv.n || argv.num || 1
+var num = argv.n || argv.num || 100
 
 var apiHost = api.split(':')[0],
     apiPort = api.split(':')[1]
-var gatHost = gate.split(':')[0],
-    gatPort = gate.split(':')[1]
+var gateHost = gate.split(':')[0],
+    gatePort = gate.split(':')[1]
 
-var createAudience = function(channel, userId) {
-    applyToken(channel, userId, lookupConnector)
+var Audience = function(channel, userId) {
+    this.channel = channel
+    this.userId = userId
 }
 
-var applyToken = function(channel, userId, cb) {
+Audience.prototype.init = function() {
+    var self = this
+    this.applyToken(function(token){
+        self.token = token
+        self.lookupConnector(self.connectConnector.bind(self))
+    })
+}
+
+Audience.prototype.applyToken = function(cb) {
+    var channel = this.channel,
+        userId = this.userId
+
     var req = http.request({
         hostname: apiHost,
         port: apiPort,
         method: 'POST'
     }, function(res){
         res.on('data', function(data) {
-            body = JSON.parse(data.toString()).body
+            var body = JSON.parse(data.toString()).body
             if (body.code !== 0) {
                 console.error('body.code = %s', body.code)
             }
@@ -52,11 +64,55 @@ var applyToken = function(channel, userId, cb) {
     req.end()
 }
 
-var lookupConnector = function(token) {
-    console.log(token)
+Audience.prototype.lookupConnector = function(cb) {
+    var self = this
+    self.pomelo = new Pomelo()
+    self.pomelo.connect({
+        host: gateHost,
+        port: gatePort
+    }, function(){
+        self.pomelo.request('gate.gateHandler.lookupConnector', {
+            userId: self.userId,
+            channelId: self.channel
+        }, function(res) {
+            self.pomelo.disconnect();
+            if(res.code === 0) {
+                cb(res.host, res.port)
+            }
+        })
+    })
+}
+
+Audience.prototype.connectConnector = function(host, port) {
+    var self = this
+    self.pomelo.connect({
+        host: host,
+        port: port
+    }, function(){
+        self.pomelo.request("connector.connectorHandler.login", {
+            userId: self.userId,
+            channelId: self.channel,
+            token: self.token
+        }, function(res) {
+            if (res.code === 0) {
+                self.logined = true
+                loginedCount++
+                if (loginedCount === num) {
+                    console.log('all %s audience connected', loginedCount)
+                }
+            }
+        })
+    })
+}
+
+var createAudience = function(channel, userId) {
+    var audience = new Audience(channel, userId)
+    audience.init()
+    return audience
 }
 
 var audiences = []
+var loginedCount = 0
 
 for (var i=0; i<num; ++i) {
     audiences.push(createAudience(channel, randomString({length: 10}), i))
