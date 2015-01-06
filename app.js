@@ -37,7 +37,6 @@ app.configure(function(){
         acceptorFactory: acceptorFactory
     })
     app.set('ssh_config_params', ['-p 1127'])
-    app.enable('systemMonitor')
 })
 
 app.configure('all', 'connector', function(){
