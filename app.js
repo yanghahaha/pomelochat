@@ -8,6 +8,21 @@ var frontChannelService = require('./app/modules/frontChannel')
 var userService = require('./app/modules/user')
 var leastConnDispatcher = require('./app/dispatchers/leastConnDispatcher')
 
+var TcpMailBox = require('pomelo-rpc').client.TcpMailbox
+var TcpAcceptor = require('pomelo-rpc').server.TcpAcceptor
+
+var mailboxFactory = {
+    create: function(serverInfo, opts) {
+        return TcpMailBox.create(serverInfo, opts)
+    }
+}
+
+var acceptorFactory = {
+    create: function(opts, cb) {
+        return TcpAcceptor.create(opts, cb)
+    }
+}
+
 var app = pomelo.createApp()
 app.set('name', 'huomaotv-pomelochat')
 
@@ -15,11 +30,17 @@ config.init(app.get('env'), {path: './config/config.json'})
 blacklist.init(app.get('env'), app.getServerType(), {path: './config/blacklist.json'})
 
 app.configure(function(){
+    app.set('proxyConfig', {
+        mailboxFactory: mailboxFactory
+    })
+    app.set('remoteConfig', {
+        acceptorFactory: acceptorFactory
+    })    
     app.rpcFilter(pomelo.rpcFilters.rpcLog())
     app.set('ssh_config_params', ['-p 1127'])
 })
 
-app.configure('all', 'connector', function(){
+app.configure('all', 'connector', function(){    
     app.set('connectorConfig', {
         connector : pomelo.connectors.hybridconnector,
         heartbeat : 30,
