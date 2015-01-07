@@ -12,6 +12,8 @@ var speakLength = argv.l || argv.length || 30
 var apiHost = api.split(':')[0],
     apiPort = api.split(':')[1]
 
+var count = 0
+
 var route
 if (room === 0) {
     route = 'api.apiHandler.sendChannelMsg'
@@ -26,7 +28,11 @@ var speak = function() {
         port: apiPort,
         method: 'POST'
     }, function(res){
-        res.on('data', function() {
+        res.on('data', function(data) {
+            data = JSON.parse(data)
+            if (data.body.code !== 0) {
+                console.error("error code = %s", data.body.code)
+            }
         })
     })
 
@@ -50,6 +56,8 @@ var speak = function() {
     })
     req.write(reqBody)
     req.end()
+
+    console.log(++count, reqBody)
 }
 
 setInterval(function(){
