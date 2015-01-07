@@ -184,6 +184,10 @@ var heartbeat = function(pomelo) {
 }
 
 var heartbeatTimeoutCb = function(pomelo) {
+    if (!pomelo || !pomelo.nextHeartbeatTimeout) {
+        console.log('pomelo: %j', pomelo)
+        return
+    }
     var gap = pomelo.nextHeartbeatTimeout - Date.now()
     if (gap > pomelo.gapThreshold) {
         pomelo.heartbeatTimeoutId = setTimeout(heartbeatTimeoutCb.bind(pomelo), gap)

@@ -92,6 +92,9 @@ var onUserLeave = function(app, session, reason) {
         roomId = session.get('roomId'),
         context = session.get('context')
 
+    session.set('userId', null)
+    session.push('userId')
+
     frontchannelService.remove(channelId, roomId, session.id)
     app.rpc.api.channelRemote.leave(session, userId, channelId, context, function(err, code){
         if (!!err || code !== Code.SUCC) {
