@@ -7,6 +7,7 @@ var api = argv.a || argv.api || '127.0.0.1:13011'
 var gate = argv.g || argv.gate || '127.0.0.1:13021'
 var channel = argv.c || argv.channel || 'yang-hannah'
 var num = argv.n || argv.num || 100
+var debug = argv.d || argv.debug || false
 
 var apiHost = api.split(':')[0],
     apiPort = api.split(':')[1]
@@ -103,6 +104,12 @@ Audience.prototype.connectConnector = function(host, port) {
             }
         })
     })
+
+    if (!!debug) {
+        self.pomelo.setMessageProcessor(function(msg){
+            console.log('%j', msg)
+        }) 
+    }
 }
 
 var createAudience = function(channel, userId) {
