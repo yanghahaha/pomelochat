@@ -4,6 +4,7 @@ var blacklist = require('./app/util/blacklist')
 var handlerLogFilter = require('./app/filters/handlerLogFilter')
 var tokenService = require('./app/modules/token')
 var channelService = require('./app/modules/channel')
+var frontChannelService = require('./app/modules/frontChannel')
 var userService = require('./app/modules/user')
 var leastConnDispatcher = require('./app/dispatchers/leastConnDispatcher')
 
@@ -30,6 +31,7 @@ app.configure('all', 'connector', function(){
     app.set('sessionConfig', {
         bindTimeout: 5
     })
+    app.set('frontChannel', frontChannelService)
 
     app.filter(handlerLogFilter(app, 'connector'))
 })

@@ -57,3 +57,10 @@ exp.remove = function(channelId, roomId, sessionId) {
         }
     }    
 }
+
+exp.dump = function() {
+    return {
+        channels: channels,
+        channelSessionCount: channelSessionCount
+    }
+}
