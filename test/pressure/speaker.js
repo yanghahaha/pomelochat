@@ -8,6 +8,7 @@ var room = argv.r || argv.room || 0
 var num = argv.n || argv.num || 1
 var interval = argv.i || argv.interval || 50
 var speakLength = argv.l || argv.length || 30
+var debug = argv.d || argv.debug || false
 
 var apiHost = api.split(':')[0],
     apiPort = api.split(':')[1]
@@ -57,7 +58,9 @@ var speak = function() {
     req.write(reqBody)
     req.end()
 
-    console.log(++count, reqBody)
+    if (!!debug) {
+        console.log(++count, reqBody)
+    }
 }
 
 setInterval(function(){
