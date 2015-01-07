@@ -106,6 +106,9 @@ Audience.prototype.connectConnector = function(host, port) {
     })
 
     if (!!debug) {
+        self.pomelo.on('close', function(){
+            console.log('close')
+        })
         self.pomelo.setMessageProcessor(function(msg){
             console.log('%j', msg)
         }) 

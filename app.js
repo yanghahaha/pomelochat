@@ -42,8 +42,8 @@ app.configure('all', 'gate', function(){
         disconnectOnTimeout: true,
         blacklistFun: blacklist.get
 	})
-    app.filter(handlerLogFilter(app, 'gate'))
     leastConnDispatcher.init(app)
+    app.filter(handlerLogFilter(app, 'gate'))    
 })
 
 app.configure('all', 'api', function(){
@@ -52,12 +52,16 @@ app.configure('all', 'api', function(){
         distinctHost: true,
         blacklistFun: blacklist.get        
     })
+    app.filter(handlerLogFilter(app, 'api'))
+})
+
+app.configure('all', 'channel', function(){
     app.set('token', tokenService)
     app.set('user', userService)
     app.set('channel', channelService)
-    app.filter(handlerLogFilter(app, 'api'))
     tokenService.init()
     channelService.init()
+    app.filter(handlerLogFilter(app, 'channel'))
 })
 
 app.start()

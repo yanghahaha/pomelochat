@@ -1,5 +1,12 @@
 {
     "development":  {
+        "channel": [
+            {
+                "id": "channel-1", 
+                "host": "127.0.0.1",
+                "port": 3003
+            }
+        ],        
         "api": [
             {
                 "id": "api-1", 
@@ -33,6 +40,13 @@
         ]
     },    
     "test":  {
+        "channel": [
+            {
+                "id": "channel-1", 
+                "host": "127.0.0.1",
+                "port": 3003
+            }
+        ],        
         "api": [
             {
                 "id": "api-1", 
@@ -66,6 +80,13 @@
         ]
     },
     "production":  {
+        "channel": [
+            {
+                "id": "channel-1", 
+                "host": "10.10.6.28",
+                "port": 3003
+            }
+        ],
         "api": [
             {
                 "id": "api-1", 
@@ -79,7 +100,7 @@
         "gate":  [
             {
                 "id": "gate-1", 
-                "host": "10.10.61.52", 
+                "host": "10.10.19.195", 
                 "port": 3021,
                 "clientHost": "0.0.0.0",
                 "clientPort": 13021, 
@@ -87,32 +108,86 @@
             },
             {
                 "id": "gate-2", 
-                "host": "10.10.19.195", 
+                "host": "10.10.56.63", 
                 "port": 3021,
                 "clientHost": "0.0.0.0",
                 "clientPort": 13021, 
                 "frontend": true
-            }            
+            }
         ],
         "connector":  [
             {
-                "id": "connector-1", 
-                "host": "10.10.61.52",  
-                "port": 3031, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "180.150.186.66",
-                "clientPort": 13031, 
-                "frontend": true
-            },
-            {
-                "id": "connector-2", 
+                "id": "connector-11", 
                 "host": "10.10.19.195",  
                 "port": 3031, 
                 "clientHost": "0.0.0.0",
                 "clientHostReal": "180.150.186.65",
                 "clientPort": 13031, 
                 "frontend": true
-            }            
+            },            
+            {
+                "id": "connector-12", 
+                "host": "10.10.19.195",  
+                "port": 3032, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "180.150.186.65",
+                "clientPort": 13032, 
+                "frontend": true
+            },
+            {
+                "id": "connector-13", 
+                "host": "10.10.19.195",  
+                "port": 3033, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "180.150.186.65",
+                "clientPort": 13033, 
+                "frontend": true
+            },            
+            {
+                "id": "connector-14", 
+                "host": "10.10.19.195",  
+                "port": 3034, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "180.150.186.65",
+                "clientPort": 13034, 
+                "frontend": true
+            },            
+            {
+                "id": "connector-21", 
+                "host": "10.10.56.63",  
+                "port": 3031, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "unknown",
+                "clientPort": 13031, 
+                "frontend": true
+            },
+            {
+                "id": "connector-22", 
+                "host": "10.10.56.63",  
+                "port": 3032, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "unknown",
+                "clientPort": 13032, 
+                "frontend": true
+            },
+            {
+                "id": "connector-23", 
+                "host": "10.10.56.63",  
+                "port": 3033, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "unknown",
+                "clientPort": 13033, 
+                "frontend": true
+            },
+            {
+                "id": "connector-24", 
+                "host": "10.10.56.63",  
+                "port": 3034, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "unknown",
+                "clientPort": 13034, 
+                "frontend": true
+            }
         ]
     }
 }

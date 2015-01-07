@@ -45,7 +45,7 @@ handler.login = function(req, session, next) {
             })
         },
         function(cb) {
-            self.app.rpc.api.channelRemote.enter(session, req.token, userId, channelId, context, cb)
+            self.app.rpc.channel.channelRemote.enter(session, req.token, userId, channelId, context, cb)
         },
         function(ret, data, cb) {
             cb = arguments[arguments.length-1]
@@ -96,7 +96,7 @@ var onUserLeave = function(app, session, reason) {
     session.push('userId')
 
     frontchannelService.remove(channelId, roomId, session.id)
-    app.rpc.api.channelRemote.leave(session, userId, channelId, context, function(err, code){
+    app.rpc.channel.channelRemote.leave(session, userId, channelId, context, function(err, code){
         if (!!err || code !== Code.SUCC) {
             logger.debug('leave error userId=%s channelId=%s reason=%s code=%s error=%j', userId, channelId, reason, code, err)
         }

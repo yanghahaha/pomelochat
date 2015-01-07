@@ -161,7 +161,7 @@ Client.prototype.send = function(packet){
 
 var heartbeat = function(pomelo) {
     if (!pomelo.heartbeatInterval) {
-      return
+        return
     }
 
     var obj = Package.encode(Package.TYPE_HEARTBEAT)
@@ -177,20 +177,15 @@ var heartbeat = function(pomelo) {
     pomelo.heartbeatId = setTimeout(function() {
         pomelo.heartbeatId = null
         pomelo.send(obj)
-
         pomelo.nextHeartbeatTimeout = Date.now() + pomelo.heartbeatTimeout
-        pomelo.heartbeatTimeoutId = setTimeout(heartbeatTimeoutCb.bind(pomelo), pomelo.heartbeatTimeout)
+        pomelo.heartbeatTimeoutId = setTimeout(heartbeatTimeoutCb.bind(null, pomelo), pomelo.heartbeatTimeout)
     }, pomelo.heartbeatInterval)
 }
 
 var heartbeatTimeoutCb = function(pomelo) {
-    if (!pomelo || !pomelo.nextHeartbeatTimeout) {
-        console.log('pomelo: %j', pomelo)
-        return
-    }
     var gap = pomelo.nextHeartbeatTimeout - Date.now()
     if (gap > pomelo.gapThreshold) {
-        pomelo.heartbeatTimeoutId = setTimeout(heartbeatTimeoutCb.bind(pomelo), gap)
+        pomelo.heartbeatTimeoutId = setTimeout(heartbeatTimeoutCb.bind(null, pomelo), gap)
     }
     else {
         pomelo.emit('heartbeat timeout')

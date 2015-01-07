@@ -8,7 +8,7 @@ module.exports = function(app) {
 
 var Handler = function(app) {
     this.app = app;
-    channelRemote = require('../remote/channelRemote')(app)
+    channelRemote = app.rpc.channel.channelRemote
 };
 
 var handler = Handler.prototype;
@@ -21,7 +21,7 @@ handler.applyToken = function(req, session, next) {
         return
     }
 
-    channelRemote.applyToken(req.userId, req.channelId, req.userData,  function(err, code, token){
+    channelRemote.applyToken(req, req.userId, req.channelId, req.userData,  function(err, code, token){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -117,7 +117,7 @@ handler.sendRoomMsg = function(req, session, next) {
     }
 
     var time = new Date().getTime() / 1000 | 0
-    channelRemote.logMsgCount(req.channelId, roomIds, time, 1, null)
+    channelRemote.logMsgCount(req, req.channelId, roomIds, time, 1, null)
 }
 
 handler.sendRoomMsgByUserId = function(req, session, next) {
@@ -128,7 +128,7 @@ handler.sendRoomMsgByUserId = function(req, session, next) {
         return
     }
     var self = this
-    channelRemote.getRoomIdByUserId(req.channelId, req.userId, function(err, code, roomId){
+    channelRemote.getRoomIdByUserId(req, req.channelId, req.userId, function(err, code, roomId){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -155,7 +155,7 @@ handler.kickUser = function(req, session, next) {
     }
 
     var channelToContexts
-    channelRemote.kick(req.userId, req.channelId, function(err, code, contexts){
+    channelRemote.kick(req, req.userId, req.channelId, function(err, code, contexts){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -257,7 +257,7 @@ sIdToKickData = {
     get user count
 ***************************************************/
 handler.getServerUserCount = function(req, session, next) {
-    channelRemote.getServerUserCount(function(err, code, userCount, connectionCount){
+    channelRemote.getServerUserCount(req, function(err, code, userCount, connectionCount){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -281,7 +281,7 @@ handler.getChannelUserCount = function(req, session, next) {
         return
     }   
 
-    channelRemote.getChannelUserCount(req.channelId, function(err, code, counts){
+    channelRemote.getChannelUserCount(req, req.channelId, function(err, code, counts){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -304,7 +304,7 @@ handler.getRoomUserCount = function(req, session, next) {
         return
     }   
 
-    channelRemote.getRoomUserCount(req.channelId, req.roomId, function(err, code, counts){
+    channelRemote.getRoomUserCount(req, req.channelId, req.roomId, function(err, code, counts){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -327,7 +327,7 @@ handler.getRoomUserCountByUserId = function(req, session, next) {
         return
     }   
 
-    channelRemote.getRoomUserCountByUserId(req.channelId, req.userId, function(err, code, userCount, connectionCount){
+    channelRemote.getRoomUserCountByUserId(req, req.channelId, req.userId, function(err, code, userCount, connectionCount){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -354,7 +354,7 @@ handler.getChannelUsers = function(req, session, next) {
         return
     }   
 
-    channelRemote.getChannelUsers(req.channelId, req.dataKeys, function(err, code, users){
+    channelRemote.getChannelUsers(req, req.channelId, req.dataKeys, function(err, code, users){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -377,7 +377,7 @@ handler.getRoomUsers = function(req, session, next) {
         return
     }   
 
-    channelRemote.getRoomUsers(req.channelId, req.roomId, req.dataKeys, function(err, code, users){
+    channelRemote.getRoomUsers(req, req.channelId, req.roomId, req.dataKeys, function(err, code, users){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -400,7 +400,7 @@ handler.getRoomUsersByUserId = function(req, session, next) {
         return
     }   
 
-    channelRemote.getRoomUsersByUserId(req.channelId, req.userId, req.dataKeys, function(err, code, users){
+    channelRemote.getRoomUsersByUserId(req, req.channelId, req.userId, req.dataKeys, function(err, code, users){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -426,7 +426,7 @@ handler.dumpUser = function(req, session, next) {
         return
     }
 
-    channelRemote.dumpUser(req.userId, function(err, code, users){
+    channelRemote.dumpUser(req, req.userId, function(err, code, users){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -442,7 +442,7 @@ handler.dumpUser = function(req, session, next) {
 }
 
 handler.dumpAllUser = function(req, session, next) {
-    channelRemote.dumpAllUser(function(err, code, users){
+    channelRemote.dumpAllUser(req, function(err, code, users){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -465,7 +465,7 @@ handler.dumpChannel = function(req, session, next) {
         return
     }
 
-    channelRemote.dumpChannel(req.channelId, function(err, code, channels){
+    channelRemote.dumpChannel(req, req.channelId, function(err, code, channels){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
@@ -481,7 +481,7 @@ handler.dumpChannel = function(req, session, next) {
 }
 
 handler.dumpAllChannel = function(req, session, next) {
-    channelRemote.dumpAllChannel(function(err, code, channels){
+    channelRemote.dumpAllChannel(req, function(err, code, channels){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
