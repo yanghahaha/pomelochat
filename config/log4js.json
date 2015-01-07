@@ -10,15 +10,6 @@
             "backups": 5
         },
         {
-            "type": "dateFile",
-            "filename": "./logs/channel", 
-            "layout": {
-                "type": "basic"
-            },
-            "category":"channel",
-            "alwaysIncludePattern": true
-        },
-        {
             "type": "file",
             "filename": "./logs/con-log.log", 
             "pattern": "connector", 

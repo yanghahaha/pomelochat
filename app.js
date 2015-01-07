@@ -28,10 +28,15 @@ app.configure('all', 'connector', function(){
         disconnectOnTimeout: true,
         blacklistFun: blacklist.get
     })
+    app.set('pushSchedulerConfig', {
+        scheduler: pomelo.pushSchedulers.buffer,
+        flushInterval: 50
+    })
     app.set('sessionConfig', {
         bindTimeout: 5
     })
     app.set('frontChannel', frontChannelService)
+
 
     app.filter(handlerLogFilter(app, 'connector'))
 })
