@@ -149,10 +149,13 @@ remote.getRoomIdByUserId = function(channelId, userId, cb) {
 /**************************************************
     log msg count
 ***************************************************/
-remote.logMsgCount = function(channelId, roomIds, timestamp, msgCount, cb) {
+remote.logMsgCount = function(min, channelId, roomIds, msgCount, cb) {
+    console.log(arguments)
     var channel = channelService.getChannel(channelId)
     if (!!channel) {
-        var min = timestamp / 60 | 0
+        if (!min) {
+            min = Date.now() / 60000 | 0
+        }
         _.each(roomIds, function(roomId){
             var room = channel.getRoom(roomId)
             if (!room) {
@@ -163,6 +166,23 @@ remote.logMsgCount = function(channelId, roomIds, timestamp, msgCount, cb) {
             }
         })
     }
+
+    utils.invokeCallback(cb)
+}
+
+remote.logMsgCountBatch = function(min, channels, cb) {
+    if (!min) {
+        min = Date.now() / 60000 | 0
+    }
+
+    console.log(channels)
+
+    var self = this
+    _.each(channels, function(channel, channelId){
+        _.each(channel, function(msgCount, roomId){
+            self.logMsgCount(min, channelId, [roomId], msgCount)
+        })
+    })
 
     utils.invokeCallback(cb)
 }

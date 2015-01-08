@@ -1,5 +1,6 @@
 var _ = require('underscore')
 var Code = require('../../../util/code')
+var logger = require('pomelo-logger').getLogger('api', __filename, process.pid)
 var channelRemote
 
 module.exports = function(app) {
@@ -9,6 +10,7 @@ module.exports = function(app) {
 var Handler = function(app) {
     this.app = app;
     channelRemote = app.rpc.channel.channelRemote
+    setInterval(sendMsgCount.bind(null, app), 1000)
 };
 
 var handler = Handler.prototype;
@@ -36,7 +38,7 @@ handler.applyToken = function(req, session, next) {
     })
 }
 
-var routeConnectors = function(app, params) {
+var routeConnectors = function(app) {
     var connectors = []
     _.each(app.getServersByType('connector'), function(connector){
         connectors.push(connector.id)
@@ -56,11 +58,7 @@ handler.sendServerMsg = function(req, session, next) {
     }
     next(null, {code: Code.SUCC})
 
-    this.app.rpc.connector.connectorRemote.sendServerMsg.toServer('*', req.route, req.msg, function(err){
-        if (!!err) {
-            logger.error('connectorRemote.sendServerMsg fail. err=%s stack=%j', err.toString(), err.stack)
-        }
-    })
+    this.app.rpc.connector.connectorRemote.sendServerMsg.toServer('*', req.route, req.msg, null)
 }
 
 handler.sendChannelMsg = function(req, session, next) {
@@ -83,12 +81,9 @@ handler.sendChannelMsg = function(req, session, next) {
     var connectors = routeConnectors(this.app, {
         channelIds: channelIds
     })
+
     for (var i=0; i<connectors.length; ++i) {
-        this.app.rpc.connector.connectorRemote.sendChannelMsg.toServer(connectors[i], channelIds, req.route, req.msg, function(err){
-            if (!!err) {
-                logger.error('connectorRemote.sendChannelMsg fail. connector=%s err=%s stack=%j', connectors[i], err.toString(), err.stack)
-            }
-        })
+        this.app.rpc.connector.connectorRemote.sendChannelMsg.toServer(connectors[i], channelIds, req.route, req.msg, null)
     }
 }
 
@@ -115,21 +110,12 @@ handler.sendRoomMsg = function(req, session, next) {
     }
     routeParams.roomIds[req.channelId] = roomIds
 
+    logMsgCount(req.channelId, roomIds, 1)
+
     var connectors = routeConnectors(this.app, routeParams)
     for (var i=0; i<connectors.length; ++i) {
-        this.app.rpc.connector.connectorRemote.sendRoomMsg.toServer(connectors[i], req.channelId, roomIds, req.route, req.msg, function(err){
-            if (!!err) {
-                logger.error('connectorRemote.sendRoomMsg fail. connector=%s err=%s stack=%j', connectors[i], err.toString(), err.stack)
-            }            
-        })
+        this.app.rpc.connector.connectorRemote.sendRoomMsg.toServer(connectors[i], req.channelId, roomIds, req.route, req.msg, null)
     }
-
-    var time = new Date().getTime() / 1000 | 0
-    channelRemote.logMsgCount(req, req.channelId, roomIds, time, 1, function(err){
-        if (!!err) {
-            logger.error('channelRemote.logMsgCount fail. err=%s stack=%j', err.toString(), err.stack)
-        }
-    })
 }
 
 handler.sendRoomMsgByUserId = function(req, session, next) {
@@ -260,11 +246,7 @@ sIdToKickData = {
         // }
 
         for (var fsId in sIdToKickData) {
-            this.app.rpc.connector.connectorRemote.kick.toServer(fsId, sIdToKickData[fsId], req.route, req.msg, function(err){
-                if (!!err) {
-                    logger.error('connectorRemote.kick fail. connector=%s err=%s stack=%j', fsId, err.toString(), err.stack)
-                }                            
-            })
+            this.app.rpc.connector.connectorRemote.kick.toServer(fsId, sIdToKickData[fsId], req.route, req.msg, null)
         }
     }
 }
@@ -510,4 +492,31 @@ handler.dumpAllChannel = function(req, session, next) {
             })              
         }
     })
+}
+
+var roomMsgCount = {}
+
+var logMsgCount = function(channelId, roomIds, msgCount) {
+    if (!roomMsgCount[channelId]) {
+        roomMsgCount[channelId] = {}
+    }
+
+    _.each(roomIds, function(roomId){
+        if (!roomMsgCount[channelId][roomId]) {
+            roomMsgCount[channelId][roomId] = msgCount
+        }
+        else {
+            roomMsgCount[channelId][roomId] += msgCount   
+        }
+    })
+}
+
+var sendMsgCount = function(app) {
+    if (_.isEmpty(roomMsgCount)) {
+        return
+    }
+    console.log('send %j', roomMsgCount)
+    var msgCountSent = roomMsgCount
+    roomMsgCount = {}
+    app.rpc.channel.channelRemote.logMsgCountBatch.toServer('*', null, msgCountSent, null)
 }
