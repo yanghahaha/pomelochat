@@ -92,7 +92,7 @@
                 "id": "api-1", 
                 "host": "10.10.6.28",
                 "port": 3011,
-                "clientHost": "0.0.0.0",
+                "clientHost": "10.10.6.28",
                 "clientPort": 13011, 
                 "frontend": true
             }
