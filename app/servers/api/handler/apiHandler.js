@@ -37,13 +37,11 @@ handler.applyToken = function(req, session, next) {
 }
 
 var routeConnectors = function(app, params) {
-    if (!routeConnectors.allConnectors) {
-        routeConnectors.allConnectors = []
-        _.each(app.getServersByType('connector'), function(connector){
-            routeConnectors.allConnectors.push(connector.id)
-        })
-    }
-    return routeConnectors.allConnectors
+    var connectors = []
+    _.each(app.getServersByType('connector'), function(connector){
+        connectors.push(connector.id)
+    })
+    return connectors
 }
 
 /**************************************************
@@ -58,7 +56,11 @@ handler.sendServerMsg = function(req, session, next) {
     }
     next(null, {code: Code.SUCC})
 
-    this.app.rpc.connector.connectorRemote.sendServerMsg.toServer('*', req.route, req.msg, null)
+    this.app.rpc.connector.connectorRemote.sendServerMsg.toServer('*', req.route, req.msg, function(err){
+        if (!!err) {
+            logger.error('connectorRemote.sendServerMsg fail. err=%s stack=%j', err.toString(), err.stack)
+        }
+    })
 }
 
 handler.sendChannelMsg = function(req, session, next) {
@@ -82,10 +84,12 @@ handler.sendChannelMsg = function(req, session, next) {
         channelIds: channelIds
     })
     for (var i=0; i<connectors.length; ++i) {
-        this.app.rpc.connector.connectorRemote.sendChannelMsg.toServer(connectors[i], channelIds, req.route, req.msg, null)
+        this.app.rpc.connector.connectorRemote.sendChannelMsg.toServer(connectors[i], channelIds, req.route, req.msg, function(err){
+            if (!!err) {
+                logger.error('connectorRemote.sendChannelMsg fail. connector=%s err=%s stack=%j', connectors[i], err.toString(), err.stack)
+            }
+        })
     }
-
-    var time = new Date().getTime() / 1000 | 0
 }
 
 handler.sendRoomMsg = function(req, session, next) {
@@ -113,11 +117,19 @@ handler.sendRoomMsg = function(req, session, next) {
 
     var connectors = routeConnectors(this.app, routeParams)
     for (var i=0; i<connectors.length; ++i) {
-        this.app.rpc.connector.connectorRemote.sendRoomMsg.toServer(connectors[i], req.channelId, roomIds, req.route, req.msg, null)
+        this.app.rpc.connector.connectorRemote.sendRoomMsg.toServer(connectors[i], req.channelId, roomIds, req.route, req.msg, function(err){
+            if (!!err) {
+                logger.error('connectorRemote.sendRoomMsg fail. connector=%s err=%s stack=%j', connectors[i], err.toString(), err.stack)
+            }            
+        })
     }
 
     var time = new Date().getTime() / 1000 | 0
-    channelRemote.logMsgCount(req, req.channelId, roomIds, time, 1, null)
+    channelRemote.logMsgCount(req, req.channelId, roomIds, time, 1, function(err){
+        if (!!err) {
+            logger.error('channelRemote.logMsgCount fail. err=%s stack=%j', err.toString(), err.stack)
+        }
+    })
 }
 
 handler.sendRoomMsgByUserId = function(req, session, next) {
@@ -248,7 +260,11 @@ sIdToKickData = {
         // }
 
         for (var fsId in sIdToKickData) {
-            this.app.rpc.connector.connectorRemote.kick.toServer(fsId, sIdToKickData[fsId], req.route, req.msg, null)
+            this.app.rpc.connector.connectorRemote.kick.toServer(fsId, sIdToKickData[fsId], req.route, req.msg, function(err){
+                if (!!err) {
+                    logger.error('connectorRemote.kick fail. connector=%s err=%s stack=%j', fsId, err.toString(), err.stack)
+                }                            
+            })
         }
     }
 }
