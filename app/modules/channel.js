@@ -73,7 +73,7 @@ exp.dump = function() {
 
 exp.topChannels = function(topNum) {
     var sortedChannels = _.sortBy(channels, function(channel){
-        return channel.userCount
+        return -channel.userCount
     })
     if (!!topNum) {
         sortedChannels.splice(topNum)

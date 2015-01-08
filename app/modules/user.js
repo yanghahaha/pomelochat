@@ -68,13 +68,13 @@ exp.sortIps = function(minCount) {
     }
 
     return _.sortBy(filteredIps, function(ip){
-        return ip.count
+        return -ip.count
     })
 }
 
 exp.topIps = function(topNum) {
     var sortedIps = _.sortBy(ips, function(ip){
-        return ip.count
+        return -ip.count
     })
     if (!!topNum) {
         sortedIps.splice(topNum)
