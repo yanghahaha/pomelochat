@@ -515,7 +515,7 @@ var sendMsgCount = function(app) {
     if (_.isEmpty(roomMsgCount)) {
         return
     }
-    console.log('send %j', roomMsgCount)
+
     var msgCountSent = roomMsgCount
     roomMsgCount = {}
     app.rpc.channel.channelRemote.logMsgCountBatch.toServer('*', null, msgCountSent, null)

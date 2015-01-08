@@ -150,7 +150,6 @@ remote.getRoomIdByUserId = function(channelId, userId, cb) {
     log msg count
 ***************************************************/
 remote.logMsgCount = function(min, channelId, roomIds, msgCount, cb) {
-    console.log(arguments)
     var channel = channelService.getChannel(channelId)
     if (!!channel) {
         if (!min) {

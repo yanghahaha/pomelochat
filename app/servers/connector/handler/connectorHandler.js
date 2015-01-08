@@ -65,7 +65,7 @@ handler.login = function(req, session, next) {
         }
     ], function(err) {
         if (!!err) {
-            logger.error("login error userId=%s channelId=%s token=%s code=%s err=%j", userId, channelId, req.token, code, err)
+            logger.error("login error userId=%s channelId=%s token=%s code=%s err=%s stack=%j", userId, channelId, req.token, code, err, err.stack)
             next(null, {
                 code: code
             })
@@ -98,7 +98,11 @@ var onUserLeave = function(app, session, reason) {
     frontchannelService.remove(channelId, roomId, session.id)
     app.rpc.channel.channelRemote.leave(session, userId, channelId, context, function(err, code){
         if (!!err || code !== Code.SUCC) {
-            logger.debug('leave error userId=%s channelId=%s reason=%s code=%s error=%j', userId, channelId, reason, code, err)
+            var stack = null
+            if (!!err) {
+                stack = err.stack
+            }
+            logger.debug('leave error userId=%s channelId=%s reason=%s code=%s err=%s stack=%j', userId, channelId, reason, code, err, stack)
         }
         else {
             logger.debug('leave succ userId=%s channelId=%s reason=%s', userId, channelId, reason)

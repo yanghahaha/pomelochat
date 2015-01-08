@@ -32,17 +32,18 @@ Filter.prototype.after = function(err, msg, session, resp, next) {
       code: code
     }
 
+    var logString = JSON.stringify(log)
     if (!!err) {
-        this.logger.error('%s err=%s', JSON.stringify(log), err.stack)
+        this.logger.error('%s err=%s stack=%j', logString, err, err.stack)
     }
     else if(resp.code !== Code.SUCC) {
-        this.logger.error(JSON.stringify(log))
+        this.logger.error(logString)
     }
     else if (timeUsed > config.get('handler.timeUseWarn')) {
-        this.logger.warn(JSON.stringify(log))
+        this.logger.warn(logString)
     }
     else {
-        this.logger.debug(JSON.stringify(log))
+        this.logger.debug(logString)
     }
 
     next(err)
