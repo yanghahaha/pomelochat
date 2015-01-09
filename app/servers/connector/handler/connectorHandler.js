@@ -10,6 +10,7 @@ module.exports = function(app) {
 
 var Handler = function(app) {
     this.app = app
+    setInterval(sendLeaveMsgBatch.bind(null, app), 1000)
 }
 
 var handler = Handler.prototype
@@ -79,7 +80,7 @@ handler.login = function(req, session, next) {
         }
     ], function(err) {
         if (!!err) {
-            logger.error("login error userId=%s channelId=%s token=%s code=%s err=%s stack=%s", userId, channelId, req.token, code, err.toString(), err.stack)
+            logger.debug("login error userId=%s channelId=%s token=%s code=%s err=%s stack=%s", userId, channelId, req.token, code, err.toString(), err.stack)
             next(null, {
                 code: code
             })
@@ -99,6 +100,8 @@ handler.login = function(req, session, next) {
     })
 }
 
+var leaveMsgs = []
+
 var onUserLeave = function(app, session, reason) {
     if (!session || !session.get('userId') || reason === 'kick') {
         return
@@ -113,7 +116,18 @@ var onUserLeave = function(app, session, reason) {
     session.push('userId')
 
     frontchannelService.remove(channelId, roomId, session.id)
-    app.rpc.channel.channelRemote.leave(session, userId, channelId, context, function(err, code){
+    leaveMsgs.push({
+        channelId: channelId,
+        userId: userId,
+        context: context
+    })
+}
+
+var sendLeaveMsgBatch = function(app) {
+    var msgs = leaveMsgs
+    leaveMsgs = []
+    console.log("sendLeaveMsgBatch %j", msgs)
+    app.rpc.channel.channelRemote.leaveBatch.toServer('*', msgs, function(err, code){
         if (!!err || code !== Code.SUCC) {
             var stack = null
             var errMsg = null
@@ -121,10 +135,7 @@ var onUserLeave = function(app, session, reason) {
                 errMsg = err.toString()
                 stack = err.stack
             }
-            logger.debug('leave error userId=%s channelId=%s reason=%s code=%s err=%s stack=%s', userId, channelId, reason, code, errMsg, stack)
-        }
-        else {
-            logger.debug('leave succ userId=%s channelId=%s reason=%s', userId, channelId, reason)
+            logger.debug('leave batch error code=%s err=%s stack=%s', code, errMsg, stack)
         }
     })
 }

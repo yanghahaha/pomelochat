@@ -294,6 +294,22 @@ handler.getChannelUserCount = function(req, session, next) {
     })
 }
 
+handler.getAllChannelUserCount = function(req, session, next) {
+    channelRemote.getAllChannelUserCount(req, function(err, code, counts){
+        if (!!err) {
+            next(null, {
+                code: Code.INTERNAL_SERVER_ERROR
+            })
+        }
+        else {
+            next(null, {
+                code: code,
+                channels: counts
+            })              
+        }
+    })
+}
+
 handler.getRoomUserCount = function(req, session, next) {
     if (!req.channelId || !req.roomId) {
         next(null, {
@@ -519,4 +535,55 @@ var sendMsgCount = function(app) {
     var msgCountSent = roomMsgCount
     roomMsgCount = {}
     app.rpc.channel.channelRemote.logMsgCountBatch.toServer('*', null, msgCountSent, null)
+}
+
+/**************************************************
+    top & sort
+***************************************************/
+handler.topChannels = function(req, session, next) {
+    channelRemote.topChannels(req, req.topNum, function(err, code, channels){
+        if (!!err) {
+            next(null, {
+                code: Code.INTERNAL_SERVER_ERROR
+            })            
+        }
+        else {
+            next(null, {
+                code: code,
+                channels: channels
+            })              
+        }
+    })
+}
+
+handler.topIps = function(req, session, next) {
+    channelRemote.topIps(req, req.topNum, function(err, code, ips){
+        if (!!err) {
+            next(null, {
+                code: Code.INTERNAL_SERVER_ERROR
+            })            
+        }
+        else {
+            next(null, {
+                code: code,
+                ips: ips
+            })              
+        }
+    })
+}
+
+handler.sortIps = function(req, session, next) {
+    channelRemote.sortIps(req, req.minCount, function(err, code, ips){
+        if (!!err) {
+            next(null, {
+                code: Code.INTERNAL_SERVER_ERROR
+            })            
+        }
+        else {
+            next(null, {
+                code: code,
+                ips: ips
+            })
+        }
+    })
 }

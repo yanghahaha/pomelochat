@@ -113,10 +113,18 @@
                 "id": "api-1", 
                 "host": "10.10.6.28",
                 "port": 3011,
-                "clientHost": "10.10.6.28",
+                "clientHost": "0.0.0.0",
                 "clientPort": 13011, 
                 "frontend": true
-            }
+            },
+            {
+                "id": "api-2", 
+                "host": "10.10.6.28",
+                "port": 3012,
+                "clientHost": "0.0.0.0",
+                "clientPort": 13012, 
+                "frontend": true
+            }            
         ],
         "gate":  [
             {

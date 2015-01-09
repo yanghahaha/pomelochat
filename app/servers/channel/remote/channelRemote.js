@@ -70,6 +70,14 @@ remote.leave = function(userId, channelId, context, cb) {
     cb(null, Code.SUCC)
 }
 
+remote.leaveBatch = function(users, cb) {
+    var self = this
+    _.each(users, function(user){
+        self.leave(user.userId, user.channelId, user.context, function(){})
+    })
+    cb(null, Code.SUCC)
+}
+
 remote.kick = function(userId, channelId, cb) {
     var user = userService.getUser(userId)
     if (!user) {
@@ -158,8 +166,6 @@ remote.logMsgCountBatch = function(min, channels, cb) {
         min = Date.now() / 60000 | 0
     }
 
-    console.log(channels)
-
     var self = this
     _.each(channels, function(channel, channelId){
         _.each(channel, function(msgCount, roomId){
@@ -198,6 +204,11 @@ remote.getChannelUserCount = function(channelIds, cb) {
         }
     }
     cb(null, Code.SUCC, counts)
+}
+
+remote.getAllChannelUserCount = function(cb) {
+    var channelIds = _.keys(channelService.getChannels())
+    this.getChannelUserCount(channelIds, cb)
 }
 
 remote.getRoomUserCount = function(channelId, roomIds, cb) {
@@ -382,4 +393,19 @@ remote.dumpChannel = function(channelIds, cb) {
 
 remote.dumpAllChannel = function(cb) {
     cb(null, Code.SUCC, channelService.dump())
+}
+
+/**************************************************
+    top & sort
+***************************************************/
+remote.topChannels = function(topNum, cb) {
+    cb(null, Code.SUCC, channelService.topChannels(topNum))
+}
+
+remote.topIps = function(topNum, cb) {
+    cb(null, Code.SUCC, userService.topIps(topNum))
+}
+
+remote.sortIps = function(minCount, cb) {
+    cb(null, Code.SUCC, userService.sortIps(minCount))
 }

@@ -63,6 +63,10 @@ exp.getChannel = function(id) {
     return channels[id]
 }
 
+exp.getChannels = function() {
+    return channels
+}
+
 exp.dump = function() {
     var dumps = {}
     for (var i in channels) {
@@ -78,7 +82,12 @@ exp.topChannels = function(topNum) {
     if (!!topNum) {
         sortedChannels.splice(topNum)
     }
-    return sortedChannels
+    var tops = []
+    _.each(sortedChannels, function(channel){
+        tops.push(channel.dump())
+    })
+
+    return tops
 }
 
 exp.getConnectionCount = function() {

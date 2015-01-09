@@ -27,6 +27,7 @@ app.configure('all', 'connector', function(){
     app.set('connectorConfig', {
         connector : pomelo.connectors.hybridconnector,
         heartbeat : 30,
+        timeout: 90,
         distinctHost: true,
         firstTimeout: 3,
         disconnectOnTimeout: true,
