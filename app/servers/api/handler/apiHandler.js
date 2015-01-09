@@ -23,7 +23,7 @@ handler.applyToken = function(req, session, next) {
         return
     }
 
-    channelRemote.applyToken(req, req.userId, req.channelId, req.userData,  function(err, code, token){
+    this.app.rpc.auth.authRemote.applyToken(req, req.userId, req.channelId, req.userData,  function(err, code, token){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR

@@ -2,7 +2,6 @@ var _ = require('underscore')
 var logger = require('pomelo-logger').getLogger('channel', __filename, process.pid)
 var channelService = require('../../../modules/channel')
 var userService = require('../../../modules/user')
-var tokenService = require('../../../modules/token');
 var Code = require('../../../util/code')
 var utils = require('../../../util/utils')
 
@@ -16,22 +15,7 @@ var Remote = function(app) {
 
 var remote = Remote.prototype
 
-remote.applyToken = function(userId, channelId, data, cb) {
-    var out = {}
-    var code = tokenService.apply(userId, channelId, data, out)
-    cb(null, code, out.token)
-}
-
-remote.enter = function(token, userId, channelId, context, cb) {
-    var out = {}
-    var code = tokenService.verify(userId, channelId, token, out)
-    if (code !== Code.SUCC) {
-        cb(null, code)
-        return
-    }
-
-    var userData = out.data
-
+remote.enter = function(userId, channelId, userData, context, cb) {
     var newUser = false
     var user = userService.getUser(userId)
     if (!user) {
@@ -46,8 +30,8 @@ remote.enter = function(token, userId, channelId, context, cb) {
         newChannel = true
     }
 
-    out = {}
-    code = user.enter(channelId, context, out)
+    var out = {}
+    var code = user.enter(channelId, context, out)
     if (code !== Code.SUCC) {
         if (newUser) {
             userService.destroyUser(userId)

@@ -61,11 +61,15 @@ app.configure('all', 'api', function(){
     app.filter(handlerLogFilter(app, 'api'))
 })
 
-app.configure('all', 'channel', function(){
+app.configure('all', 'auth', function(){
     app.set('token', tokenService)
+    tokenService.init()
+    app.filter(handlerLogFilter(app, 'auth'))
+})
+
+app.configure('all', 'channel', function(){
     app.set('user', userService)
     app.set('channel', channelService)
-    tokenService.init()
     channelService.init()
     app.filter(handlerLogFilter(app, 'channel'))
 })

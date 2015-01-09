@@ -7,6 +7,13 @@
                 "port": 3003
             }
         ],        
+        "auth": [
+            {
+                "id": "auth-1", 
+                "host": "127.0.0.1",
+                "port": 3010
+            }
+        ],
         "api": [
             {
                 "id": "api-1", 
@@ -46,7 +53,14 @@
                 "host": "127.0.0.1",
                 "port": 3003
             }
-        ],        
+        ],   
+        "auth": [
+            {
+                "id": "auth-1", 
+                "host": "127.0.0.1",
+                "port": 3010
+            }
+        ],             
         "api": [
             {
                 "id": "api-1", 
@@ -87,6 +101,13 @@
                 "port": 3003
             }
         ],
+        "auth": [
+            {
+                "id": "auth-1", 
+                "host": "10.10.6.28",
+                "port": 3010
+            }
+        ],             
         "api": [
             {
                 "id": "api-1", 
@@ -113,7 +134,15 @@
                 "clientHost": "0.0.0.0",
                 "clientPort": 13021, 
                 "frontend": true
-            }
+            },
+            {
+                "id": "gate-3", 
+                "host": "10.10.16.183", 
+                "port": 3021,
+                "clientHost": "0.0.0.0",
+                "clientPort": 13021, 
+                "frontend": true
+            }            
         ],
         "connector":  [
             {
@@ -134,6 +163,24 @@
                 "clientPort": 13032, 
                 "frontend": true
             },         
+            {
+                "id": "connector-13", 
+                "host": "10.10.19.195",  
+                "port": 3033, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "180.150.186.65",
+                "clientPort": 13033, 
+                "frontend": true
+            },         
+            {
+                "id": "connector-14", 
+                "host": "10.10.19.195",  
+                "port": 3034, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "180.150.186.65",
+                "clientPort": 13034, 
+                "frontend": true
+            },                     
             {
                 "id": "connector-21", 
                 "host": "10.10.56.63",  
@@ -167,6 +214,43 @@
                 "port": 3034, 
                 "clientHost": "0.0.0.0",
                 "clientHostReal": "120.132.51.104",
+                "clientPort": 13034, 
+                "frontend": true
+            },
+
+            {
+                "id": "connector-31", 
+                "host": "10.10.16.183",  
+                "port": 3031, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "120.132.61.237",
+                "clientPort": 13031, 
+                "frontend": true
+            },
+            {
+                "id": "connector-32", 
+                "host": "10.10.16.183",  
+                "port": 3032, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "120.132.61.237",
+                "clientPort": 13032, 
+                "frontend": true
+            },
+            {
+                "id": "connector-33", 
+                "host": "10.10.16.183",  
+                "port": 3033, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "120.132.61.237",
+                "clientPort": 13033, 
+                "frontend": true
+            },
+            {
+                "id": "connector-34", 
+                "host": "10.10.16.183",  
+                "port": 3034, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "120.132.61.237",
                 "clientPort": 13034, 
                 "frontend": true
             }

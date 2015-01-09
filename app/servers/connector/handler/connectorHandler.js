@@ -27,7 +27,7 @@ handler.login = function(req, session, next) {
     var userId = req.userId,
         channelId = req.channelId,
         code = Code.INTERNAL_SERVER_ERROR,
-        retData
+        retData, userData
     var uId = Utils.getSessionUid(userId, channelId)
     var context = {
             fId: self.app.get('serverId'),
@@ -37,6 +37,20 @@ handler.login = function(req, session, next) {
 
     async.waterfall([
         function(cb) {
+            self.app.rpc.auth.authRemote.verifyToken(session, req.token, userId, channelId, cb)
+        },
+        function(ret, data, cb) {
+            cb = arguments[arguments.length-1]
+            code = ret
+            if (code !== Code.SUCC) {
+                cb(new Error('authRemote.verifyToken fail'))
+            }
+            else {
+                userData = data
+                cb(null)
+            }
+        },
+        function(cb) {
             session.bind(uId, function(err) {
                 if (!!err) {
                     code = Code.DUPLICATED_LOGIN
@@ -45,7 +59,7 @@ handler.login = function(req, session, next) {
             })
         },
         function(cb) {
-            self.app.rpc.channel.channelRemote.enter(session, req.token, userId, channelId, context, cb)
+            self.app.rpc.channel.channelRemote.enter(session, userId, channelId, userData, context, cb)
         },
         function(ret, data, cb) {
             cb = arguments[arguments.length-1]
@@ -65,7 +79,7 @@ handler.login = function(req, session, next) {
         }
     ], function(err) {
         if (!!err) {
-            logger.error("login error userId=%s channelId=%s token=%s code=%s err=%s stack=%j", userId, channelId, req.token, code, err, err.stack)
+            logger.error("login error userId=%s channelId=%s token=%s code=%s err=%s stack=%s", userId, channelId, req.token, code, err.toString(), err.stack)
             next(null, {
                 code: code
             })
@@ -76,7 +90,10 @@ handler.login = function(req, session, next) {
             logger.debug('login succ userId=%s channelId=%s token=%s', userId, channelId, req.token)
             next(null, {
                 code: Code.SUCC,
-                data: retData
+                data: {
+                    roomId: retData.roomId,
+                    user: userData
+                }
             })
         }
     })
@@ -99,10 +116,12 @@ var onUserLeave = function(app, session, reason) {
     app.rpc.channel.channelRemote.leave(session, userId, channelId, context, function(err, code){
         if (!!err || code !== Code.SUCC) {
             var stack = null
+            var errMsg = null
             if (!!err) {
+                errMsg = err.toString()
                 stack = err.stack
             }
-            logger.debug('leave error userId=%s channelId=%s reason=%s code=%s err=%s stack=%j', userId, channelId, reason, code, err, stack)
+            logger.debug('leave error userId=%s channelId=%s reason=%s code=%s err=%s stack=%s', userId, channelId, reason, code, errMsg, stack)
         }
         else {
             logger.debug('leave succ userId=%s channelId=%s reason=%s', userId, channelId, reason)
