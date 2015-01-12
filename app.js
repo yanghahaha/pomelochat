@@ -26,10 +26,9 @@ app.configure(function(){
 app.configure('all', 'connector', function(){    
     app.set('connectorConfig', {
         connector : pomelo.connectors.hybridconnector,
-        heartbeat : 30,
-        timeout: 90,
         distinctHost: true,
         firstTimeout: 3,
+        heartbeat : 30,
         disconnectOnTimeout: true,
         blacklistFun: blacklist.get
     })
@@ -49,6 +48,9 @@ app.configure('all', 'gate', function(){
         disconnectOnTimeout: true,
         blacklistFun: blacklist.get
 	})
+    app.set('sessionConfig', {
+        bindTimeout: 5
+    })
     leastConnDispatcher.init(app)
     app.filter(handlerLogFilter(app, 'gate'))    
 })

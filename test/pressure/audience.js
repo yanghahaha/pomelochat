@@ -17,6 +17,16 @@ var gateHost = gate.split(':')[0],
 var Audience = function(channel, userId) {
     this.channel = channel
     this.userId = userId
+    this.pomelo = new Pomelo()
+
+    if (!!debug) {
+        this.pomelo.on('close', function(){
+            console.log('close')
+        })
+        this.pomelo.setMessageProcessor(function(msg){
+            console.log('%j', msg)
+        }) 
+    }    
 }
 
 Audience.prototype.init = function() {
@@ -67,7 +77,7 @@ Audience.prototype.applyToken = function(cb) {
 
 Audience.prototype.lookupConnector = function(cb) {
     var self = this
-    self.pomelo = new Pomelo()
+    
     self.pomelo.connect({
         host: gateHost,
         port: gatePort
@@ -104,15 +114,6 @@ Audience.prototype.connectConnector = function(host, port) {
             }
         })
     })
-
-    if (!!debug) {
-        self.pomelo.on('close', function(){
-            console.log('close')
-        })
-        self.pomelo.setMessageProcessor(function(msg){
-            console.log('%j', msg)
-        }) 
-    }
 }
 
 var createAudience = function(channel, userId) {
