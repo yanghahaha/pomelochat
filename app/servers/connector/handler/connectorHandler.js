@@ -126,7 +126,6 @@ var onUserLeave = function(app, session, reason) {
 var sendLeaveMsgBatch = function(app) {
     var msgs = leaveMsgs
     leaveMsgs = []
-    console.log("sendLeaveMsgBatch %j", msgs)
     app.rpc.channel.channelRemote.leaveBatch.toServer('*', msgs, function(err, code){
         if (!!err || code !== Code.SUCC) {
             var stack = null
