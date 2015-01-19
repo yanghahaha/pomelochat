@@ -283,7 +283,7 @@ var deCompose = function(pomelo, msg) {
 var handshakeInit = function(pomelo, data) {
     if (data.sys && data.sys.heartbeat) {
         pomelo.heartbeatInterval = data.sys.heartbeat * 1000   // heartbeat interval
-        pomelo.heartbeatTimeout = pomelo.heartbeatInterval * 3        // max heartbeat timeout
+        pomelo.heartbeatTimeout = pomelo.heartbeatInterval * 2        // max heartbeat timeout
     } 
     else {
         pomelo.heartbeatInterval = 0
