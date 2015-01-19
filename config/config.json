@@ -3,7 +3,10 @@
         "handler.timeUseWarn"             : 50,
         "token.timeout"                   : 30,
         "user.maxChannelCount"            : 1073741824,
-        "user.maxIpCount"                 : 5,
+        "user.maxIpCount"                 : 10,
+        "user.maxIpExclude"               : [
+            "116.226.201.250"
+        ],
         "channel.maxUserCount"            : 1073741824,
         "channel.maxConnectionCount"      : 1073741824,
         "channel.maxUserConnectionCount"  : 5,
@@ -19,6 +22,9 @@
         "token.timeout"                   : 30,
         "user.maxChannelCount"            : 1073741824,
         "user.maxIpCount"                 : 10,
+        "user.maxIpExclude"               : [
+            "116.226.201.250"
+        ],
         "channel.maxUserCount"            : 1073741824,
         "channel.maxConnectionCount"      : 1073741824,
         "channel.maxUserConnectionCount"  : 5,
@@ -34,6 +40,9 @@
         "token.timeout"                   : 30,
         "user.maxChannelCount"            : 1073741824,
         "user.maxIpCount"                 : 100,
+        "user.maxIpExclude"               : [
+            "116.226.201.250"
+        ],
         "channel.maxUserCount"            : 1073741824,
         "channel.maxConnectionCount"      : 1073741824,
         "channel.maxUserConnectionCount"  : 5,

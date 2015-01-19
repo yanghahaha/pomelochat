@@ -118,7 +118,15 @@ User.prototype.enter = function(channelId, context, varOut) {
         return Code.USER_CHANNEL_MEET_MAX
     }
     if (!!ips[context.remote.ip] && ips[context.remote.ip].count >= config.get('user.maxIpCount')) {
-        return Code.USER_IP_MEET_MAX
+        var maxIpExclude = config.get('user.maxIpExclude')
+        if (!!maxIpExclude && _.isArray(maxIpExclude)) {
+            if (maxIpExclude.indexOf(context.remote.ip) === -1) {
+                return Code.USER_IP_MEET_MAX
+            }
+        }
+        else {
+            return Code.USER_IP_MEET_MAX
+        }
     }
 
     var userChannelData = this.channelDatas[channelId]
