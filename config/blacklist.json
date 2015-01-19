@@ -1,16 +1,23 @@
 {
     "development":  {
         "connector": [
+            "^192\\.168\\.186\\.10$"
         ],
         "gate": [
+            "^192\\.168\\.186\\.102$",
+            "^127\\.0\\.0\\.10$"
         ]
     },
     "test":  {
         "connector": [
         ],
         "gate": [
-        ]
+        ]        
     },    
     "production":  {
+        "connector": [
+        ],
+        "gate": [
+        ]
     }    
 }

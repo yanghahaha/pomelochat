@@ -76,10 +76,5 @@ var parse = function(config) {
         return []
     }
 
-    var list = []
-    for (var i in config) {
-        list.push('^' + config[i].replace(/\./g, '\\.'))
-    }
-
-    return list
+    return config
 }

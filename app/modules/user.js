@@ -151,7 +151,7 @@ User.prototype.enter = function(channelId, context, varOut) {
     userChannelData.roomId = out.roomId
     userChannelData.addContext(context)
 
-    addIp(context.remote.ip, this.id)
+    addIp(context.remote.ip, this.id, channelId, context)
 
     varOut.roomId = out.roomId
     return Code.SUCC
@@ -191,8 +191,8 @@ User.prototype.leave = function(channelId, context, out) {
     ChannelService.getChannel(channelId).leave(this, lastLeave, leaveConnection, userChannelData.roomId, context)
 
     var userId = this.id
-    _.each(out.contexts, function(context){
-        removeIp(context.remote.ip, userId)
+    _.each(out.contexts, function(ctx){
+        removeIp(ctx.remote.ip, userId, channelId, ctx)
     })
 
     return Code.SUCC
@@ -264,35 +264,46 @@ UserChannelData.prototype.findContext = function(ctx) {
     return -1
 }
 
-var addIp = function(ip, userId) {
+var addIp = function(ip, userId, channelId, context) {
     if (!ips[ip]) {
         ips[ip] = {
+            ip: ip,      
             count: 0,
-            users: {},
-            ip: ip
+            users: {}
         }
     }
     if (!ips[ip].users[userId]) {
-        ips[ip].users[userId] = 0
+        ips[ip].users[userId] = []
     }
 
     ips[ip].count++
-    ips[ip].users[userId]++
+
+    ips[ip].users[userId].push({
+        channelId: channelId,
+        context: context        
+    })
 }
 
-var removeIp = function(ip, userId) {
+var removeIp = function(ip, userId, channelId, context) {
     if (!ips[ip] || !ips[ip].users[userId]) {
-        logger.error('remove ip not found. ip=%s userId=%s', ip, userId)
+        logger.error('remove ip not found. ip=%s userId=%s channelId=%s', ip, userId, channelId)
         return
     }
 
-    ips[ip].users[userId]--
-    if (ips[ip].users[userId] === 0) {
-        delete ips[ip].users[userId]
+    var ipUser = ips[ip].users[userId]
+    for (var i=0; i<ipUser.length; ++i) {
+        if (ipUser[i].context.remote.ip === context.remote.ip && ipUser[i].context.remote.port === context.remote.port) {
+            ipUser.splice(i, 1)
+            if (ipUser.length === 0) {
+                delete ips[ip].users[userId]
+            }
+            ips[ip].count--
+            if (ips[ip].count === 0) {
+                delete ips[ip]
+            }
+            return
+        }
     }
 
-    ips[ip].count--
-    if (ips[ip].count === 0) {
-        delete ips[ip]
-    }
+    logger.error('remove ip not found. ip=%s userId=%s channelId=%s', ip, userId, channelId)
 }
