@@ -222,6 +222,7 @@ UserChannelData.prototype.getContextCount = function() {
 }
 
 UserChannelData.prototype.addContext = function(ctx) {
+    ctx.__time__ = Date.now() / 1000 | 0
     this.contexts.push(ctx)
 }
 
