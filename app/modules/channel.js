@@ -6,6 +6,7 @@ var config = require('../util/config')
 
 var channels = {}
 var connectionCount = 0
+var stats = {}
 
 var exp = module.exports
 
@@ -21,9 +22,17 @@ exp.init = function() {
             lastMin = currMin
             var statMsgCountMinute = config.get('channel.statMsgCountMinute')
             if (_.isArray(statMsgCountMinute)) {
-                _.each(channels, function(channel){
-                    channel.statMsgCount(currMin, statMsgCountMinute)
+                var newStats = {}
+                _.each(statMsgCountMinute, function(min){
+                    newStats[min] = 0
                 })
+                _.each(channels, function(channel){
+                    var channelStats = channel.statMsgCount(currMin, statMsgCountMinute)
+                    for (var min in channelStats) {
+                        newStats[min] += channelStats[min]
+                    }
+                })
+                stats = newStats
             }
             if (!!debug) {
                 console.timeEnd('channel.statMsgCountMinute')
@@ -286,4 +295,5 @@ Channel.prototype.statMsgCount = function(currMin, statMsgCountMinute) {
     })
 
     this.stats = stats
+    return stats
 }
