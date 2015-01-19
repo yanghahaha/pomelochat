@@ -156,6 +156,8 @@ remote.logMsgCount = function(min, channelId, roomIds, msgCount, cb) {
                 room.logMsgCount(min, msgCount)
             }
         })
+
+        channelService.logMsgCount(min, msgCount)
     }
 
     utils.invokeCallback(cb)
@@ -408,4 +410,16 @@ remote.topIps = function(topNum, cb) {
 
 remote.sortIps = function(minCount, cb) {
     cb(null, Code.SUCC, userService.sortIps(minCount))
+}
+
+/**************************************************
+    stats
+***************************************************/
+remote.getServerStats = function(cb) {
+    cb(null, Code.SUCC, {
+        stats: channelService.getStats(),
+        userCount: userService.getUserCount(), 
+        connectionCount: channelService.getConnectionCount(),
+        channelCount: _.keys(channelService.getChannels()).length
+    })
 }

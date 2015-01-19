@@ -587,3 +587,22 @@ handler.sortIps = function(req, session, next) {
         }
     })
 }
+
+/**************************************************
+    stats
+***************************************************/
+handler.getServerStats = function(req, session, next) {
+    channelRemote.getServerStats(req, function(err, code, stats){
+        if (!!err) {
+            next(null, {
+                code: Code.INTERNAL_SERVER_ERROR
+            })            
+        }
+        else {
+            next(null, {
+                code: code,
+                stats: stats
+            })
+        }
+    })
+}

@@ -96,6 +96,13 @@ Audience.prototype.lookupConnector = function(cb) {
 
 Audience.prototype.connectConnector = function(host, port) {
     var self = this
+
+    if (!!debug) {
+        self.pomelo.setMessageProcessor(function(msg){
+            console.log('%j', msg)
+        }) 
+    }    
+
     self.pomelo.connect({
         host: host,
         port: port

@@ -3,9 +3,11 @@ var logger = require('pomelo-logger').getLogger('channel', __filename, process.p
 var Room = require('./room')
 var Code = require('../util/code')
 var config = require('../util/config')
+var MinuteStat = require('../util/minuteStat')
 
 var channels = {}
 var connectionCount = 0
+var minuteStat = new MinuteStat()
 var stats = {}
 
 var exp = module.exports
@@ -22,17 +24,10 @@ exp.init = function() {
             lastMin = currMin
             var statMsgCountMinute = config.get('channel.statMsgCountMinute')
             if (_.isArray(statMsgCountMinute)) {
-                var newStats = {}
-                _.each(statMsgCountMinute, function(min){
-                    newStats[min] = 0
-                })
                 _.each(channels, function(channel){
-                    var channelStats = channel.statMsgCount(currMin, statMsgCountMinute)
-                    for (var min in channelStats) {
-                        newStats[min] += channelStats[min]
-                    }
+                    channel.statMsgCount(currMin, statMsgCountMinute)
                 })
-                stats = newStats
+                stats = minuteStat.stat(currMin, statMsgCountMinute)
             }
             if (!!debug) {
                 console.timeEnd('channel.statMsgCountMinute')
@@ -101,6 +96,14 @@ exp.topChannels = function(topNum) {
 
 exp.getConnectionCount = function() {
     return connectionCount
+}
+
+exp.getStats = function() {
+    return stats
+}
+
+exp.logMsgCount = function(min, msgCount) {
+    minuteStat.log(min, msgCount)
 }
 
 
