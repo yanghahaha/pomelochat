@@ -2,7 +2,7 @@ var logger = require('pomelo-logger').getLogger('connector', __filename, process
 var async = require('async')
 var Code = require('../../../util/code')
 var Utils = require('../../../util/utils')
-var frontchannelService = require('../../../modules/frontChannel')
+var frontChannelService = require('../../../modules/frontChannel')
 
 module.exports = function(app) {
 	return new Handler(app)
@@ -87,12 +87,12 @@ handler.login = function(req, session, next) {
             self.app.sessionService.kickBySessionId(session.id)
         }
         else {
-            frontchannelService.add(channelId, retData.roomId, session.id)
+            frontChannelService.add(channelId, retData.roomId, session.id)
             logger.debug('login succ userId=%s channelId=%s token=%s', userId, channelId, req.token)
             next(null, {
                 code: Code.SUCC,
                 data: {
-                    roomId: retData.roomId,
+                    //roomId: retData.roomId,
                     user: userData
                 }
             })
@@ -115,7 +115,7 @@ var onUserLeave = function(app, session, reason) {
     session.set('userId', null)
     session.push('userId')
 
-    frontchannelService.remove(channelId, roomId, session.id)
+    frontChannelService.remove(channelId, roomId, session.id)
     leaveMsgs.push({
         channelId: channelId,
         userId: userId,

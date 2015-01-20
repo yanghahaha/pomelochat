@@ -12,7 +12,7 @@
         "channel.maxUserConnectionCount"  : 5,
         "channel.userDispatcher"          : "lastRoomDispatcher",
         "channel.statMsgCountMinute"      : [1, 5, 15],
-        "channel.statMsgCountMinuteDebug" : true,
+        "channel.statMsgCountMinuteDebug" : false,
         "room.maxUserCount"               : 10,
         "gate.dispatcher"                 : "leastConnDispatcher",
         "gate.lastConnDispatcherReloadSec": 10
@@ -30,7 +30,7 @@
         "channel.maxUserConnectionCount"  : 5,
         "channel.userDispatcher"          : "lastRoomDispatcher",
         "channel.statMsgCountMinute"      : [1, 5, 15],
-        "channel.statMsgCountMinuteDebug" : true,
+        "channel.statMsgCountMinuteDebug" : false,
         "room.maxUserCount"               : 10000,
         "gate.dispatcher"                 : "leastConnDispatcher",
         "gate.lastConnDispatcherReloadSec": 60

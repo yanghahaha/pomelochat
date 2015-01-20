@@ -151,7 +151,7 @@ User.prototype.enter = function(channelId, context, varOut) {
     userChannelData.roomId = out.roomId
     userChannelData.addContext(context)
 
-    addIp(context.remote.ip, this.id, channelId, context)
+    addIp(context.remote.ip, this.id, channelId, out.roomId, context)
 
     varOut.roomId = out.roomId
     return Code.SUCC
@@ -192,7 +192,7 @@ User.prototype.leave = function(channelId, context, out) {
 
     var userId = this.id
     _.each(out.contexts, function(ctx){
-        removeIp(ctx.remote.ip, userId, channelId, ctx)
+        removeIp(ctx.remote.ip, userId, channelId, out.roomId, ctx)
     })
 
     return Code.SUCC
@@ -264,7 +264,7 @@ UserChannelData.prototype.findContext = function(ctx) {
     return -1
 }
 
-var addIp = function(ip, userId, channelId, context) {
+var addIp = function(ip, userId, channelId, roomId, context) {
     if (!ips[ip]) {
         ips[ip] = {
             ip: ip,      
@@ -280,13 +280,14 @@ var addIp = function(ip, userId, channelId, context) {
 
     ips[ip].users[userId].push({
         channelId: channelId,
+        roomId: roomId,
         context: context        
     })
 }
 
-var removeIp = function(ip, userId, channelId, context) {
+var removeIp = function(ip, userId, channelId, roomId, context) {
     if (!ips[ip] || !ips[ip].users[userId]) {
-        logger.error('remove ip not found. ip=%s userId=%s channelId=%s', ip, userId, channelId)
+        logger.error('remove ip not found. ip=%s userId=%s channelId=%s roomId=%s', ip, userId, channelId, roomId)
         return
     }
 
@@ -305,5 +306,5 @@ var removeIp = function(ip, userId, channelId, context) {
         }
     }
 
-    logger.error('remove ip not found. ip=%s userId=%s channelId=%s', ip, userId, channelId)
+    logger.error('remove ip not found. ip=%s userId=%s channelId=%s roomId=%s', ip, userId, channelId, roomId)
 }

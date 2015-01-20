@@ -1,6 +1,6 @@
 var _ = require('underscore')
 var Code = require('../../../util/code')
-var logger = require('pomelo-logger').getLogger('api', __filename, process.pid)
+//var logger = require('pomelo-logger').getLogger('api', __filename, process.pid)
 var channelRemote
 
 module.exports = function(app) {
@@ -152,26 +152,58 @@ handler.kickUser = function(req, session, next) {
         return
     }
 
-    var channelToContexts
-    channelRemote.kick(req, req.userId, req.channelId, function(err, code, contexts){
+    var app = this.app
+    channelRemote.kickUser(req, req.userId, req.channelId, function(err, code, contexts){
+        if (!!err) {
+            next(null, {
+                code: Code.INTERNAL_SERVER_ERROR
+            })
+        }
+        else {
+            next(null, {
+                code: code
+            })
+
+            if (code === Code.SUCC && !!contexts && !_.isEmpty(contexts)) {
+                kickContexts(app, contexts, req.route, req.msg)
+            }
+        }
+    })
+}
+
+handler.kickIp = function(req, session, next) {
+    if (!req.ip) {
+        next(null, {
+            code: Code.BAD_REQUEST
+        })   
+        return
+    }
+
+    var app = this.app
+    channelRemote.kickIp(req, req.ip, function(err, code, contexts){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR
             })            
         }
         else {
-            channelToContexts = contexts
             next(null, {
                 code: code
             })
+
+            if (code === Code.SUCC && !!contexts && !_.isEmpty(contexts)) {
+                kickContexts(app, contexts, req.route, req.msg)
+            }            
         }
     })
+}
 
+
+var kickContexts = function(app, channelToContexts, route, msg) {
 /*
 ret = {
     channelId1: {
-        roomId: roomId
-        contexts: [{
+        roomId1: [{
             fId:
             sId:
             context:
@@ -183,73 +215,42 @@ To
 sIdToKickData = {
     fId1: {
         channelId1: {
-            roomId: roomId
-            sIds: [sId1, sId2, ...]
+            roomId1: [sId1, sId2, ...]
         }
         channelId2: {...}
     }
     fId2: {...}
 }
 */
-    if (!_.isEmpty(channelToContexts)) {
-        var sIdToKickData = {}
+    var sIdToKickData = {}
 
-        _.each(channelToContexts, function(info, channelId){
-            if (!!info) {
-                var roomId = info.roomId
-                var contexts = info.contexts                
+    _.each(channelToContexts, function(rooms, channelId){
+        _.each(rooms, function(ctxs, roomId){
+            _.each(ctxs, function(context){
 
-                _.each(contexts, function(context){
-                    var fId = context.fId,
-                        sId = context.sId
+                var fId = context.fId,
+                    sId = context.sId
 
-                    if (!sIdToKickData[fId]) {
-                        sIdToKickData[fId] = {}
-                    }
-                    if (!sIdToKickData[fId][channelId]) {
-                        sIdToKickData[fId][channelId] = {
-                            roomId: roomId,
-                            sIds: []
-                        }
-                    }
-                    sIdToKickData[fId][channelId].sIds.push(sId)
-                })
-            }
-        }) 
+                if (!sIdToKickData[fId]) {
+                    sIdToKickData[fId] = {}
+                }
+                if (!sIdToKickData[fId][channelId]) {
+                    sIdToKickData[fId][channelId] = {}
+                }
+                if (!sIdToKickData[fId][channelId][roomId]) {
+                    sIdToKickData[fId][channelId][roomId] = []
+                }
 
-        // for (var channelId in channelToContexts) {
-        //     if (!channelToContexts[channelId]) {
-        //         continue
-        //     }
+                sIdToKickData[fId][channelId][roomId].push(sId)
+            })
+        })
+    })
 
-        //     var info = channelToContexts[channelId]
-        //     var roomId = info.roomId
-        //     var contexts = info.contexts
-
-
-        //     for (var i=0; i<contexts.length; ++i) {
-
-        //         var fId = contexts[i].fId,
-        //             sId = contexts[i].sId
-
-        //         if (!sIdToKickData[fId]) {
-        //             sIdToKickData[fId] = {}
-        //         }
-        //         if (!sIdToKickData[fId][channelId]) {
-        //             sIdToKickData[fId][channelId] = {
-        //                 roomId: roomId,
-        //                 sIds: []
-        //             }
-        //         }
-        //         sIdToKickData[fId][channelId].sIds.push(sId)
-        //     }
-        // }
-
-        for (var fsId in sIdToKickData) {
-            this.app.rpc.connector.connectorRemote.kick.toServer(fsId, sIdToKickData[fsId], req.route, req.msg, null)
-        }
+    for (var fsId in sIdToKickData) {
+        app.rpc.connector.connectorRemote.kick.toServer(fsId, sIdToKickData[fsId], route, msg, null)
     }
 }
+
 
 /**************************************************
     get user count

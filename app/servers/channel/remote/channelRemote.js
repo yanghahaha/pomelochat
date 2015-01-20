@@ -56,13 +56,18 @@ remote.leave = function(userId, channelId, context, cb) {
     }
 
     var out = {}
-    user.leave(channelId, context, out)
+    var code = user.leave(channelId, context, out)
+    if (code !== Code.SUCC) {
+        cb(null, code)
+        return        
+    }
+
     if (user.getChannelCount() === 0) {
         userService.destroyUser(userId)
     }
 
     var channel = channelService.getChannel(channelId)
-    if (channel.getUserCount() === 0) {
+    if (!!channel && channel.getUserCount() === 0) {
         channelService.destroyChannel(channelId)
     }
 
@@ -78,48 +83,99 @@ remote.leaveBatch = function(users, cb) {
     cb(null, Code.SUCC)
 }
 
-remote.kick = function(userId, channelId, cb) {
+remote.kickUser = function(userId, channelId, cb) {
     var user = userService.getUser(userId)
     if (!user) {
-        logger.warn('kick userId=%s not found', userId)
+        logger.warn('kickUser userId=%s not found', userId)
         cb(null, Code.USER_NOT_EXIST)
         return
     }
 
-    var out = {}
+    var outData = {}
     if (!!channelId) {
-        var ctx
+        var channelIds
         if (_.isArray(channelId)) {
-            _.each(channelId, function(cId) {
-                ctx = {}
-                if (user.leave(cId, null, ctx) !== Code.SUCC) {
-                    out[cId] = null
-                }
-                else {
-                    out[cId] = ctx
-                }
-            })
+            channelIds = channelId
         }
         else {
-            ctx = {}
-            var code = user.leave(channelId, null, ctx)
-            if (code !== Code.SUCC) {
-                cb(null, code)
-                return            
-            }
-            out[channelId] = ctx
+            channelIds = [channelId]
         }
+
+        _.each(channelIds, function(cId) {
+            var ctx = {}
+            if (user.leave(cId, null, ctx) === Code.SUCC) {
+                outData[cId] = {}
+                outData[cId][ctx.roomId] = ctx.contexts
+            }
+        })
     }
     else {
+        var out = {}
         user.leaveAll(out)
+        _.each(out, function(ctx, cId){
+            outData[cId] = {}
+            outData[cId][ctx.roomId] = ctx.contexts
+        })
     }
+
+    _.each(outData, function(data, cId){
+        var channel = channelService.getChannel(cId)
+        if (!!channel && channel.getUserCount() === 0) {
+            channelService.destroyChannel(cId)
+        }
+    })
 
     if (user.getChannelCount() === 0) {
         userService.destroyUser(userId)
     }
 
-    logger.info('kick userId=%s channelId=%j', userId, channelId)
-    cb(null, Code.SUCC, out)
+    logger.info('kickUser userId=%s channelId=%j', userId, channelId)
+    cb(null, Code.SUCC, outData)
+}
+
+remote.kickIp = function(ip, cb) {
+    var outData = {}
+    var innerIpData = {}    
+    var ipData = userService.getIps()[ip]
+    if (!!ipData) {
+        _.each(ipData.users, function(datas, userId){
+            if (!innerIpData[userId]) {
+                innerIpData[userId] = []
+            }
+            _.each(datas, function(data){
+                innerIpData[userId].push(data)
+            })
+        })
+
+        _.each(innerIpData, function(datas, userId){
+            var user = userService.getUser(userId)
+            if (!!user) {
+                _.each(datas, function(data){
+                    var out = {}
+                    user.leave(data.channelId, data.context, out)
+                    if (!outData[data.channelId]) {
+                        outData[data.channelId] = {}
+                    }
+                    if (!outData[data.channelId][out.roomId]) {
+                        outData[data.channelId][out.roomId] = []
+                    }
+                    outData[data.channelId][out.roomId].push(data.context)
+
+                    var channel = channelService.getChannel(data.channelId)
+                    if (!!channel && channel.getUserCount() === 0) {
+                        channelService.destroyChannel(data.channelId)
+                    }
+                })
+
+                if (user.getChannelCount() === 0) {
+                    userService.destroyUser(userId)
+                }
+            }
+        })
+    }
+
+    logger.info('kickIp ip=%s data=%j', ip, innerIpData)
+    cb(null, Code.SUCC, outData)
 }
 
 remote.getRoomIdByUserId = function(channelId, userId, cb) {
