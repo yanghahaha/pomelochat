@@ -11,6 +11,16 @@
         },
         {
             "type": "file",
+            "filename": "./logs/danger-ip.log",
+            "fileSize": 10485760,
+            "layout": {
+                "type": "basic"
+            },
+            "backups": 5,
+            "category":"danger-ip"
+        },        
+        {
+            "type": "file",
             "filename": "./logs/con-log.log", 
             "pattern": "connector", 
             "fileSize": 10485760,
@@ -66,7 +76,7 @@
     ],
 
     "levels": {
-        "[all]": "ERROR",
+        "[all]": "WARN",
         "rpc-log": "ERROR",
         "forward-log": "ERROR"
     },

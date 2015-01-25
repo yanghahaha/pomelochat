@@ -7,6 +7,8 @@
         "user.maxIpExclude"               : [
             "116.226.201.250"
         ],
+        "user.dangerPortRange"            : [0, 32767],
+        "user.dangerPortReject"           : false,
         "channel.maxUserCount"            : 1073741824,
         "channel.maxConnectionCount"      : 1073741824,
         "channel.maxUserConnectionCount"  : 5,
@@ -25,6 +27,8 @@
         "user.maxIpExclude"               : [
             "116.226.201.250"
         ],
+        "user.dangerPortRange"            : [0, 32767],
+        "user.dangerPortReject"           : false,
         "channel.maxUserCount"            : 1073741824,
         "channel.maxConnectionCount"      : 1073741824,
         "channel.maxUserConnectionCount"  : 5,
@@ -43,6 +47,8 @@
         "user.maxIpExclude"               : [
             "116.226.201.250"
         ],
+        "user.dangerPortRange"            : [0, 32767],
+        "user.dangerPortReject"           : false,
         "channel.maxUserCount"            : 1073741824,
         "channel.maxConnectionCount"      : 1073741824,
         "channel.maxUserConnectionCount"  : 5,

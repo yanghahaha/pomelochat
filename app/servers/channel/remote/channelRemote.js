@@ -1,9 +1,11 @@
 var _ = require('underscore')
 var logger = require('pomelo-logger').getLogger('channel', __filename, process.pid)
+var dangerIplogger = require('pomelo-logger').getLogger('danger-ip')
 var channelService = require('../../../modules/channel')
 var userService = require('../../../modules/user')
 var Code = require('../../../util/code')
 var utils = require('../../../util/utils')
+var config = require('../../../util/config')
 
 module.exports = function(app) {
 	return new Remote(app)
@@ -16,6 +18,17 @@ var Remote = function(app) {
 var remote = Remote.prototype
 
 remote.enter = function(userId, channelId, userData, context, cb) {
+    var range = config.get('user.dangerPortRange')
+    if (_.isArray(range) && range.length >= 2 && context.remote.port >= range[0] && context.remote.port <= range[1]) {
+        dangerIplogger.warn('%s:%s', context.remote.ip, context.remote.port)
+        var reject = config.get('user.dangerPortReject')
+        if (!!reject) {
+            logger.info('enter userId=%s channelId=%s context=%j code=%s', userId, channelId, context, Code.USER_DANGER_PORT_REJECT)
+            cb(null, Code.USER_DANGER_PORT_REJECT)       
+            return             
+        }
+    }
+
     var newUser = false
     var user = userService.getUser(userId)
     if (!user) {
@@ -41,7 +54,7 @@ remote.enter = function(userId, channelId, userData, context, cb) {
         }
     }
 
-    logger.info('enter userId=%s channelId=%s roomId=%s context=%j code=%s', userId, channelId, out.roomId,context, code)
+    logger.info('enter userId=%s channelId=%s roomId=%s context=%j code=%s', userId, channelId, out.roomId, context, code)
     cb(null, code, {
         roomId: out.roomId
     })

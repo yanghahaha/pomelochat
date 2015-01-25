@@ -14,6 +14,7 @@ module.exports = {
     CHANNEL_CONNECTION_MEET_MAX         : 1005,
     CHANNEL_USER_CONNECTION_MEET_MAX    : 1006,
     USER_IP_MEET_MAX                    : 1007,
+    USER_DANGER_PORT_REJECT             : 1008,
 
     CHANNEL_NOT_EXIST                   : 2001,
     ROOM_NOT_EXIST                      : 2002,
