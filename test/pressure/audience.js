@@ -107,6 +107,14 @@ Audience.prototype.connectConnector = function(host, port) {
         host: host,
         port: port
     }, function(){
+        // self.pomelo.request('api.apiHandler.sendChannelMsg', {
+        //     channelId: 1,
+        //     route: 'msg',
+        //     msg: {}
+        // }, function(res){
+        //     console.log('%j', res)
+        // })
+        // return;
         self.pomelo.request("connector.connectorHandler.login", {
             userId: self.userId,
             channelId: self.channel,

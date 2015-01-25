@@ -124,6 +124,14 @@
                 "clientHost": "0.0.0.0",
                 "clientPort": 13012, 
                 "frontend": true
+            },
+            {
+                "id": "api-3", 
+                "host": "10.10.6.28",
+                "port": 3013,
+                "clientHost": "0.0.0.0",
+                "clientPort": 13013, 
+                "frontend": true
             }            
         ],
         "gate":  [
@@ -190,6 +198,15 @@
                 "frontend": true
             },                     
             {
+                "id": "connector-15", 
+                "host": "10.10.19.195",  
+                "port": 3035, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "180.150.186.65",
+                "clientPort": 13035, 
+                "frontend": true
+            },                     
+            {
                 "id": "connector-21", 
                 "host": "10.10.56.63",  
                 "port": 3031, 
@@ -225,7 +242,15 @@
                 "clientPort": 13034, 
                 "frontend": true
             },
-
+            {
+                "id": "connector-25", 
+                "host": "10.10.56.63",  
+                "port": 3035, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "120.132.65.31",
+                "clientPort": 13035, 
+                "frontend": true
+            },
             {
                 "id": "connector-31", 
                 "host": "10.10.16.183",  
@@ -260,6 +285,15 @@
                 "clientHost": "0.0.0.0",
                 "clientHostReal": "120.132.61.237",
                 "clientPort": 13034, 
+                "frontend": true
+            },
+            {
+                "id": "connector-35", 
+                "host": "10.10.16.183",  
+                "port": 3035, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "120.132.61.237",
+                "clientPort": 13035, 
                 "frontend": true
             }
         ]
