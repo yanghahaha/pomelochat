@@ -1,6 +1,7 @@
 var pomelo = require('pomelo')
 var config = require('./app/util/config')
 var blacklist = require('./app/util/blacklist')
+var invalidPackageHandler = require('./app/util/invalidPackageHandler')
 var handlerLogFilter = require('./app/filters/handlerLogFilter')
 var tokenService = require('./app/modules/token')
 var channelService = require('./app/modules/channel')
@@ -30,7 +31,8 @@ app.configure('all', 'connector', function(){
         firstTimeout: 3,
         heartbeat : 30,
         disconnectOnTimeout: true,
-        blacklistFun: blacklist.get
+        blacklistFun: blacklist.get,
+        invalidPackageHandler: invalidPackageHandler
     })
     app.set('sessionConfig', {
         bindTimeout: 5
@@ -46,7 +48,8 @@ app.configure('all', 'gate', function(){
         distinctHost: true,
         firstTimeout: 3,
         disconnectOnTimeout: true,
-        blacklistFun: blacklist.get
+        blacklistFun: blacklist.get,
+        invalidPackageHandler: invalidPackageHandler
 	})
     app.set('sessionConfig', {
         bindTimeout: 5

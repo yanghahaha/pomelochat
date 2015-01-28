@@ -128,6 +128,7 @@ Audience.prototype.connectConnector = function(host, port) {
                 }
             }
         })
+        //self.pomelo.disconnect()
     })
 }
 

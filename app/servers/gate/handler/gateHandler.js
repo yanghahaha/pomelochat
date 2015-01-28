@@ -1,7 +1,7 @@
 var _ = require('underscore')
 var Code = require('../../../util/code')
 var config = require('../../../util/config')
-var logger = require('pomelo-logger').getLogger('gate', __filename)
+var logger = require('pomelo-logger').getLogger('gate', __filename, process.pid)
 
 var dispatchers = {
     'leastConnDispatcher': require('../../../dispatchers/leastConnDispatcher'),
