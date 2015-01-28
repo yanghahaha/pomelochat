@@ -30,10 +30,22 @@ handler.login = function(req, session, next) {
         code = Code.INTERNAL_SERVER_ERROR,
         retData, userData
     var uId = Utils.getSessionUid(userId, channelId)
+    var remote = self.app.sessionService.getClientAddressBySessionId(session.id)
+    if (!remote) {
+        next(null, {
+            code: Code.INTERNAL_SERVER_ERROR
+        });
+        self.app.sessionService.kickBySessionId(session.id);
+        return;        
+    }
+
     var context = {
             fId: self.app.get('serverId'),
             sId: session.id,
-            remote: self.app.sessionService.getClientAddressBySessionId(session.id)
+            remote: {
+                ip: remote.ip,
+                port: remote.port
+            }
         }
 
     async.waterfall([
@@ -52,6 +64,17 @@ handler.login = function(req, session, next) {
             }
         },
         function(cb) {
+            if (!session.isValid()) {
+                cb(new Error('session invalid sid='+session.id))
+                return
+            }
+
+            session.on('closed', onUserLeave.bind(null, self.app))
+            session.set('userId', userId)
+            session.set('channelId', channelId)
+            session.set('context', context)
+            session.pushAll()            
+
             session.bind(uId, function(err) {
                 if (!!err) {
                     code = Code.DUPLICATED_LOGIN
@@ -60,6 +83,10 @@ handler.login = function(req, session, next) {
             })
         },
         function(cb) {
+            if (!session.isValid()) {
+                cb(new Error('session invalid sid='+session.id))
+                return
+            }
             self.app.rpc.channel.channelRemote.enter(session, userId, channelId, userData, context, cb)
         },
         function(ret, data, cb) {
@@ -68,23 +95,25 @@ handler.login = function(req, session, next) {
             if (code !== Code.SUCC) {
                 cb(new Error('channelRemote.enter fail'))
             }
+            else if (!session.isValid()) {
+                cb(new Error('session invalid sid='+session.id))
+            }
             else {
                 retData = data
-                session.on('closed', onUserLeave.bind(null, self.app))
-                session.set('userId', userId)
-                session.set('channelId', channelId)
-                session.set('context', context)
                 session.set('roomId', retData.roomId)
-                session.pushAll(cb)
+                session.push('roomId')                    
+                cb()
             }
         }
     ], function(err) {
         if (!!err) {
             logger.debug("login error userId=%s channelId=%s token=%s code=%s err=%s stack=%s", userId, channelId, req.token, code, err.toString(), err.stack)
-            next(null, {
-                code: code
-            })
-            self.app.sessionService.kickBySessionId(session.id)
+            if (session.isValid()) {
+                next(null, {
+                    code: code
+                })
+                self.app.sessionService.kickBySessionId(session.id)
+            }
         }
         else {
             frontChannelService.add(channelId, retData.roomId, session.id)

@@ -26,15 +26,29 @@ exp.add = function(channelId, roomId, sessionId) {
         channels[channelId][roomId] = {}
         channelSessionCount[channelId][roomId] = 0
     }
-    channels[channelId][roomId][sessionId] = true
-    channelSessionCount[channelId][roomId] ++
+    if (!channels[channelId][roomId][sessionId]) {
+        channels[channelId][roomId][sessionId] = true
+        channelSessionCount[channelId][roomId] ++
+    }
 }
 
 exp.remove = function(channelId, roomId, sessionId) {
     if (!channels[channelId]) {
         return
     }
-    if (!channels[channelId][roomId]) {
+    if (!roomId) {
+        for (var rId in channels[channelId]) {
+            if (!!channels[channelId][rId][sessionId]) {
+                roomId = rId
+                break
+            }
+        }
+        if (!roomId) {
+            return
+        }
+    }
+
+    if (!channels[channelId][roomId] || !channels[channelId][roomId][sessionId]) {
         return
     }
     delete channels[channelId][roomId][sessionId]
@@ -55,7 +69,7 @@ exp.remove = function(channelId, roomId, sessionId) {
                 delete channelSessionCount[channelId]
             }
         }
-    }    
+    }
 }
 
 exp.dump = function() {

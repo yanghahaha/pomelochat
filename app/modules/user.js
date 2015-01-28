@@ -86,6 +86,10 @@ exp.getIps = function() {
     return ips
 }
 
+exp.getUsers = function() {
+    return users
+}
+
 var User = function(id, data) {
     this.id = id
     this.data = {}    
