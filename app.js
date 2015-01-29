@@ -18,7 +18,7 @@ blacklist.init(app.get('env'), app.getServerType(), {path: './config/blacklist.j
 app.configure(function(){
     app.set('proxyConfig', {
         bufferMsg: true,
-        interval: 30
+        interval: 50
     })
     app.rpcFilter(pomelo.rpcFilters.rpcLog())
     app.set('ssh_config_params', ['-p 1127'])
