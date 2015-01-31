@@ -90,9 +90,21 @@ remote.leave = function(userId, channelId, context, cb) {
 
 remote.leaveBatch = function(users, cb) {
     var self = this
-    _.each(users, function(user){
-        self.leave(user.userId, user.channelId, user.context, function(){})
-    })
+    for (var i=0; i<users.length; ++i) {
+        var brk = false
+        var user = users[i]
+        self.leave(user.userId, user.channelId, user.context, function(err, code){
+            if (code === Code.USER_NOT_EXIST) {
+                brk = true
+            }
+        })
+
+        if (brk) {
+            logger.fatal('users.length=%s i=%s user=%j users=%j', users.length, i, user, users)
+            break
+        }
+    }
+
     cb(null, Code.SUCC)
 }
 
