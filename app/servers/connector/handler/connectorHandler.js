@@ -148,7 +148,8 @@ var onUserLeave = function(app, session, reason) {
     leaveMsgs.push({
         channelId: channelId,
         userId: userId,
-        context: context
+        context: context,
+        roomId: roomId
     })
 }
 

@@ -63,7 +63,15 @@ remote.enter = function(userId, channelId, userData, context, cb) {
 remote.leave = function(userId, channelId, context, cb) {
     var user = userService.getUser(userId)
     if (!user) {
-        logger.warn('leave userId=%s not found', userId)        
+        logger.warn('leave userId=%s not found', userId)
+        logger.fatal('arguments=%j', arguments)     
+        logger.fatal('cb=%s', cb.toString())     
+        logger.fatal('stack=%s', new Error().stack)
+        logger.fatal('userdump=%j', userService.dump())
+        var util = require('util')
+        logger.fatal('util.inspect=%s', util.inspect(userService.getUsers(), {showHidden:true, depth: 10}))
+        var heapdump = require('heapdump');
+        heapdump.writeSnapshot('/tmp/channel.heapsnapshot.' + Date.now() + '.' + process.pid)
         cb(null, Code.USER_NOT_EXIST)
         return
     }
@@ -90,15 +98,17 @@ remote.leave = function(userId, channelId, context, cb) {
 
 remote.leaveBatch = function(users, cb) {
     var self = this
-    for (var i=0; i<users.length; ++i) {
-        var brk = false
-        var user = users[i]
-        self.leave(user.userId, user.channelId, user.context, function(err, code){
-            if (code === Code.USER_NOT_EXIST) {
-                brk = true
-            }
-        })
+    var brk = false
+    var checker = function(err, code) {
+        if (code === Code.USER_NOT_EXIST) {
+            brk = true
+        }
+    }
 
+    for (var i=0; i<users.length; ++i) {
+        brk = false
+        var user = users[i]
+        self.leave(user.userId, user.channelId, user.context, checker)
         if (brk) {
             logger.fatal('users.length=%s i=%s user=%j users=%j', users.length, i, user, users)
             break
