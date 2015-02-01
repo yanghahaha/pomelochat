@@ -1,20 +1,20 @@
 {
-	"name": "huomaotv-pomelochat",
-	"version": "0.0.1",
-	"private": false,
+    "name": "huomaotv-pomelochat",
+    "version": "0.0.1",
+    "private": false,
     "repository": {
         "type": "git",
         "url": "git+ssh://git@git.marstv.com/git/backend/pomelochat.git"
     },
-	"dependencies": {
-		"pomelo": "git+ssh://git@git.marstv.com/git/backend/pomelo.git",
+    "dependencies": {
+        "pomelo": "git+ssh://git@git.marstv.com/git/backend/pomelo.git",
         "pomelo-logger": "git+ssh://git@git.marstv.com/git/backend/pomelo-logger.git",
         "pomelo-rpc": "git+ssh://git@git.marstv.com/git/backend/pomelo-rpc.git",
-		"crc": "0.2.0",
+        "crc": "0.2.0",
         "underscore": "",
         "random-string": "",
         "async": "",
         "optimist": "",
         "heapdump": ""
-	}
+    }
 }
