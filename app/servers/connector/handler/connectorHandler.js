@@ -144,7 +144,10 @@ var onUserLeave = function(app, session, reason) {
     session.set('userId', null)
     session.push('userId')
 
-    frontChannelService.remove(channelId, roomId, session.id)
+    if (!!roomId) {
+        frontChannelService.remove(channelId, roomId, session.id)
+    }
+
     leaveMsgs.push({
         channelId: channelId,
         userId: userId,

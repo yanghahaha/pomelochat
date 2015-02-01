@@ -11,7 +11,7 @@ exp.create = function(opts) {
 }
 
 exp.destroy = function(room) {
-    logger.debug('destroy room id=%s channelId=%s', room.id, room.channel.id)
+    logger.debug('destroy room id=%s channelId=%s', room.id, room.channelId)
     for (var i in room) {
         room[i] = null
     }
