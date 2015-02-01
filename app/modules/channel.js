@@ -271,7 +271,7 @@ Channel.prototype.createNewRoom = function() {
     }
 
     var room = Room.create({
-        channel: this,
+        channelId: this.id,
         id: index
     })
 
