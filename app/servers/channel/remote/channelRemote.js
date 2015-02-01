@@ -18,6 +18,8 @@ var Remote = function(app) {
 var remote = Remote.prototype
 
 remote.enter = function(userId, channelId, userData, context, cb) {
+    logger.info('enter begin userId=%s channelId=%s context=%j', userId, channelId, context)
+
     var range = config.get('user.dangerPortRange')
     if (_.isArray(range) && range.length >= 2 && context.remote.port >= range[0] && context.remote.port <= range[1]) {
         dangerIplogger.warn('%s:%s', context.remote.ip, context.remote.port)
@@ -61,6 +63,7 @@ remote.enter = function(userId, channelId, userData, context, cb) {
 }
 
 remote.leave = function(userId, channelId, context, cb) {
+    logger.info('leave begin userId=%s channelId=%s context=%j', userId, channelId, context) 
     var user = userService.getUser(userId)
     if (!user) {
         logger.warn('leave userId=%s not found', userId)
@@ -72,6 +75,7 @@ remote.leave = function(userId, channelId, context, cb) {
         logger.fatal('util.inspect=%s', util.inspect(userService.getUsers(), {showHidden:true, depth: 10}))
         var heapdump = require('heapdump');
         heapdump.writeSnapshot('/tmp/channel.heapsnapshot.' + Date.now() + '.' + process.pid)
+        logger.info('code=Code.USER_NOT_EXIST') 
         cb(null, Code.USER_NOT_EXIST)
         return
     }
@@ -79,6 +83,7 @@ remote.leave = function(userId, channelId, context, cb) {
     var out = {}
     var code = user.leave(channelId, context, out)
     if (code !== Code.SUCC) {
+        logger.info('code=%s', code) 
         cb(null, code)
         return        
     }
@@ -97,24 +102,20 @@ remote.leave = function(userId, channelId, context, cb) {
 }
 
 remote.leaveBatch = function(users, cb) {
+    logger.info('leaveBatch begin users.length=%s users=%j', users.length, users)
     var self = this
-    var brk = false
-    var checker = function(err, code) {
-        if (code === Code.USER_NOT_EXIST) {
-            brk = true
+    var checker = function(err, code) {        
+        if (code !== Code.SUCC) {
+            logger.fatal('code=%s', code)
         }
     }
 
     for (var i=0; i<users.length; ++i) {
-        brk = false
         var user = users[i]
         self.leave(user.userId, user.channelId, user.context, checker)
-        if (brk) {
-            logger.fatal('users.length=%s i=%s user=%j users=%j', users.length, i, user, users)
-            break
-        }
     }
 
+    logger.info('leaveBatch end users.length=%s', users.length)
     cb(null, Code.SUCC)
 }
 
@@ -214,18 +215,22 @@ remote.kickIp = function(ip, cb) {
 }
 
 remote.getRoomIdByUserId = function(channelId, userId, cb) {
+    logger.info('getRoomIdByUserId begin')
     var user = userService.getUser(userId)
     if (!user) {
+        logger.info('code = Code.USER_NOT_EXIST')
         cb(null, Code.USER_NOT_EXIST)
         return
     }
 
     var userChannel = user.getChannelData(channelId)
     if (!userChannel) {
+        logger.info('code = Code.USER_NOT_IN_CHANNEL')
         cb(null, Code.USER_NOT_IN_CHANNEL)
         return        
     }
 
+    logger.info('code = Code.SUCC')
     cb(null, Code.SUCC, userChannel.roomId)
 }
 
@@ -250,11 +255,11 @@ remote.logMsgCount = function(min, channelId, roomIds, msgCount, cb) {
 
         channelService.logMsgCount(min, msgCount)
     }
-
     utils.invokeCallback(cb)
 }
 
 remote.logMsgCountBatch = function(min, channels, cb) {
+    logger.info('logMsgCountBatch begin')
     if (!min) {
         min = Date.now() / 60000 | 0
     }
@@ -266,6 +271,7 @@ remote.logMsgCountBatch = function(min, channels, cb) {
         })
     })
 
+    logger.info('logMsgCountBatch end')
     utils.invokeCallback(cb)
 }
 

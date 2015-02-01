@@ -17,6 +17,7 @@ exp.init = function() {
     setInterval(function(){
         var currMin = new Date() / 60000 | 0
         if (currMin > lastMin) {
+            logger.info('channel.statMsgCountMinute begin')
             var debug = config.get('channel.statMsgCountMinuteDebug')
             if (!!debug) {
                 console.time('channel.statMsgCountMinute')
@@ -32,6 +33,7 @@ exp.init = function() {
             if (!!debug) {
                 console.timeEnd('channel.statMsgCountMinute')
             }
+            logger.info('channel.statMsgCountMinute end')
         }
     }, 1000)
 }
