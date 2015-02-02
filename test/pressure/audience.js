@@ -8,7 +8,8 @@ var gate = argv.g || argv.gate || '127.0.0.1:13021'
 var channel = argv.c || argv.channel || 'yang-hannah'
 var num = argv.n || argv.num || 100
 var debug = argv.d || argv.debug || false
-var leaveNum = argv.l || argv.leave || 10
+var mockDebug = argv.m || argv.mockdebug || false
+var leaveNum = argv.l || argv.leave || 0
 
 var apiHost = api.split(':')[0],
     apiPort = api.split(':')[1]
@@ -24,11 +25,11 @@ var Audience = function(channel, userId) {
     if (!!debug) {
         this.pomelo.on('close', function(){
             console.log('close %s', self.userId)
-        })
+        }) 
         this.pomelo.setMessageProcessor(function(msg){
             console.log('%j', msg)
         }) 
-    }    
+    }
 }
 
 Audience.prototype.init = function() {
@@ -109,14 +110,12 @@ Audience.prototype.connectConnector = function(host, port) {
         host: host,
         port: port
     }, function(){
-        // self.pomelo.request('api.apiHandler.sendChannelMsg', {
-        //     channelId: 1,
-        //     route: 'msg',
-        //     msg: {}
-        // }, function(res){
-        //     console.log('%j', res)
-        // })
-        // return;
+        if (!!mockDebug) {
+            self.pomelo.on('close', function(){
+                console.log('on close %s', self.userId)
+            })
+        }
+
         self.pomelo.request("connector.connectorHandler.login", {
             userId: self.userId,
             channelId: self.channel,
@@ -131,13 +130,15 @@ Audience.prototype.connectConnector = function(host, port) {
                 }
             }
         })
-        //self.pomelo.disconnect()
     })
 }
 
 var mock = function() {
     for (var i=0; i<leaveNum; ++i) {
         var index = Math.random() * audiences.length | 0
+        if (!!mockDebug) {
+            console.log('active close %s', audiences[index].userId)
+        }
         audiences[index].pomelo.disconnect()
         delete audiences[index]
         audiences[index] = createAudience(channel, randomString({length: 10}), index)
@@ -152,6 +153,10 @@ var createAudience = function(channel, userId) {
 
 var audiences = []
 var loginedCount = 0
+
+process.on('uncaughtException', function(err) {
+    console.error(' Caught exception: ' + err.stack)
+})
 
 for (var i=0; i<num; ++i) {
     audiences.push(createAudience(channel, randomString({length: 10}), i))
