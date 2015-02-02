@@ -10,7 +10,6 @@ module.exports = function(app) {
 
 var Handler = function(app) {
     this.app = app
-    setInterval(sendLeaveMsgBatch.bind(null, app), 1000)
 }
 
 var handler = Handler.prototype
@@ -79,7 +78,6 @@ handler.login = function(req, session, next) {
                 if (!!err) {
                     code = Code.DUPLICATED_LOGIN
                 }
-                logger.info('bind userId=%s channelId=%s err=%s', userId, channelId, err)
                 cb(err)
             })
         },
@@ -88,7 +86,6 @@ handler.login = function(req, session, next) {
                 cb(new Error('session invalid sid='+session.id))
                 return
             }
-            logger.info('enter userId=%s channelId=%s', userId, channelId)
             self.app.rpc.channel.channelRemote.enter(session, userId, channelId, userData, context, cb)
         },
         function(ret, data, cb) {
@@ -109,7 +106,7 @@ handler.login = function(req, session, next) {
         }
     ], function(err) {
         if (!!err) {
-            logger.debug("login error userId=%s channelId=%s token=%s code=%s err=%s stack=%s", userId, channelId, req.token, code, err.toString(), err.stack)
+            logger.warn("login error userId=%s channelId=%s token=%s code=%s err=%s stack=%s", userId, channelId, req.token, code, err.toString(), err.stack)
             if (session.isValid()) {
                 next(null, {
                     code: code
@@ -119,19 +116,16 @@ handler.login = function(req, session, next) {
         }
         else {
             frontChannelService.add(channelId, retData.roomId, session.id)
-            logger.debug('login succ userId=%s channelId=%s token=%s', userId, channelId, req.token)
+            logger.info('login succ userId=%s channelId=%s token=%s', userId, channelId, req.token)
             next(null, {
                 code: Code.SUCC,
                 data: {
-                    //roomId: retData.roomId,
                     user: userData
                 }
             })
         }
     })
 }
-
-var leaveMsgs = []
 
 var onUserLeave = function(app, session, reason) {
     if (!session || !session.get('userId') || reason === 'kick') {
@@ -150,7 +144,35 @@ var onUserLeave = function(app, session, reason) {
         frontChannelService.remove(channelId, roomId, session.id)
     }
 
-    logger.info('onUserLeave userId=%s channelId=%s roomId=%s reason=%s', userId, channelId, roomId, reason)
+    app.rpc.channel.channelRemote.leave.toServer('*', userId, channelId, context, function(err, code){
+        if (!!err || code !== Code.SUCC) {
+            logger.warn('onUserLeave fail userId=%s channelId=%s roomId=%s context=%j reason=%s err=%s code=%s', userId, channelId, roomId, context, reason, err, code)
+        }
+        else {
+            logger.info('onUserLeave succ userId=%s channelId=%s roomId=%s context=%j reason=%s code=%s', userId, channelId, roomId, context, reason, code)   
+        }
+    })
+}
+
+var leaveMsgs = []
+var leaveLoopStarted = false
+
+var onUserLeaveBatch = function(app, session, reason) {
+    if (!session || !session.get('userId') || reason === 'kick') {
+        return
+    }
+
+    var userId = session.get('userId'),
+        channelId = session.get('channelId'),
+        roomId = session.get('roomId'),
+        context = session.get('context')
+
+    session.set('userId', null)
+    session.push('userId')
+
+    if (!!roomId) {
+        frontChannelService.remove(channelId, roomId, session.id)
+    }
 
     leaveMsgs.push({
         channelId: channelId,
@@ -158,6 +180,11 @@ var onUserLeave = function(app, session, reason) {
         context: context,
         roomId: roomId
     })
+
+    if (!leaveLoopStarted) {
+        setInterval(sendLeaveMsgBatch.bind(null, app), 1000)
+        leaveLoopStarted = true
+    }
 }
 
 var sendLeaveMsgBatch = function(app) {
@@ -165,8 +192,8 @@ var sendLeaveMsgBatch = function(app) {
         var msgs = leaveMsgs
         leaveMsgs = []
         app.rpc.channel.channelRemote.leaveBatch.toServer('*', msgs, function(err, code, failed){
-            if (failed.length > 0) {
-                logger.info('leave batch failed=%j', failed)
+            if (!!failed && failed.length > 0) {
+                logger.warn('leave batch failed=%j', failed)
             }
         })
     }

@@ -1,6 +1,5 @@
 var _ = require('underscore')
 var logger = require('pomelo-logger').getLogger('channel', __filename, process.pid)
-var dangerIplogger = require('pomelo-logger').getLogger('danger-ip')
 var channelService = require('../../../modules/channel')
 var userService = require('../../../modules/user')
 var Code = require('../../../util/code')
@@ -18,16 +17,13 @@ var Remote = function(app) {
 var remote = Remote.prototype
 
 remote.enter = function(userId, channelId, userData, context, cb) {
-    logger.info('enter begin userId=%s channelId=%s context=%j', userId, channelId, context)
-
     var range = config.get('user.dangerPortRange')
     if (_.isArray(range) && range.length >= 2 && context.remote.port >= range[0] && context.remote.port <= range[1]) {
-        dangerIplogger.warn('%s:%s', context.remote.ip, context.remote.port)
         var reject = config.get('user.dangerPortReject')
         if (!!reject) {
-            logger.info('enter userId=%s channelId=%s context=%j code=%s', userId, channelId, context, Code.USER_DANGER_PORT_REJECT)
+            logger.warn('enter fail userId=%s channelId=%s context=%j code=%s', userId, channelId, context, Code.USER_DANGER_PORT_REJECT)
             cb(null, Code.USER_DANGER_PORT_REJECT)       
-            return             
+            return
         }
     }
 
@@ -54,28 +50,22 @@ remote.enter = function(userId, channelId, userData, context, cb) {
         if (newChannel) {
             channelService.destroyChannel(channelId)
         }
+
+        logger.warn('enter fail userId=%s channelId=%s context=%j code=%s', userId, channelId, context, code)
+    }
+    else {
+        logger.info('enter succ userId=%s channelId=%s roomId=%s context=%j code=%s', userId, channelId, out.roomId, context, code)
     }
 
-    logger.info('enter userId=%s channelId=%s roomId=%s context=%j code=%s', userId, channelId, out.roomId, context, code)
     cb(null, code, {
         roomId: out.roomId
     })
 }
 
 remote.leave = function(userId, channelId, context, cb) {
-    logger.info('leave begin userId=%s channelId=%s context=%j', userId, channelId, context) 
     var user = userService.getUser(userId)
     if (!user) {
-        logger.warn('leave userId=%s not found', userId)
-        logger.fatal('arguments=%j', arguments)     
-        logger.fatal('cb=%s', cb.toString())     
-        logger.fatal('stack=%s', new Error().stack)
-        //logger.fatal('userdump=%j', userService.dump())
-        var util = require('util')
-        //logger.fatal('util.inspect=%s', util.inspect(userService.getUsers(), {showHidden:true, depth: 10}))
-        var heapdump = require('heapdump');
-        //heapdump.writeSnapshot('/tmp/channel.heapsnapshot.' + Date.now() + '.' + process.pid)
-        logger.info('code=Code.USER_NOT_EXIST') 
+        logger.warn('leave fail userId=%s channelId=%s context=%j code=%s', userId, channelId, context, Code.USER_NOT_EXIST)
         cb(null, Code.USER_NOT_EXIST)
         return
     }
@@ -83,7 +73,7 @@ remote.leave = function(userId, channelId, context, cb) {
     var out = {}
     var code = user.leave(channelId, context, out)
     if (code !== Code.SUCC) {
-        logger.info('code=%s', code) 
+        logger.warn('leave fail userId=%s channelId=%s context=%j code=%s', userId, channelId, context, code)
         cb(null, code)
         return        
     }
@@ -97,18 +87,16 @@ remote.leave = function(userId, channelId, context, cb) {
         channelService.destroyChannel(channelId)
     }
 
-    logger.info('leave userId=%s channelId=%s roomId=%s context=%j', userId, channelId, out.roomId, context)
+    logger.info('leave succ userId=%s channelId=%s roomId=%s context=%j code=%s', userId, channelId, out.roomId, context, Code.SUCC)
     cb(null, Code.SUCC)
 }
 
 remote.leaveBatch = function(users, cb) {
-    logger.info('leaveBatch begin users.length=%s users=%j', users.length, users)
     var self = this
     var failed = []
     var checker = function(err, code) {        
-        if (code !== Code.SUCC) {
+        if (!err && code !== Code.SUCC) {
             failed.push({user:user, code:code})
-            logger.fatal('code=%s', code)
         }
     }
 
@@ -117,14 +105,20 @@ remote.leaveBatch = function(users, cb) {
         self.leave(user.userId, user.channelId, user.context, checker)
     }
 
-    logger.info('leaveBatch end users.length=%s failed.length=%s', users.length, failed.length)
+    if (failed.length > 0) {
+        logger.warn('leaveBatch has fail users.length=%s failed.length=%s failed=%j', users.length, failed.length, failed)    
+    }
+    else {
+        logger.info('leaveBatch succ users.length=%s failed.length=%s', users.length, failed.length)
+    }
+
     cb(null, Code.SUCC, failed)
 }
 
 remote.kickUser = function(userId, channelId, cb) {
     var user = userService.getUser(userId)
     if (!user) {
-        logger.warn('kickUser userId=%s not found', userId)
+        logger.warn('kickUser fail userId=%s channelId=%s code=%s', userId, channelId, Code.USER_NOT_EXIST)
         cb(null, Code.USER_NOT_EXIST)
         return
     }
@@ -167,7 +161,7 @@ remote.kickUser = function(userId, channelId, cb) {
         userService.destroyUser(userId)
     }
 
-    logger.info('kickUser userId=%s channelId=%j', userId, channelId)
+    logger.info('kickUser succ userId=%s channelId=%s code=%s', userId, channelId, Code.SUCC)
     cb(null, Code.SUCC, outData)
 }
 
@@ -212,27 +206,23 @@ remote.kickIp = function(ip, cb) {
         })
     }
 
-    logger.info('kickIp ip=%s data=%j', ip, innerIpData)
+    logger.info('kickIp succ ip=%s data=%j code=%s', ip, innerIpData, Code.SUCC)
     cb(null, Code.SUCC, outData)
 }
 
 remote.getRoomIdByUserId = function(channelId, userId, cb) {
-    logger.info('getRoomIdByUserId begin')
     var user = userService.getUser(userId)
     if (!user) {
-        logger.info('code = Code.USER_NOT_EXIST')
         cb(null, Code.USER_NOT_EXIST)
         return
     }
 
     var userChannel = user.getChannelData(channelId)
     if (!userChannel) {
-        logger.info('code = Code.USER_NOT_IN_CHANNEL')
         cb(null, Code.USER_NOT_IN_CHANNEL)
         return        
     }
 
-    logger.info('code = Code.SUCC')
     cb(null, Code.SUCC, userChannel.roomId)
 }
 
@@ -261,7 +251,6 @@ remote.logMsgCount = function(min, channelId, roomIds, msgCount, cb) {
 }
 
 remote.logMsgCountBatch = function(min, channels, cb) {
-    logger.info('logMsgCountBatch begin')
     if (!min) {
         min = Date.now() / 60000 | 0
     }
@@ -273,7 +262,6 @@ remote.logMsgCountBatch = function(min, channels, cb) {
         })
     })
 
-    logger.info('logMsgCountBatch end')
     utils.invokeCallback(cb)
 }
 

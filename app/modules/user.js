@@ -164,7 +164,6 @@ User.prototype.enter = function(channelId, context, varOut) {
 User.prototype.leave = function(channelId, context, out) {
     var userChannelData = this.channelDatas[channelId]
     if (!userChannelData) {
-        logger.warn('user=%s not in channel=%s', this.id, channelId)
         return Code.USER_NOT_IN_CHANNEL
     }
 
@@ -174,7 +173,6 @@ User.prototype.leave = function(channelId, context, out) {
     if (!!context) {
         var index = userChannelData.findContext(context)
         if (index === -1) {
-            logger.warn('user=%s context.remote=%j not in channel=%s', this.id, context.remote, channelId)
             return Code.USER_CTX_NOT_FOUND
         }
         userChannelData.removeContextByIndex(index)
