@@ -160,11 +160,13 @@ var onUserLeave = function(app, session, reason) {
 }
 
 var sendLeaveMsgBatch = function(app) {
-    var msgs = leaveMsgs
-    leaveMsgs = []
-    app.rpc.channel.channelRemote.leaveBatch.toServer('*', msgs, function(err, code, failed){
-        if (failed.length > 0) {
-            logger.info('leave batch failed=%j', failed)
-        }
-    })
+    if (leaveMsgs.length > 0) {
+        var msgs = leaveMsgs
+        leaveMsgs = []
+        app.rpc.channel.channelRemote.leaveBatch.toServer('*', msgs, function(err, code, failed){
+            if (failed.length > 0) {
+                logger.info('leave batch failed=%j', failed)
+            }
+        })
+    }
 }
