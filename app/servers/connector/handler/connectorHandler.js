@@ -150,7 +150,7 @@ var onUserLeave = function(app, session, reason) {
         frontChannelService.remove(channelId, roomId, session.id)
     }
 
-    logger.info('onUserLeave userId=%s channelId=%s roomId=%s', userId, channelId, roomId)
+    logger.info('onUserLeave userId=%s channelId=%s roomId=%s reason=%s', userId, channelId, roomId, reason)
 
     leaveMsgs.push({
         channelId: channelId,
