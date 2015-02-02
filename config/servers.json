@@ -108,7 +108,16 @@
                 "clientHostReal": "192.168.14.13",
                 "clientPort": 13033, 
                 "frontend": true
-            }                                
+            },
+            {
+                "id": "connector-4", 
+                "host": "127.0.0.1",  
+                "port": 3034, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "192.168.14.13",
+                "clientPort": 13034, 
+                "frontend": true
+            }                                                    
         ]
     },
     "production":  {
