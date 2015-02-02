@@ -73,7 +73,7 @@ handler.login = function(req, session, next) {
             session.set('userId', userId)
             session.set('channelId', channelId)
             session.set('context', context)
-            session.pushAll()            
+            session.pushAll()
 
             session.bind(uId, function(err) {
                 if (!!err) {
@@ -87,6 +87,7 @@ handler.login = function(req, session, next) {
                 cb(new Error('session invalid sid='+session.id))
                 return
             }
+            logger.info('enter userId=%s channelId=%s', userId, channelId)
             self.app.rpc.channel.channelRemote.enter(session, userId, channelId, userData, context, cb)
         },
         function(ret, data, cb) {
@@ -148,6 +149,8 @@ var onUserLeave = function(app, session, reason) {
         frontChannelService.remove(channelId, roomId, session.id)
     }
 
+    logger.info('onUserLeave userId=%s channelId=%s roomId=%s', userId, channelId, roomId)
+
     leaveMsgs.push({
         channelId: channelId,
         userId: userId,
@@ -159,15 +162,9 @@ var onUserLeave = function(app, session, reason) {
 var sendLeaveMsgBatch = function(app) {
     var msgs = leaveMsgs
     leaveMsgs = []
-    app.rpc.channel.channelRemote.leaveBatch.toServer('*', msgs, function(err, code){
-        if (!!err || code !== Code.SUCC) {
-            var stack = null
-            var errMsg = null
-            if (!!err) {
-                errMsg = err.toString()
-                stack = err.stack
-            }
-            logger.debug('leave batch error code=%s err=%s stack=%s', code, errMsg, stack)
+    app.rpc.channel.channelRemote.leaveBatch.toServer('*', msgs, function(err, code, failed){
+        if (failed.length > 0) {
+            logger.info('leave batch failed=%j', failed)
         }
     })
 }

@@ -70,11 +70,11 @@ remote.leave = function(userId, channelId, context, cb) {
         logger.fatal('arguments=%j', arguments)     
         logger.fatal('cb=%s', cb.toString())     
         logger.fatal('stack=%s', new Error().stack)
-        logger.fatal('userdump=%j', userService.dump())
+        //logger.fatal('userdump=%j', userService.dump())
         var util = require('util')
-        logger.fatal('util.inspect=%s', util.inspect(userService.getUsers(), {showHidden:true, depth: 10}))
+        //logger.fatal('util.inspect=%s', util.inspect(userService.getUsers(), {showHidden:true, depth: 10}))
         var heapdump = require('heapdump');
-        heapdump.writeSnapshot('/tmp/channel.heapsnapshot.' + Date.now() + '.' + process.pid)
+        //heapdump.writeSnapshot('/tmp/channel.heapsnapshot.' + Date.now() + '.' + process.pid)
         logger.info('code=Code.USER_NOT_EXIST') 
         cb(null, Code.USER_NOT_EXIST)
         return
@@ -104,8 +104,10 @@ remote.leave = function(userId, channelId, context, cb) {
 remote.leaveBatch = function(users, cb) {
     logger.info('leaveBatch begin users.length=%s users=%j', users.length, users)
     var self = this
+    var failed = []
     var checker = function(err, code) {        
         if (code !== Code.SUCC) {
+            failed.push({user:user, code:code})
             logger.fatal('code=%s', code)
         }
     }
@@ -115,8 +117,8 @@ remote.leaveBatch = function(users, cb) {
         self.leave(user.userId, user.channelId, user.context, checker)
     }
 
-    logger.info('leaveBatch end users.length=%s', users.length)
-    cb(null, Code.SUCC)
+    logger.info('leaveBatch end users.length=%s failed.length=%s', users.length, failed.length)
+    cb(null, Code.SUCC, failed)
 }
 
 remote.kickUser = function(userId, channelId, cb) {
