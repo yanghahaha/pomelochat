@@ -23,7 +23,7 @@
         "handler.timeUseWarn"             : 100,        
         "token.timeout"                   : 30,
         "user.maxChannelCount"            : 1073741824,
-        "user.maxIpCount"                 : 10,
+        "user.maxIpCount"                 : 100000,
         "user.maxIpExclude"               : [
             "116.226.201.250"
         ],
