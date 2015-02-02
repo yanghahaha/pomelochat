@@ -20,6 +20,10 @@ app.configure(function(){
         bufferMsg: true,
         interval: 50
     })
+    app.set('remoteConfig', {
+        bufferMsg: true,
+        interval: 50
+    })
     app.rpcFilter(pomelo.rpcFilters.rpcLog())
     app.set('ssh_config_params', ['-p 1127'])
 })
