@@ -79,6 +79,7 @@ handler.login = function(req, session, next) {
                 if (!!err) {
                     code = Code.DUPLICATED_LOGIN
                 }
+                logger.info('bind userId=%s channelId=%s err=%s', userId, channelId, err)
                 cb(err)
             })
         },
