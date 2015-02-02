@@ -8,6 +8,7 @@ var gate = argv.g || argv.gate || '127.0.0.1:13021'
 var channel = argv.c || argv.channel || 'yang-hannah'
 var num = argv.n || argv.num || 100
 var debug = argv.d || argv.debug || false
+var leaveNum = argv.l || argv.leave || 10
 
 var apiHost = api.split(':')[0],
     apiPort = api.split(':')[1]
@@ -125,11 +126,21 @@ Audience.prototype.connectConnector = function(host, port) {
                 loginedCount++
                 if (loginedCount === num) {
                     console.log('all %s audience connected', loginedCount)
+                    setInterval(mock, 200)
                 }
             }
         })
         //self.pomelo.disconnect()
     })
+}
+
+var mock = function() {
+    for (var i=0; i<leaveNum; ++i) {
+        var index = Math.random() * audiences.length | 0
+        audiences[index].pomelo.disconnect()
+        delete audiences[index]
+        audiences[index] = createAudience(channel, randomString({length: 10}), index)
+    }
 }
 
 var createAudience = function(channel, userId) {
