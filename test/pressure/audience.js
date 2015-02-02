@@ -16,13 +16,14 @@ var gateHost = gate.split(':')[0],
     gatePort = gate.split(':')[1]
 
 var Audience = function(channel, userId) {
+    var self = this
     this.channel = channel
     this.userId = userId
     this.pomelo = new Pomelo()
 
     if (!!debug) {
         this.pomelo.on('close', function(){
-            console.log('close')
+            console.log('close %s', self.userId)
         })
         this.pomelo.setMessageProcessor(function(msg){
             console.log('%j', msg)
