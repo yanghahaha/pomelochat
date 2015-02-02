@@ -79,7 +79,15 @@
                 "clientHost": "0.0.0.0",
                 "clientPort": 13021, 
                 "frontend": true
-            }
+            },
+            {
+                "id": "gate-2", 
+                "host": "127.0.0.1", 
+                "port": 3022,
+                "clientHost": "0.0.0.0",
+                "clientPort": 13022, 
+                "frontend": true
+            }            
         ],
         "connector":  [
             {
