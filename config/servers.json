@@ -4,7 +4,8 @@
             {
                 "id": "channel-1", 
                 "host": "127.0.0.1",
-                "port": 3003
+                "port": 3003,
+                "args": "--nouse-idle-notification --max-old-space-size=8192"
             }
         ],        
         "auth": [
