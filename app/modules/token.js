@@ -1,6 +1,6 @@
 var _ = require('underscore')
 var randomString = require('random-string')
-var logger = require('pomelo-logger').getLogger('token', __filename, process.pid)
+var logger = require('pomelo-logger').getLogger('auth', __filename, 'pid:'+process.pid)
 var Code = require('../util/code')
 var config = require('../util/config')
 

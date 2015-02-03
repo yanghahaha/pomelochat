@@ -1,4 +1,4 @@
-var logger = require('pomelo-logger').getLogger('channel', __filename, process.pid)
+var logger = require('pomelo-logger').getLogger('channel', __filename, 'pid:'+process.pid)
 var Code = require('../util/code')
 var MinuteStat = require('../util/minuteStat')
 var userService = require('./user')

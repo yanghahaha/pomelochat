@@ -1,5 +1,5 @@
 var _ = require('underscore')
-var logger = require('pomelo-logger').getLogger('channel', __filename, process.pid)
+var logger = require('pomelo-logger').getLogger('auth', __filename, 'pid:'+process.pid)
 var tokenService = require('../../../modules/token')
 var Code = require('../../../util/code')
 

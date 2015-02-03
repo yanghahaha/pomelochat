@@ -1,4 +1,4 @@
-var logger = require('pomelo-logger').getLogger('app', __filename, process.pid)
+var logger = require('pomelo-logger').getLogger('app', __filename, 'pid:'+process.pid)
 
 module.exports = function(socket, chunk) {
     if (!!chunk && chunk.toString() === '<policy-file-request/>\0') {

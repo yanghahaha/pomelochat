@@ -1,4 +1,4 @@
-var logger = require('pomelo-logger').getLogger('connector', __filename, process.pid)
+var logger = require('pomelo-logger').getLogger('connector', __filename, 'pid:'+process.pid)
 var async = require('async')
 var Code = require('../../../util/code')
 var Utils = require('../../../util/utils')

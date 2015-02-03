@@ -5,7 +5,7 @@
             "filename": "./logs/${opts:serverId}.log",
             "maxLogSize": 10485760,
             "layout": {
-                "type": "basic"
+                "type": "colored"
             }, 
             "backups": 5
         },
@@ -14,7 +14,7 @@
             "filename": "./logs/rpc-log.log",
             "maxLogSize": 10485760,
             "layout": {
-                "type": "basic"
+                "type": "colored"
             },
             "backups": 5,
             "category":"rpc-log"
@@ -24,7 +24,7 @@
             "filename": "./logs/forward-log.log",
             "maxLogSize": 10485760,
             "layout": {
-                "type": "basic"
+                "type": "colored"
             },
             "backups": 5,
             "category":"forward-log"
@@ -34,7 +34,7 @@
             "filename": "./logs/crash.log",
             "maxLogSize": 10485760,
             "layout": {
-                "type": "basic"
+                "type": "colored"
             },
             "backups": 5,
             "category":"crash-log"
@@ -44,7 +44,7 @@
             "filename": "./logs/console.log",
             "maxLogSize": 10485760,
             "layout": {
-                "type": "basic"
+                "type": "colored"
             },
             "backups": 5,
             "category":"console"

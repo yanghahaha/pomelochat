@@ -1,6 +1,6 @@
 var _ = require('underscore')
 var Code = require('../../../util/code')
-//var logger = require('pomelo-logger').getLogger('api', __filename, process.pid)
+//var logger = require('pomelo-logger').getLogger('api', __filename, 'pid:'+process.pid)
 var channelRemote
 
 module.exports = function(app) {

@@ -7,7 +7,7 @@ module.exports = function(app, serverType) {
 
 var Filter = function(app, serverType) {
     this.app = app
-    this.logger = require('pomelo-logger').getLogger(serverType, __filename, process.pid)
+    this.logger = require('pomelo-logger').getLogger(serverType, __filename, 'pid:'+process.pid)
 }
 
 Filter.prototype.before = function(msg, session, next) {

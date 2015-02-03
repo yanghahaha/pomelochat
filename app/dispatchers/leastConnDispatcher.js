@@ -1,5 +1,5 @@
 var _ = require('underscore')
-var logger = require('pomelo-logger').getLogger('gate', __filename)
+var logger = require('pomelo-logger').getLogger('gate', __filename, 'pid:'+process.pid)
 var config = require('../util/config')
 var randomDispatcher = require('./randomDispatcher')
 

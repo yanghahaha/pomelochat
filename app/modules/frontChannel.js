@@ -1,5 +1,5 @@
 var _ = require('underscore')
-var logger = require('pomelo-logger').getLogger('connector', __filename, process.pid)
+var logger = require('pomelo-logger').getLogger('connector', __filename, 'pid:'+process.pid)
 
 var channels = {}
 var channelSessionCount = {}
