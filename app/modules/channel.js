@@ -240,7 +240,7 @@ Channel.prototype.findRoomForNewUser = function() {
     var dispatcher = dispatchers[dispatcherName]
     if (!dispatcher) {
         dispatcher = lastRoomDispatcher
-        dispatcherName = 'lastRoomDispatcher'
+        dispatcherName = 'firstRoomDispatcher'
     }
 
     var room = dispatcher.call(null, {
