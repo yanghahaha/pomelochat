@@ -15,7 +15,7 @@ app.set('name', 'huomaotv-pomelochat')
 config.init(app.get('env'), {path: './config/config.json'})
 blacklist.init(app.get('env'), app.getServerType(), {path: './config/blacklist.json'})
 
-var sshPort = config.get('ssh.port')
+var sshParams = config.get('ssh.params')
 
 app.configure(function(){
     app.set('proxyConfig', {
@@ -27,7 +27,7 @@ app.configure(function(){
         interval: 50
     })
     app.rpcFilter(pomelo.rpcFilters.rpcLog())
-    app.set('ssh_config_params', ['-p ' + sshPort])
+    app.set('ssh_config_params', sshParams)
 })
 
 app.configure('all', 'connector', function(){    

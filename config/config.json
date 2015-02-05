@@ -1,6 +1,6 @@
 {
     "development":  {        
-        "ssh.port"                        : 22,
+        "ssh.params"                      : ["-l huomao", "-p 22"],
         "handler.timeUseWarn"             : 50,
         "token.timeout"                   : 30,
         "user.maxChannelCount"            : 1073741824,
@@ -21,7 +21,7 @@
         "gate.lastConnDispatcherReloadSec": 10
     },
     "test":  {
-        "ssh.port"                        : 22,
+        "ssh.param"                       : ["-l huomao", "-p 22"],
         "handler.timeUseWarn"             : 200,        
         "token.timeout"                   : 30,
         "user.maxChannelCount"            : 1073741824,
@@ -42,7 +42,7 @@
         "gate.lastConnDispatcherReloadSec": 60
     },
     "production":  {
-        "ssh.port"                        : 1127,
+        "ssh.param"                       : ["-l huomao", "-p 1127"],
         "handler.timeUseWarn"             : 500,
         "token.timeout"                   : 30,
         "user.maxChannelCount"            : 1073741824,
