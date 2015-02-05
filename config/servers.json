@@ -5,7 +5,7 @@
                 "id": "channel-1", 
                 "host": "127.0.0.1",
                 "port": 3003,
-                "args": ["--max-old-space-size=8192", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=8192", "--nouse-idle-notification", "--expose-gc"]
             }
         ],        
         "auth": [
@@ -13,7 +13,7 @@
                 "id": "auth-1", 
                 "host": "127.0.0.1",
                 "port": 3010,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             }
         ],
         "api": [
@@ -24,7 +24,7 @@
                 "clientHost": "0.0.0.0",
                 "clientPort": 13011, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             }
         ],
         "gate":  [
@@ -35,7 +35,7 @@
                 "clientHost": "0.0.0.0",
                 "clientPort": 13021, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             }
         ],
         "connector":  [
@@ -47,7 +47,7 @@
                 "clientHostReal": "192.168.186.102",
                 "clientPort": 13031, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             }
         ]
     },    
@@ -57,7 +57,7 @@
                 "id": "channel-1", 
                 "host": "192.168.14.13",
                 "port": 3003,
-                "args": ["--max-old-space-size=8192", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=8192", "--nouse-idle-notification", "--expose-gc"]
             }
         ],   
         "auth": [
@@ -65,7 +65,7 @@
                 "id": "auth-1", 
                 "host": "192.168.14.13",
                 "port": 3010,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             }
         ],             
         "api": [
@@ -76,7 +76,7 @@
                 "clientHost": "0.0.0.0",                
                 "clientPort": 13011, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             }
         ],
         "gate":  [
@@ -87,7 +87,7 @@
                 "clientHost": "0.0.0.0",
                 "clientPort": 13021, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "gate-2", 
@@ -96,7 +96,7 @@
                 "clientHost": "0.0.0.0",
                 "clientPort": 13022, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             }            
         ],
         "connector":  [
@@ -108,7 +108,7 @@
                 "clientHostReal": "192.168.14.13",
                 "clientPort": 13031, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-2", 
@@ -118,7 +118,7 @@
                 "clientHostReal": "192.168.14.13",
                 "clientPort": 13032, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-3", 
@@ -128,7 +128,7 @@
                 "clientHostReal": "192.168.14.13",
                 "clientPort": 13033, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-4", 
@@ -138,7 +138,7 @@
                 "clientHostReal": "192.168.14.13",
                 "clientPort": 13034, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             }                                                    
         ]
     },
@@ -148,7 +148,7 @@
                 "id": "channel-1", 
                 "host": "10.10.6.28",
                 "port": 3003,
-                "args": ["--max-old-space-size=8192", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=8192", "--nouse-idle-notification", "--expose-gc"]
             }
         ],
         "auth": [
@@ -156,7 +156,7 @@
                 "id": "auth-1", 
                 "host": "10.10.6.28",
                 "port": 3010,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             }
         ],             
         "api": [
@@ -167,7 +167,7 @@
                 "clientHost": "0.0.0.0",
                 "clientPort": 13011, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "api-2", 
@@ -176,7 +176,7 @@
                 "clientHost": "0.0.0.0",
                 "clientPort": 13012, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "api-3", 
@@ -185,7 +185,7 @@
                 "clientHost": "0.0.0.0",
                 "clientPort": 13013, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             }            
         ],
         "gate":  [
@@ -196,7 +196,7 @@
                 "clientHost": "0.0.0.0",
                 "clientPort": 13021, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "gate-2", 
@@ -205,7 +205,7 @@
                 "clientHost": "0.0.0.0",
                 "clientPort": 13021, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "gate-3", 
@@ -214,7 +214,7 @@
                 "clientHost": "0.0.0.0",
                 "clientPort": 13021, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "gate-4",
@@ -223,7 +223,7 @@
                 "clientHost": "0.0.0.0",
                 "clientPort": 13021,
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "gate-5",
@@ -232,7 +232,7 @@
                 "clientHost": "0.0.0.0",
                 "clientPort": 13021,
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             }
         ],
         "connector":  [
@@ -244,7 +244,7 @@
                 "clientHostReal": "180.150.186.65",
                 "clientPort": 13031, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },            
             {
                 "id": "connector-12", 
@@ -254,7 +254,7 @@
                 "clientHostReal": "180.150.186.65",
                 "clientPort": 13032, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },         
             {
                 "id": "connector-13", 
@@ -264,7 +264,7 @@
                 "clientHostReal": "180.150.186.65",
                 "clientPort": 13033, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },         
             {
                 "id": "connector-14", 
@@ -274,7 +274,7 @@
                 "clientHostReal": "180.150.186.65",
                 "clientPort": 13034, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },                     
             {
                 "id": "connector-15", 
@@ -284,7 +284,7 @@
                 "clientHostReal": "180.150.186.65",
                 "clientPort": 13035, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },                     
             {
                 "id": "connector-21", 
@@ -294,7 +294,7 @@
                 "clientHostReal": "120.132.65.31",
                 "clientPort": 13031, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-22", 
@@ -304,7 +304,7 @@
                 "clientHostReal": "120.132.65.31",
                 "clientPort": 13032, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-23", 
@@ -314,7 +314,7 @@
                 "clientHostReal": "120.132.65.31",
                 "clientPort": 13033, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-24", 
@@ -324,7 +324,7 @@
                 "clientHostReal": "120.132.65.31",
                 "clientPort": 13034, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-25", 
@@ -334,7 +334,7 @@
                 "clientHostReal": "120.132.65.31",
                 "clientPort": 13035, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-31", 
@@ -344,7 +344,7 @@
                 "clientHostReal": "120.132.61.237",
                 "clientPort": 13031, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-32", 
@@ -354,7 +354,7 @@
                 "clientHostReal": "120.132.61.237",
                 "clientPort": 13032, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-33", 
@@ -364,7 +364,7 @@
                 "clientHostReal": "120.132.61.237",
                 "clientPort": 13033, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-34", 
@@ -374,7 +374,7 @@
                 "clientHostReal": "120.132.61.237",
                 "clientPort": 13034, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-35", 
@@ -384,7 +384,7 @@
                 "clientHostReal": "120.132.61.237",
                 "clientPort": 13035, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-41", 
@@ -394,7 +394,7 @@
                 "clientHostReal": "180.150.186.66",
                 "clientPort": 13031, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-42", 
@@ -404,7 +404,7 @@
                 "clientHostReal": "180.150.186.66",
                 "clientPort": 13032, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-43", 
@@ -414,7 +414,7 @@
                 "clientHostReal": "180.150.186.66",
                 "clientPort": 13033, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-44", 
@@ -424,7 +424,7 @@
                 "clientHostReal": "180.150.186.66",
                 "clientPort": 13034, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-45", 
@@ -434,7 +434,7 @@
                 "clientHostReal": "180.150.186.66",
                 "clientPort": 13035, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },            
             {
                 "id": "connector-51", 
@@ -444,7 +444,7 @@
                 "clientHostReal": "120.132.65.53",
                 "clientPort": 13031, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-52", 
@@ -454,7 +454,7 @@
                 "clientHostReal": "120.132.65.53",
                 "clientPort": 13032, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },                   
             {
                 "id": "connector-53", 
@@ -464,7 +464,7 @@
                 "clientHostReal": "120.132.65.53",
                 "clientPort": 13033, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-54", 
@@ -474,7 +474,7 @@
                 "clientHostReal": "120.132.65.53",
                 "clientPort": 13034, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-55", 
@@ -484,7 +484,7 @@
                 "clientHostReal": "120.132.65.53",
                 "clientPort": 13035, 
                 "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc", "--trace-gc"]
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             }
         ]
     }
