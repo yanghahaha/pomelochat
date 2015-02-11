@@ -46,14 +46,14 @@ app.configure('all', 'connector', function(){
 })
 
 app.configure('all', 'gate', function(){
-	app.set('connectorConfig', {
-		connector : pomelo.connectors.hybridconnector,
+    app.set('connectorConfig', {
+        connector : pomelo.connectors.hybridconnector,
         distinctHost: true,
         firstTimeout: 3,
         disconnectOnTimeout: true,
         blacklistFun: blacklist.get,
         invalidPackageHandler: invalidPackageHandler
-	})
+    })
     app.set('sessionConfig', {
         bindTimeout: 5
     })
@@ -81,7 +81,6 @@ app.configure('all', 'channel', function(){
         bufferMsg: true,
         interval: 50,
         dispatchEnqueue: true,
-        dispatchInterval: 500,
         dispatchCountOnce: 200,
         msgMaxPriority: 5
     })
@@ -95,5 +94,5 @@ app.configure('all', 'channel', function(){
 app.start()
 
 process.on('uncaughtException', function(err) {
-	console.error(' Caught exception: ' + err.stack)
+    console.error(' Caught exception: ' + err.stack)
 })
