@@ -26,8 +26,7 @@ app.configure(function(){
         bufferMsg: true,
         interval: 50
     })    
-    // app.before(pomelo.filters.toobusy())
-    // app.rpcFilter(pomelo.rpcFilters.rpcLog())
+    app.rpcFilter(pomelo.rpcFilters.rpcLog())
     app.set('ssh_config_params', sshParams)
 })
 
