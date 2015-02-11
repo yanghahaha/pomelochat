@@ -1,7 +1,7 @@
 {
     "development":  {        
         "ssh.params"                      : ["-l", "huomao", "-p", "22"],
-        "handler.timeUseWarn"             : 50,
+        "handler.timeUseWarn"             : 100,
         "token.timeout"                   : 30,
         "user.maxChannelCount"            : 1073741824,
         "user.maxIpCount"                 : 10000,
@@ -22,7 +22,7 @@
     },
     "test":  {
         "ssh.params"                      : ["-l", "huomao", "-p", "22"],
-        "handler.timeUseWarn"             : 200,        
+        "handler.timeUseWarn"             : 500,        
         "token.timeout"                   : 30,
         "user.maxChannelCount"            : 1073741824,
         "user.maxIpCount"                 : 100000,
