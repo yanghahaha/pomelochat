@@ -191,15 +191,6 @@
         "gate":  [
             {
                 "id": "gate-1", 
-                "host": "10.10.19.195", 
-                "port": 3021,
-                "clientHost": "0.0.0.0",
-                "clientPort": 13021, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },
-            {
-                "id": "gate-2", 
                 "host": "10.10.56.63", 
                 "port": 3021,
                 "clientHost": "0.0.0.0",
@@ -208,7 +199,7 @@
                 "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
-                "id": "gate-3", 
+                "id": "gate-2", 
                 "host": "10.10.16.183", 
                 "port": 3021,
                 "clientHost": "0.0.0.0",
@@ -217,35 +208,8 @@
                 "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
-                "id": "gate-4",
-                "host": "10.10.61.52",
-                "port": 3021,
-                "clientHost": "0.0.0.0",
-                "clientPort": 13021,
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },
-            {
-                "id": "gate-5",
+                "id": "gate-3",
                 "host": "10.10.17.191",
-                "port": 3021,
-                "clientHost": "0.0.0.0",
-                "clientPort": 13021,
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },
-            {
-                "id": "gate-6",
-                "host": "10.10.53.32",
-                "port": 3021,
-                "clientHost": "0.0.0.0",
-                "clientPort": 13021,
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },
-            {
-                "id": "gate-7",
-                "host": "10.10.55.44",
                 "port": 3021,
                 "clientHost": "0.0.0.0",
                 "clientPort": 13021,
@@ -253,249 +217,149 @@
                 "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             }
         ],
-        "connector":  [
+        "connector":  [             
             {
                 "id": "connector-11", 
-                "host": "10.10.19.195",  
-                "port": 3031, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "180.150.186.65",
-                "clientPort": 13031, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },            
-            {
-                "id": "connector-12", 
-                "host": "10.10.19.195",  
-                "port": 3032, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "180.150.186.65",
-                "clientPort": 13032, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },         
-            {
-                "id": "connector-13", 
-                "host": "10.10.19.195",  
-                "port": 3033, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "180.150.186.65",
-                "clientPort": 13033, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },         
-            {
-                "id": "connector-14", 
-                "host": "10.10.19.195",  
-                "port": 3034, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "180.150.186.65",
-                "clientPort": 13034, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },                     
-            {
-                "id": "connector-15", 
-                "host": "10.10.19.195",  
-                "port": 3035, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "180.150.186.65",
-                "clientPort": 13035, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },                     
-            {
-                "id": "connector-21", 
                 "host": "10.10.56.63",  
                 "port": 3031, 
                 "clientHost": "0.0.0.0",
                 "clientHostReal": "120.132.65.31",
+                "clientPort": 13031, 
+                "frontend": true,
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
+            },
+            {
+                "id": "connector-12", 
+                "host": "10.10.56.63",  
+                "port": 3032, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "120.132.65.31",
+                "clientPort": 13032, 
+                "frontend": true,
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
+            },
+            {
+                "id": "connector-13", 
+                "host": "10.10.56.63",  
+                "port": 3033, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "120.132.65.31",
+                "clientPort": 13033, 
+                "frontend": true,
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
+            },
+            {
+                "id": "connector-14", 
+                "host": "10.10.56.63",  
+                "port": 3034, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "120.132.65.31",
+                "clientPort": 13034, 
+                "frontend": true,
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
+            },
+            {
+                "id": "connector-15", 
+                "host": "10.10.56.63",  
+                "port": 3035, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "120.132.65.31",
+                "clientPort": 13035, 
+                "frontend": true,
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
+            },
+            {
+                "id": "connector-21", 
+                "host": "10.10.16.183",  
+                "port": 3031, 
+                "clientHost": "0.0.0.0",
+                "clientHostReal": "120.132.61.237",
                 "clientPort": 13031, 
                 "frontend": true,
                 "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-22", 
-                "host": "10.10.56.63",  
+                "host": "10.10.16.183",  
                 "port": 3032, 
                 "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.65.31",
+                "clientHostReal": "120.132.61.237",
                 "clientPort": 13032, 
                 "frontend": true,
                 "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-23", 
-                "host": "10.10.56.63",  
+                "host": "10.10.16.183",  
                 "port": 3033, 
                 "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.65.31",
+                "clientHostReal": "120.132.61.237",
                 "clientPort": 13033, 
                 "frontend": true,
                 "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-24", 
-                "host": "10.10.56.63",  
+                "host": "10.10.16.183",  
                 "port": 3034, 
                 "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.65.31",
+                "clientHostReal": "120.132.61.237",
                 "clientPort": 13034, 
                 "frontend": true,
                 "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-25", 
-                "host": "10.10.56.63",  
+                "host": "10.10.16.183",  
                 "port": 3035, 
                 "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.65.31",
+                "clientHostReal": "120.132.61.237",
                 "clientPort": 13035, 
                 "frontend": true,
                 "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-31", 
-                "host": "10.10.16.183",  
+                "host": "10.10.17.191",  
                 "port": 3031, 
                 "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.61.237",
+                "clientHostReal": "120.132.65.53",
                 "clientPort": 13031, 
                 "frontend": true,
                 "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-32", 
-                "host": "10.10.16.183",  
+                "host": "10.10.17.191",  
                 "port": 3032, 
                 "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.61.237",
+                "clientHostReal": "120.132.65.53",
                 "clientPort": 13032, 
                 "frontend": true,
                 "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },
+            },                   
             {
                 "id": "connector-33", 
-                "host": "10.10.16.183",  
+                "host": "10.10.17.191",  
                 "port": 3033, 
                 "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.61.237",
+                "clientHostReal": "120.132.65.53",
                 "clientPort": 13033, 
                 "frontend": true,
                 "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-34", 
-                "host": "10.10.16.183",  
+                "host": "10.10.17.191",  
                 "port": 3034, 
                 "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.61.237",
+                "clientHostReal": "120.132.65.53",
                 "clientPort": 13034, 
                 "frontend": true,
                 "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
                 "id": "connector-35", 
-                "host": "10.10.16.183",  
-                "port": 3035, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.61.237",
-                "clientPort": 13035, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },
-            {
-                "id": "connector-41", 
-                "host": "10.10.61.52",  
-                "port": 3031, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "180.150.186.66",
-                "clientPort": 13031, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },
-            {
-                "id": "connector-42", 
-                "host": "10.10.61.52",  
-                "port": 3032, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "180.150.186.66",
-                "clientPort": 13032, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },
-            {
-                "id": "connector-43", 
-                "host": "10.10.61.52",  
-                "port": 3033, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "180.150.186.66",
-                "clientPort": 13033, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },
-            {
-                "id": "connector-44", 
-                "host": "10.10.61.52",  
-                "port": 3034, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "180.150.186.66",
-                "clientPort": 13034, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },
-            {
-                "id": "connector-45", 
-                "host": "10.10.61.52",  
-                "port": 3035, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "180.150.186.66",
-                "clientPort": 13035, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },            
-            {
-                "id": "connector-51", 
-                "host": "10.10.17.191",  
-                "port": 3031, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.65.53",
-                "clientPort": 13031, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },
-            {
-                "id": "connector-52", 
-                "host": "10.10.17.191",  
-                "port": 3032, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.65.53",
-                "clientPort": 13032, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },                   
-            {
-                "id": "connector-53", 
-                "host": "10.10.17.191",  
-                "port": 3033, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.65.53",
-                "clientPort": 13033, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },
-            {
-                "id": "connector-54", 
-                "host": "10.10.17.191",  
-                "port": 3034, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.65.53",
-                "clientPort": 13034, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },
-            {
-                "id": "connector-55", 
                 "host": "10.10.17.191",  
                 "port": 3035, 
                 "clientHost": "0.0.0.0",
@@ -503,107 +367,7 @@
                 "clientPort": 13035, 
                 "frontend": true,
                 "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },
-            {
-                "id": "connector-61", 
-                "host": "10.10.53.32",  
-                "port": 3031, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.68.118",
-                "clientPort": 13031, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },
-            {
-                "id": "connector-62", 
-                "host": "10.10.53.32",  
-                "port": 3032, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.68.118",
-                "clientPort": 13032, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },                   
-            {
-                "id": "connector-63", 
-                "host": "10.10.53.32",  
-                "port": 3033, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.68.118",
-                "clientPort": 13033, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },
-            {
-                "id": "connector-64", 
-                "host": "10.10.53.32",  
-                "port": 3034, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.68.118",
-                "clientPort": 13034, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },
-            {
-                "id": "connector-65", 
-                "host": "10.10.53.32",  
-                "port": 3035, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.68.118",
-                "clientPort": 13035, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },
-            {
-                "id": "connector-71", 
-                "host": "10.10.55.44",  
-                "port": 3031, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.68.86",
-                "clientPort": 13031, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },
-            {
-                "id": "connector-72", 
-                "host": "10.10.55.44",  
-                "port": 3032, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.68.86",
-                "clientPort": 13032, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },                   
-            {
-                "id": "connector-73", 
-                "host": "10.10.55.44",  
-                "port": 3033, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.68.86",
-                "clientPort": 13033, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },
-            {
-                "id": "connector-74", 
-                "host": "10.10.55.44",  
-                "port": 3034, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.68.86",
-                "clientPort": 13034, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            },
-            {
-                "id": "connector-75", 
-                "host": "10.10.55.44",  
-                "port": 3035, 
-                "clientHost": "0.0.0.0",
-                "clientHostReal": "120.132.68.86",
-                "clientPort": 13035, 
-                "frontend": true,
-                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
-            }                        
+            }
         ]
     }
 }
