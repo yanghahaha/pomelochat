@@ -84,9 +84,9 @@ app.configure('all', 'channel', function(){
     app.set('remoteConfig', {
         bufferMsg: true,
         interval: 50,
-        dispatchInterval: 50,
+        dispatchInterval: 30,
         dispatchEnqueue: true,
-        dispatchCountOnce: 1000,
+        dispatchCountOnce: 500,
         msgMaxPriority: 5
     })
 
