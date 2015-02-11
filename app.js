@@ -22,6 +22,10 @@ app.configure(function(){
         bufferMsg: true,
         interval: 50
     })
+    app.set('remoteConfig', {
+        bufferMsg: true,
+        interval: 50
+    })    
     // app.before(pomelo.filters.toobusy())
     // app.rpcFilter(pomelo.rpcFilters.rpcLog())
     app.set('ssh_config_params', sshParams)
@@ -79,7 +83,7 @@ app.configure('all', 'auth', function(){
 app.configure('all', 'channel', function(){
     app.set('remoteConfig', {
         bufferMsg: true,
-        interval: 20,
+        interval: 50,
         dispatchEnqueue: true,
         dispatchCountOnce: 200,
         msgMaxPriority: 5
