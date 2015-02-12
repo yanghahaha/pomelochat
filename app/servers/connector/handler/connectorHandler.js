@@ -15,13 +15,18 @@ var Handler = function(app) {
 var handler = Handler.prototype
 
 handler.login = function(req, session, next) {
+    if (!session.isValid()) {
+        next()
+        return
+    }
+
     var self = this
     if (!req.userId || !req.channelId || !req.token) {
         next(null, {
             code: Code.BAD_REQUEST
         });
-        self.app.sessionService.kickBySessionId(session.id);
-        return;
+        session.closed('bad request')
+        return
     }
 
     var userId = req.userId,
@@ -29,7 +34,8 @@ handler.login = function(req, session, next) {
         code = Code.INTERNAL_SERVER_ERROR,
         retData, userData
     var uId = Utils.getSessionUid(userId, channelId)
-    var remote = self.app.sessionService.getClientAddressBySessionId(session.id)
+    var remote = session.getClientAddress()
+
     var context = {
             fId: self.app.get('serverId'),
             sId: session.id,
