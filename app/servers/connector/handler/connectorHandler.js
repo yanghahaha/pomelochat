@@ -30,14 +30,6 @@ handler.login = function(req, session, next) {
         retData, userData
     var uId = Utils.getSessionUid(userId, channelId)
     var remote = self.app.sessionService.getClientAddressBySessionId(session.id)
-    if (!remote) {
-        next(null, {
-            code: Code.INTERNAL_SERVER_ERROR
-        });
-        self.app.sessionService.kickBySessionId(session.id);
-        return;        
-    }
-
     var context = {
             fId: self.app.get('serverId'),
             sId: session.id,
@@ -49,7 +41,7 @@ handler.login = function(req, session, next) {
 
     async.waterfall([
         function(cb) {
-            self.app.rpc.auth.authRemote.verifyToken(session, req.token, userId, channelId, cb)
+            self.app.rpc.auth.authRemote.verifyToken(session, req.token, userId, channelId, cb, 1)
         },
         function(ret, data, cb) {
             cb = arguments[arguments.length-1]
@@ -86,7 +78,7 @@ handler.login = function(req, session, next) {
                 cb(new Error('session invalid sid='+session.id))
                 return
             }
-            self.app.rpc.channel.channelRemote.enter(session, userId, channelId, userData, context, cb)
+            self.app.rpc.channel.channelRemote.enter(session, userId, channelId, userData, context, cb, 2)
         },
         function(ret, data, cb) {
             cb = arguments[arguments.length-1]
@@ -100,7 +92,7 @@ handler.login = function(req, session, next) {
             else {
                 retData = data
                 session.set('roomId', retData.roomId)
-                session.push('roomId')                    
+                session.push('roomId')
                 cb()
             }
         }
@@ -111,7 +103,7 @@ handler.login = function(req, session, next) {
                 next(null, {
                     code: code
                 })
-                self.app.sessionService.kickBySessionId(session.id)
+                session.closed('login error')
             }
         }
         else {
@@ -128,7 +120,7 @@ handler.login = function(req, session, next) {
 }
 
 var onUserLeave = function(app, session, reason) {
-    if (!session || !session.get('userId') || reason === 'kick') {
+    if (!session || !session.get('userId') || reason === 'kick' || reason === 'login error') {
         return
     }
 
@@ -151,14 +143,14 @@ var onUserLeave = function(app, session, reason) {
         else {
             logger.info('onUserLeave succ userId=%s channelId=%s roomId=%s context=%j reason=%s code=%s', userId, channelId, roomId, context, reason, code)   
         }
-    })
+    }, 2)
 }
 
 var leaveMsgs = []
 var leaveLoopStarted = false
 
 var onUserLeaveBatch = function(app, session, reason) {
-    if (!session || !session.get('userId') || reason === 'kick') {
+    if (!session || !session.get('userId') || reason === 'kick' || reason === 'login error') {
         return
     }
 
@@ -195,6 +187,6 @@ var sendLeaveMsgBatch = function(app) {
             if (!!failed && failed.length > 0) {
                 logger.warn('leave batch failed=%j', failed)
             }
-        })
+        }, 2)
     }
 }

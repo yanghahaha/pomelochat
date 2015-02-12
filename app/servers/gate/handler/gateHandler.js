@@ -35,7 +35,7 @@ handler.lookupConnector = function(req, session, next) {
 		next(null, {
 			code: Code.BAD_REQUEST
 		})
-        this.app.sessionService.kickBySessionId(session.id)
+        session.closed()
 		return
 	}
 
@@ -44,7 +44,7 @@ handler.lookupConnector = function(req, session, next) {
 		next(null, {
 			code: Code.INTERNAL_SERVER_ERROR
 		})
-        this.app.sessionService.kickBySessionId(session.id)
+        session.closed()
 		return
 	}
 
@@ -59,7 +59,7 @@ handler.lookupConnector = function(req, session, next) {
         host: connector.clientHostReal,
         port: connector.clientPort
     })             
-    this.app.sessionService.kickBySessionId(session.id)
+    session.closed()
 
     logger.debug('gate dispatch userId=%s channelId=%s to %s %s:%s', req.userId, req.channelId, connector.id, connector.clientHostReal, connector.clientPort)
 }

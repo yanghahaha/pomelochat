@@ -35,7 +35,7 @@ handler.applyToken = function(req, session, next) {
                 token: token
             })
         }
-    })
+    }, 1)
 }
 
 var routeConnectors = function(app) {
@@ -58,7 +58,7 @@ handler.sendServerMsg = function(req, session, next) {
     }
     next(null, {code: Code.SUCC})
 
-    this.app.rpc.connector.connectorRemote.sendServerMsg.toServer('*', req.route, req.msg, null)
+    this.app.rpc.connector.connectorRemote.sendServerMsg.toServer('*', req.route, req.msg, null, 1)
 }
 
 handler.sendChannelMsg = function(req, session, next) {
@@ -83,7 +83,7 @@ handler.sendChannelMsg = function(req, session, next) {
     })
 
     for (var i=0; i<connectors.length; ++i) {
-        this.app.rpc.connector.connectorRemote.sendChannelMsg.toServer(connectors[i], channelIds, req.route, req.msg, null)
+        this.app.rpc.connector.connectorRemote.sendChannelMsg.toServer(connectors[i], channelIds, req.route, req.msg, null, 2)
     }
 }
 
@@ -114,7 +114,7 @@ handler.sendRoomMsg = function(req, session, next) {
 
     var connectors = routeConnectors(this.app, routeParams)
     for (var i=0; i<connectors.length; ++i) {
-        this.app.rpc.connector.connectorRemote.sendRoomMsg.toServer(connectors[i], req.channelId, roomIds, req.route, req.msg, null)
+        this.app.rpc.connector.connectorRemote.sendRoomMsg.toServer(connectors[i], req.channelId, roomIds, req.route, req.msg, null, 2)
     }
 }
 
@@ -141,7 +141,7 @@ handler.sendRoomMsgByUserId = function(req, session, next) {
             req.roomId = roomId
             self.sendRoomMsg(req, session, next)
         }
-    })
+    }, 1)
 }
 
 handler.kickUser = function(req, session, next) {

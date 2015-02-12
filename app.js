@@ -24,8 +24,17 @@ app.configure(function(){
     })
     app.set('remoteConfig', {
         bufferMsg: true,
-        interval: 50
-    })    
+        interval: 50,
+        handleEnqueue: true,        
+        handleInterval: 30,
+        handleCountOnce: 500,
+        msgMaxPriority: 5
+    })
+    app.set('serverConfig', {
+        handleEnqueue: true,        
+        handleInterval: 30,
+        handleCountOnce: 500              
+    })
     app.rpcFilter(pomelo.rpcFilters.rpcLog())
     app.set('ssh_config_params', sshParams)
 })
@@ -55,7 +64,7 @@ app.configure('all', 'gate', function(){
         firstTimeout: 3,
         disconnectOnTimeout: true,
         blacklistFun: blacklist.get,
-        invalidPackageHandler: invalidPackageHandler
+        invalidPackageHandler: invalidPackageHandler   
     })
     app.set('sessionConfig', {
         bindTimeout: 5
@@ -68,7 +77,7 @@ app.configure('all', 'api', function(){
     app.set('connectorConfig', {
         connector : pomelo.connectors.httpconnector,
         distinctHost: true,
-        blacklistFun: blacklist.get        
+        blacklistFun: blacklist.get
     })
     app.filter(handlerLogFilter(app, 'api'))
 })
@@ -80,15 +89,6 @@ app.configure('all', 'auth', function(){
 })
 
 app.configure('all', 'channel', function(){
-    app.set('remoteConfig', {
-        bufferMsg: true,
-        interval: 50,
-        dispatchInterval: 30,
-        dispatchEnqueue: true,
-        dispatchCountOnce: 500,
-        msgMaxPriority: 5
-    })
-
     app.set('user', userService)
     app.set('channel', channelService)
     channelService.init()
