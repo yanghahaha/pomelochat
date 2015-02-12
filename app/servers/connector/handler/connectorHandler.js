@@ -16,7 +16,9 @@ var handler = Handler.prototype
 
 handler.login = function(req, session, next) {
     if (!session.isValid()) {
-        next()
+        next(null, {
+            code: Code.BAD_REQUEST
+        })
         return
     }
 
