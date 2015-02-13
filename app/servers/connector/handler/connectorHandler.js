@@ -65,28 +65,28 @@ handler.login = function(req, session, next) {
         function(cb) {
             if (!session.isValid()) {
                 cb(new Error('session invalid sid='+session.id))
-                return
             }
-
-            session.on('closed', onUserLeave.bind(null, self.app))
-            session.set('userId', userId)
-            session.set('channelId', channelId)
-            session.set('context', context)
-            session.pushAll()
-
-            session.bind(uId, function(err) {
-                if (!!err) {
-                    code = Code.DUPLICATED_LOGIN
-                }
-                cb(err)
-            })
+            else {
+                session.on('closed', onUserLeave.bind(null, self.app))
+                session.set('userId', userId)
+                session.set('channelId', channelId)
+                session.set('context', context)
+                session.pushAll()
+                session.bind(uId, function(err) {
+                    if (!!err) {
+                        code = Code.DUPLICATED_LOGIN
+                    }
+                    cb(err)
+                })
+            }
         },
         function(cb) {
             if (!session.isValid()) {
                 cb(new Error('session invalid sid='+session.id))
-                return
             }
-            self.app.rpc.channel.channelRemote.enter(session, userId, channelId, userData, context, cb, 2)
+            else {
+                self.app.rpc.channel.channelRemote.enter(session, userId, channelId, userData, context, cb, 2)
+            }
         },
         function(ret, data, cb) {
             cb = arguments[arguments.length-1]

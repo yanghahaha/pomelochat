@@ -27,13 +27,13 @@ app.configure(function(){
         interval: 50,
         handleEnqueue: true,        
         handleInterval: 30,
-        handleCountOnce: 500,
+        handleCountOnce: 300,
         msgMaxPriority: 5
     })
     app.set('serverConfig', {
         handleEnqueue: true,        
         handleInterval: 30,
-        handleCountOnce: 500              
+        handleCountOnce: 300
     })
     app.rpcFilter(pomelo.rpcFilters.rpcLog())
     app.set('ssh_config_params', sshParams)
