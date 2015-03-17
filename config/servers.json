@@ -199,7 +199,7 @@
                 "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
-                "id": "gate-2", 
+                "id": "gate-12", 
                 "host": "10.10.56.63", 
                 "port": 3022,
                 "clientHost": "0.0.0.0",
