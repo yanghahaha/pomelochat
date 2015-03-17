@@ -190,7 +190,7 @@
         ],
         "gate":  [
             {
-                "id": "gate-1", 
+                "id": "gate-11", 
                 "host": "10.10.56.63", 
                 "port": 3021,
                 "clientHost": "0.0.0.0",
@@ -200,6 +200,15 @@
             },
             {
                 "id": "gate-2", 
+                "host": "10.10.56.63", 
+                "port": 3022,
+                "clientHost": "0.0.0.0",
+                "clientPort": 13022, 
+                "frontend": true,
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
+            },            
+            {
+                "id": "gate-21", 
                 "host": "10.10.16.183", 
                 "port": 3021,
                 "clientHost": "0.0.0.0",
@@ -208,11 +217,29 @@
                 "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             },
             {
-                "id": "gate-3",
+                "id": "gate-22", 
+                "host": "10.10.16.183", 
+                "port": 3022,
+                "clientHost": "0.0.0.0",
+                "clientPort": 13022, 
+                "frontend": true,
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
+            },
+            {
+                "id": "gate-31",
                 "host": "10.10.17.191",
                 "port": 3021,
                 "clientHost": "0.0.0.0",
                 "clientPort": 13021,
+                "frontend": true,
+                "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
+            },                      
+            {
+                "id": "gate-32",
+                "host": "10.10.17.191",
+                "port": 3022,
+                "clientHost": "0.0.0.0",
+                "clientPort": 13022,
                 "frontend": true,
                 "args": ["--max-old-space-size=2048", "--nouse-idle-notification", "--expose-gc"]
             }
