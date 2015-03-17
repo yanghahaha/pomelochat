@@ -10,43 +10,50 @@ var dispatchers = {
 }
 
 module.exports = function(app) {
-	return new Handler(app)
+    return new Handler(app)
 }
 
 var Handler = function(app) {
-	this.app = app
+    this.app = app
 }
 
 var handler = Handler.prototype
 
 /*
 req = {
-	userId: xxx,
-	channelId: xxxx
+    userId: xxx,
+    channelId: xxxx
 }
 res = {
-	code:
-	host:
-	port:
+    code:
+    host:
+    port:
 }
 */
 handler.lookupConnector = function(req, session, next) {
-	if (_.isUndefined(req.userId) || _.isUndefined(req.channelId)) {
-		next(null, {
-			code: Code.BAD_REQUEST
-		})
-        session.closed()
-		return
-	}
+    if (!session.isValid()) {
+        next(null, {
+            code: Code.BAD_REQUEST
+        })
+        return
+    }
 
-	var connectors = this.app.getServersByType('connector')
-	if(!connectors || connectors.length === 0) {
-		next(null, {
-			code: Code.INTERNAL_SERVER_ERROR
-		})
-        session.closed()
-		return
-	}
+    if (_.isUndefined(req.userId) || _.isUndefined(req.channelId)) {
+        next(null, {
+            code: Code.BAD_REQUEST
+        })
+        session.closed('bad request')
+        return
+    }
+
+    var connectors = this.app.getServersByType('connector')
+    if(!connectors || connectors.length === 0) {
+        next(null, {
+            code: Code.INTERNAL_SERVER_ERROR
+        })
+        session.closed('internal server error')
+        return
+    }
 
     var dispatcherName = config.get('gate.dispatcher')
     if (!dispatcherName || !dispatchers[dispatcherName]) {
@@ -59,7 +66,7 @@ handler.lookupConnector = function(req, session, next) {
         host: connector.clientHostReal,
         port: connector.clientPort
     })             
-    session.closed()
+    session.closed('succ')
 
     logger.debug('gate dispatch userId=%s channelId=%s to %s %s:%s', req.userId, req.channelId, connector.id, connector.clientHostReal, connector.clientPort)
 }
