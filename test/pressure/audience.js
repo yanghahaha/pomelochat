@@ -2,6 +2,7 @@ var http = require('http')
 var argv = require('optimist').argv
 var randomString = require('random-string')
 var Pomelo = require('./pomelo-client')
+var _ = require('underscore')
 
 var api = argv.a || argv.api || '127.0.0.1:13011'
 var gate = argv.g || argv.gate || '127.0.0.1:13021'
@@ -27,7 +28,7 @@ var Audience = function(channel, userId) {
             console.log('close %s', self.userId)
         }) 
         this.pomelo.setMessageProcessor(function(msg){
-            console.log('%j', msg)
+            console.log('%j', msg)            
         }) 
     }
 }
@@ -70,6 +71,7 @@ Audience.prototype.applyToken = function(cb) {
         body: {
             userId: userId,
             channelId: channel,
+            role: 'guest',
             userData: {}
         }
     })
@@ -89,7 +91,8 @@ Audience.prototype.lookupConnector = function(cb) {
             userId: self.userId,
             channelId: self.channel
         }, function(res) {
-            self.pomelo.disconnect();
+            self.pomelo.disconnect()
+            //self.pomelo = new Pomelo()
             if(res.code === 0) {
                 cb(res.host, res.port)
             }
@@ -103,6 +106,10 @@ Audience.prototype.connectConnector = function(host, port) {
     if (!!debug) {
         self.pomelo.setMessageProcessor(function(msg){
             console.log('%j', msg)
+            if (msg.body.content !== undefined) {
+                console.log(msg.body.content.charCodeAt(0))
+                console.log(msg.body.content.charCodeAt(1))
+            }
         }) 
     }    
 

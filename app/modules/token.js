@@ -50,7 +50,7 @@ exp.init = function() {
     setInterval(clearExpiredToken, 1000)
 }
 
-exp.apply = function(userId, channelId, data, out) {
+exp.apply = function(userId, channelId, role, data, out) {
     if (!!userToTokens[userId] && !!userToTokens[userId][channelId]) {
         var maxUserConnectionCount = config.get('channel.maxUserConnectionCount') || 5
         var userChannelTokens = userToTokens[userId][channelId]
@@ -64,7 +64,7 @@ exp.apply = function(userId, channelId, data, out) {
         token = genToken()
     } while (!!tokens[token])
 
-    addToken(token, userId, channelId, data)
+    addToken(token, userId, channelId, role, data)
     out.token = token
     stats.applyCount++
     return Code.SUCC
@@ -89,6 +89,7 @@ exp.verify = function(userId, channelId, token, out) {
     }
 
     removeToken(token)
+    out.role = tokenData.role
     out.data = tokenData.data
     stats.verifySuccCount++
     return Code.SUCC
@@ -102,10 +103,11 @@ var genToken = function() {
     return randomString({length: 20})
 }
 
-var addToken = function(token, userId, channelId, data) {
+var addToken = function(token, userId, channelId, role, data) {
     tokens[token] = {
         userId: userId,
         channelId: channelId,
+        role: role,
         data: data
     }
 

@@ -4,6 +4,7 @@ var Room = require('./room')
 var Code = require('../util/code')
 var config = require('../util/config')
 var MinuteStat = require('../util/minuteStat')
+var Role = require('./role')
 
 var channels = {}
 var connectionCount = 0
@@ -174,24 +175,31 @@ Channel.prototype.dump = function() {
     }
 }
 
-Channel.prototype.enter = function(user, reenter, userInRoomId, context, out) {
+Channel.prototype.enter = function(user, reenter, userInRoomId, userRole, context, out) {
     var code, room
 
-    if (this.connectionCount >= config.get('channel.maxConnectionCount')) {
-        return Code.CHANNEL_CONNECTION_MEET_MAX
-    }
-
-    if (!!userInRoomId) {
-        if (user.getChannelData(this.id).getContextCount() >= config.get('channel.maxUserConnectionCount')) {
-            return Code.CHANNEL_USER_CONNECTION_MEET_MAX
-        }
-        room = this.rooms[userInRoomId]
+    if (userRole === Role.MODERATOR || 
+        userRole === Role.OWNER ||
+        userRole === Role.ADMIN ) {
+        room = this.getAdminRoom()
     }
     else {
-        if (this.userCount >= config.get('channel.maxUserCount')) {
-            return Code.CHANNEL_USER_MEET_MAX
+        if (this.connectionCount >= config.get('channel.maxConnectionCount')) {
+            return Code.CHANNEL_CONNECTION_MEET_MAX
         }
-        room = this.findRoomForNewUser()
+
+        if (!!userInRoomId) {
+            if (user.getChannelData(this.id).getContextCount() >= config.get('channel.maxUserConnectionCount')) {
+                return Code.CHANNEL_USER_CONNECTION_MEET_MAX
+            }
+            room = this.rooms[userInRoomId]
+        }
+        else {
+            if (this.userCount >= config.get('channel.maxUserCount')) {
+                return Code.CHANNEL_USER_MEET_MAX
+            }
+            room = this.findRoomForNewUser()
+        }
     }
 
     code = room.enter(user, reenter, context)
@@ -243,8 +251,15 @@ Channel.prototype.findRoomForNewUser = function() {
         dispatcherName = 'firstRoomDispatcher'
     }
 
+    var rooms = []
+    for (var i in this.rooms) {
+        if (i != 0) {
+            rooms.push(this.rooms[i])
+        }
+    }
+    
     var room = dispatcher.call(null, {
-        rooms: this.rooms,
+        rooms: rooms,
         lastRoom: this.lastRoom,
         maxUserCount: config.get('room.maxUserCount')
     })
@@ -279,6 +294,21 @@ Channel.prototype.createNewRoom = function() {
     logger.debug("new room create channelId=%s roomId=%d", this.id, room.id)
 
     return room
+}
+
+Channel.prototype.getAdminRoom = function() {
+    var adminIndex = 0
+    if (!this.rooms[adminIndex]) {        
+        var room = Room.create({
+            channelId: this.id,
+            id: adminIndex
+        })
+
+        this.rooms[adminIndex] = room
+        logger.debug("new room create channelId=%s roomId=%d", this.id, room.id)
+    }
+
+    return this.rooms[adminIndex]
 }
 
 Channel.prototype.getRoom = function(roomId) {

@@ -16,7 +16,7 @@ var Remote = function(app) {
 
 var remote = Remote.prototype
 
-remote.enter = function(userId, channelId, userData, context, cb) {
+remote.enter = function(userId, channelId, userRole, userData, context, cb) {
     var range = config.get('user.dangerPortRange')
     if (_.isArray(range) && range.length >= 2 && context.remote.port >= range[0] && context.remote.port <= range[1]) {
         var reject = config.get('user.dangerPortReject')
@@ -42,7 +42,7 @@ remote.enter = function(userId, channelId, userData, context, cb) {
     }
 
     var out = {}
-    var code = user.enter(channelId, context, out)
+    var code = user.enter(channelId, userRole, context, out)
     if (code !== Code.SUCC) {
         if (newUser) {
             userService.destroyUser(userId)

@@ -42,6 +42,8 @@ remote.sendRoomMsg = function(channelId, roomIds, route, msg, cb) {
     var opts = {}
     var connector = this.app.components.__connector__
 
+    roomIds.unshift(0)
+
     _.each(roomIds, function(roomId){
         var room = frontChannelService.getRoom(channelId, roomId)
         if (!!room) {

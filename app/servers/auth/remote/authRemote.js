@@ -13,9 +13,9 @@ var Remote = function(app) {
 
 var remote = Remote.prototype
 
-remote.applyToken = function(userId, channelId, data, cb) {
+remote.applyToken = function(userId, channelId, role, data, cb) {
     var out = {}
-    var code = tokenService.apply(userId, channelId, data, out)
+    var code = tokenService.apply(userId, channelId, role, data, out)
     cb(null, code, out.token)
 }
 
@@ -26,6 +26,6 @@ remote.verifyToken = function(token, userId, channelId, cb) {
         cb(null, code)
     }
     else {
-        cb(null, code, out.data)
+        cb(null, code, out.role, out.data)
     }
 }

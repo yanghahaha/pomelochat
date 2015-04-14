@@ -6,7 +6,7 @@ var port = argv.p || argv.port || 13011
 var data = argv.d || argv.data || '{"name":"bob"}'
 var channel = argv.c || argv.channel || 'yang-hannah'
 var user = argv.u || argv.user || 123
-
+var role = argv.r || argv.role || 'guest'
 
 data = JSON.parse(data)
 
@@ -30,6 +30,7 @@ var reqBody = JSON.stringify({
     body: {
         userId: user,
         channelId: channel,
+        userRole: role,
         userData: data
     }
 })

@@ -34,7 +34,7 @@ handler.login = function(req, session, next) {
     var userId = req.userId,
         channelId = req.channelId,
         code = Code.INTERNAL_SERVER_ERROR,
-        retData, userData
+        retData, userRole, userData
     var uId = Utils.getSessionUid(userId, channelId)
     var remote = session.getClientAddress()
 
@@ -51,13 +51,14 @@ handler.login = function(req, session, next) {
         function(cb) {
             self.app.rpc.auth.authRemote.verifyToken(session, req.token, userId, channelId, cb, 1)
         },
-        function(ret, data, cb) {
+        function(ret, role, data, cb) {
             cb = arguments[arguments.length-1]
             code = ret
             if (code !== Code.SUCC) {
                 cb(new Error('authRemote.verifyToken fail'))
             }
             else {
+                userRole = role
                 userData = data
                 cb(null)
             }
@@ -85,7 +86,7 @@ handler.login = function(req, session, next) {
                 cb(new Error('session invalid sid='+session.id))
             }
             else {
-                self.app.rpc.channel.channelRemote.enter(session, userId, channelId, userData, context, cb, 2)
+                self.app.rpc.channel.channelRemote.enter(session, userId, channelId, userRole, userData, context, cb, 2)
             }
         },
         function(ret, data, cb) {

@@ -117,7 +117,7 @@ User.prototype.dump = function() {
     return this
 }
 
-User.prototype.enter = function(channelId, context, varOut) {
+User.prototype.enter = function(channelId, userRole, context, varOut) {
     if (this.getChannelCount()>= config.get('user.maxChannelCount')) {
         return Code.USER_CHANNEL_MEET_MAX
     }
@@ -138,12 +138,13 @@ User.prototype.enter = function(channelId, context, varOut) {
         userChannelRoomId
 
     if (userChannelData) {
+        userRole = userChannelData.role
         userChannelRoomId = userChannelData.roomId
         reenter = true
     }
 
     var out = {}
-    var code = ChannelService.getChannel(channelId).enter(this, reenter, userChannelRoomId, context, out)
+    var code = ChannelService.getChannel(channelId).enter(this, reenter, userChannelRoomId, userRole, context, out)
     if (code !== Code.SUCC) {
         return code
     }
@@ -153,6 +154,7 @@ User.prototype.enter = function(channelId, context, varOut) {
         this.channelDatas[channelId] = userChannelData
     }
     userChannelData.roomId = out.roomId
+    userChannelData.role = userRole
     userChannelData.addContext(context)
 
     addIp(context.remote.ip, this.id, channelId, out.roomId, context)
@@ -220,6 +222,7 @@ User.prototype.leaveAll = function(out) {
 
 var UserChannelData = function() {
     this.roomId = null
+    this.role = null
     this.contexts = []
 }
 

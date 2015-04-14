@@ -1,5 +1,6 @@
 var _ = require('underscore')
 var Code = require('../../../util/code')
+var Role = require('../../../modules/role')
 //var logger = require('pomelo-logger').getLogger('api', __filename, 'pid:'+process.pid)
 var channelRemote
 
@@ -22,8 +23,11 @@ handler.applyToken = function(req, session, next) {
         })
         return
     }
+    if (!req.userRole) {
+        req.userRole = Role.UNKNOWN
+    }
 
-    this.app.rpc.auth.authRemote.applyToken(req, req.userId, req.channelId, req.userData,  function(err, code, token){
+    this.app.rpc.auth.authRemote.applyToken(req, req.userId, req.channelId, req.userRole, req.userData, function(err, code, token){
         if (!!err) {
             next(null, {
                 code: Code.INTERNAL_SERVER_ERROR

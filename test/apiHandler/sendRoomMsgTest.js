@@ -32,7 +32,8 @@ var reqBody = JSON.stringify({
         msg: {
             id: 111,
             name: 'bob',
-            conetent: 'hello room'
+            content: '\ud83d\ude0a'
+            //content: '\u5d14\u535a'
         },
     }
 })
