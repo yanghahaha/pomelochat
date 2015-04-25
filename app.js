@@ -19,19 +19,20 @@ var sshParams = config.get('ssh.params')
 
 app.configure(function(){
     app.set('proxyConfig', {
+        timeout: 300000,
         bufferMsg: true,
         interval: 50
     })
     app.set('remoteConfig', {
         bufferMsg: true,
         interval: 50,
-        handleEnqueue: true,        
+        handleEnqueue: false,        
         handleInterval: 30,
         handleCountOnce: 300,
         msgMaxPriority: 5
     })
     app.set('serverConfig', {
-        handleEnqueue: true,        
+        handleEnqueue: false,        
         handleInterval: 30,
         handleCountOnce: 300
     })

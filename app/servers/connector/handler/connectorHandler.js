@@ -68,7 +68,7 @@ handler.login = function(req, session, next) {
                 cb(new Error('session invalid sid='+session.id))
             }
             else {
-                session.on('closed', onUserLeave.bind(null, self.app))
+                session.on('closed', onUserLeaveBatch.bind(null, self.app))
                 session.set('userId', userId)
                 session.set('channelId', channelId)
                 session.set('context', context)
@@ -141,7 +141,7 @@ var onUserLeave = function(app, session, reason) {
     session.set('userId', null)
     session.push('userId')
 
-    if (!!roomId) {
+    if (roomId !== undefined) {
         frontChannelService.remove(channelId, roomId, session.id)
     }
 
@@ -171,7 +171,7 @@ var onUserLeaveBatch = function(app, session, reason) {
     session.set('userId', null)
     session.push('userId')
 
-    if (!!roomId) {
+    if (roomId !== undefined) {
         frontChannelService.remove(channelId, roomId, session.id)
     }
 
