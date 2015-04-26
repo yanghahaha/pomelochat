@@ -55,7 +55,7 @@
     ],
 
     "levels": {
-        "[all]": "WARN",
+        "[all]": "FATAL",
         "rpc-log": "ERROR",
         "forward-log": "ERROR"
     },
