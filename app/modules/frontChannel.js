@@ -78,3 +78,10 @@ exp.dump = function() {
         channelSessionCount: channelSessionCount
     }
 }
+
+exp.clear = function() {
+    channels = {}
+    channelSessionCount = {}
+
+    logger.debug('cleared')
+}

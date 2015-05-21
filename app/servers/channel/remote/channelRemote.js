@@ -4,7 +4,7 @@ var channelService = require('../../../modules/channel')
 var userService = require('../../../modules/user')
 var Code = require('../../../util/code')
 var utils = require('../../../util/utils')
-var config = require('../../../util/config')
+var channelRemoteProxy = require('../../../modules/channelRemoteProxy')
 
 module.exports = function(app) {
 	return new Remote(app)
@@ -17,78 +17,11 @@ var Remote = function(app) {
 var remote = Remote.prototype
 
 remote.enter = function(userId, channelId, userRole, userData, context, cb) {
-    var range = config.get('user.dangerPortRange')
-    if (_.isArray(range) && range.length >= 2 && context.remote.port >= range[0] && context.remote.port <= range[1]) {
-        var reject = config.get('user.dangerPortReject')
-        if (!!reject) {
-            logger.warn('enter fail userId=%s channelId=%s context=%j code=%s', userId, channelId, context, Code.USER_DANGER_PORT_REJECT)
-            cb(null, Code.USER_DANGER_PORT_REJECT)       
-            return
-        }
-    }
-
-    var newUser = false
-    var user = userService.getUser(userId)
-    if (!user) {
-        user = userService.createUser(userId)
-        newUser = true
-    }
-    user.updateData(userData)
-
-    var newChannel = false
-    if (!channelService.getChannel(channelId)) {
-        channelService.createChannel(channelId)
-        newChannel = true
-    }
-
-    var out = {}
-    var code = user.enter(channelId, userRole, context, out)
-    if (code !== Code.SUCC) {
-        if (newUser) {
-            userService.destroyUser(userId)
-        }
-        if (newChannel) {
-            channelService.destroyChannel(channelId)
-        }
-
-        logger.warn('enter fail userId=%s channelId=%s context=%j code=%s', userId, channelId, context, code)
-    }
-    else {
-        logger.info('enter succ userId=%s channelId=%s roomId=%s context=%j code=%s', userId, channelId, out.roomId, context, code)
-    }
-
-    cb(null, code, {
-        roomId: out.roomId
-    })
+    channelRemoteProxy.enter(userId, channelId, userRole, userData, context, cb)
 }
 
 remote.leave = function(userId, channelId, context, cb) {
-    var user = userService.getUser(userId)
-    if (!user) {
-        logger.warn('leave fail userId=%s channelId=%s context=%j code=%s', userId, channelId, context, Code.USER_NOT_EXIST)
-        cb(null, Code.USER_NOT_EXIST)
-        return
-    }
-
-    var out = {}
-    var code = user.leave(channelId, context, out)
-    if (code !== Code.SUCC) {
-        logger.warn('leave fail userId=%s channelId=%s context=%j code=%s', userId, channelId, context, code)
-        cb(null, code)
-        return        
-    }
-
-    if (user.getChannelCount() === 0) {
-        userService.destroyUser(userId)
-    }
-
-    var channel = channelService.getChannel(channelId)
-    if (!!channel && channel.getUserCount() === 0) {
-        channelService.destroyChannel(channelId)
-    }
-
-    logger.info('leave succ userId=%s channelId=%s roomId=%s context=%j code=%s', userId, channelId, out.roomId, context, Code.SUCC)
-    cb(null, Code.SUCC)
+    channelRemoteProxy.leave(userId, channelId, context, cb)
 }
 
 remote.leaveBatch = function(users, cb) {

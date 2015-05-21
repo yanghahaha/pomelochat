@@ -5,6 +5,7 @@ var invalidPackageHandler = require('./app/util/invalidPackageHandler')
 var handlerLogFilter = require('./app/filters/handlerLogFilter')
 var tokenService = require('./app/modules/token')
 var channelService = require('./app/modules/channel')
+var channelRemoteProxyService = require('./app/modules/channelRemoteProxy')
 var frontChannelService = require('./app/modules/frontChannel')
 var userService = require('./app/modules/user')
 var leastConnDispatcher = require('./app/dispatchers/leastConnDispatcher')
@@ -56,6 +57,14 @@ app.configure('all', 'connector', function(){
     app.set('frontChannel', frontChannelService)
 
     app.filter(handlerLogFilter(app, 'connector'))
+    app.event.on(pomelo.events.REMOVE_SERVERS, function(ids, items){
+        for (var id in items) {
+            if (items[id].serverType === 'channel') {
+                frontChannelService.clear()
+                app.components.__session__.kickAll()
+            }
+        }
+    })
 })
 
 app.configure('all', 'gate', function(){
@@ -94,6 +103,13 @@ app.configure('all', 'channel', function(){
     app.set('channel', channelService)
     channelService.init()
     app.filter(handlerLogFilter(app, 'channel'))
+    app.event.on(pomelo.events.REMOVE_SERVERS, function(ids, items){
+        for (var id in items) {
+            if (items[id].serverType === 'connector') {
+                channelRemoteProxyService.leaveServer(id)
+            }
+        }
+    })
 })
 
 app.start()
